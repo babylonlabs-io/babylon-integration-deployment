@@ -93,7 +93,11 @@ services:
     container_name: bitcoinsim
     image: babylonchain/bitcoinsim:latest
     environment:
-      - CLIENTHOST=bitcoinsim
+      - CLIENT_HOST=bitcoinsim
+      - RPC_USER=rpcuser
+      - RPC_PASS=rpcpass
+      - WALLET_PASS=walletpass
+      - BITCOIN_CONF=/bitcoinconf
     ports:
       - 18554-18556:18554-18556
     networks:
