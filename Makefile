@@ -1,5 +1,8 @@
 DOCKER := $(shell which docker)
 
+localnet-build-bitcoinsim:
+	$(MAKE) -C contrib/images bitcoinsim
+
 start-deployment: stop-deployment
 	$(DOCKER) run --rm -v $(CURDIR)/.testnets:/data babylonchain/babylond \
 			  testnet init-files --v 4 -o /data \

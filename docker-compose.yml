@@ -90,6 +90,9 @@ services:
         ipv4_address: 192.168.10.5
 
   bitcoinsim:
+    build:
+      context: ./contrib/images/bitcoinsim/
+      dockerfile: ./Dockerfile
     container_name: bitcoinsim
     image: babylonchain/bitcoinsim:latest
     environment:
