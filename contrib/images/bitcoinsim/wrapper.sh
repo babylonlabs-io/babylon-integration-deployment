@@ -17,6 +17,9 @@ WALLET_KEY_FILE="${BITCOIN_CONF}/rpc-wallet.key"
 
 echo "Creating certificates..."
 gencerts -d $BITCOIN_CONF -H $CLIENT_HOST -f
+mv $CERT_FILE $WALLET_CERT_FILE
+mv $KEY_FILE $WALLET_KEY_FILE
+gencerts -d $BITCOIN_CONF -H $CLIENT_HOST -f
 
 echo "Starting btcd..."
 btcd --simnet -u $RPC_USER -P $RPC_PASS --rpclisten=0.0.0.0:18556 --listen=0.0.0.0:18555 \

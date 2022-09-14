@@ -13,7 +13,7 @@ start-deployment: stop-deployment
 	# TODO: Once vigilante implements a testnet command we will use that one instead of
 	#  		manually creating and copying the config file
 	mkdir -p $(CURDIR)/.testnets/vigilante
-	cp vigilante.yml $(CURDIR)/.testnets/vigilante/vigilante.yml
+	cp $(CURDIR)/vigilante.yml $(CURDIR)/.testnets/vigilante/vigilante.yml
 	# Start the docker compose
 	docker-compose up -d
 
