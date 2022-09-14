@@ -4,9 +4,11 @@ btc:
   no-client-tls: false
   ca-file: /bitcoin/rpc.cert
   endpoint: bitcoinsim:18556
+  txfee: 0.00001
   wallet-endpoint: bitcoinsim:18554
   wallet-password: walletpass
   wallet-name: default
+  wallet-locl-time: 10
   wallet-ca-file: /bitcoin/rpc-wallet.cert
   net-params: simnet
   username: rpcuser
@@ -20,12 +22,13 @@ babylon:
   account-prefix: bbn
   keyring-backend: test
   gas-adjustment: 1.2
-  gas-prices: 0.01ubbn
+  gas-prices: 2stake
   key-directory: /babylon
   debug: true
   timeout: 20s
   block-timeout: ""
   output-format: json
+  submitter-address: bbn1v6k7k9s8md3k29cu9runasstq5zaa0lpznk27w
   sign-mode: direct
 grpc:
   onetime-tls-key: true
@@ -37,5 +40,6 @@ grpcweb:
   placeholder: grpcwebconfig
 submitter:
   netparams: simnet
+  buffer-size: 100
 reporter:
   netparams: simnet
