@@ -7,7 +7,7 @@ start-deployment: stop-deployment
 	$(DOCKER) run --rm -v $(CURDIR)/.testnets:/data babylonchain/babylond \
 			  testnet init-files --v 4 -o /data \
 			  --starting-ip-address 192.168.10.2 --keyring-backend=test \
-			  --chain-id chain-test
+			  --chain-id chain-test --btc-checkpoint-tag bbt0
 	# volume in which the bitcoin configuration will be mounted
 	mkdir -p $(CURDIR)/.testnets/bitcoin
 	# TODO: Once vigilante implements a testnet command we will use that one instead of
