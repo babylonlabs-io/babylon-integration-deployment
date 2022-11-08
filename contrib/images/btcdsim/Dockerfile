@@ -15,11 +15,11 @@ RUN cd btcwallet && go install -v . ./cmd/... && cd -
 
 FROM alpine:3.14 AS run
 RUN apk add bash expect expect-dev
-WORKDIR /bitcoinsim
+WORKDIR /btcdsim
 
 COPY --from=build /go/bin/* /usr/bin/
-COPY wrapper.sh /bitcoinsim/wrapper.sh
-COPY btcwallet_create.exp /bitcoinsim/btcwallet_create.exp
+COPY wrapper.sh /btcdsim/wrapper.sh
+COPY btcwallet_create.exp /btcdsim/btcwallet_create.exp
 
 ENV RPC_USER=rpcuser
 ENV RPC_PASS=rpcpass
@@ -29,6 +29,6 @@ ENV GENERATE_INTERVAL_SECS=30
 
 EXPOSE 18554 18555 18556
 
-ENTRYPOINT ["/bitcoinsim/wrapper.sh"]
+ENTRYPOINT ["/btcdsim/wrapper.sh"]
 CMD []
 STOPSIGNAL SIGTERM

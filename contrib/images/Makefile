@@ -1,10 +1,10 @@
 all: bitcoinsim
 
-bitcoinsim:
-	docker build --tag babylonchain/bitcoinsim -f bitcoinsim/Dockerfile \
-		$(shell git rev-parse --show-toplevel)/contrib/images/bitcoinsim
+btcdsim:
+	docker build --tag babylonchain/btcdsim -f btcdsim/Dockerfile \
+		$(shell git rev-parse --show-toplevel)/contrib/images/btcdsim
 
-bitcoinsim-rmi:
-	docker rmi babylonchain/bitcoinsim 2>/dev/null; true
+btcdsim-rmi:
+	docker rmi babylonchain/btcdsim 2>/dev/null; true
 
-.PHONY: all bitcoinsim bitcoinsim-rmi
+.PHONY: all btcdsim btcdsim-rmi

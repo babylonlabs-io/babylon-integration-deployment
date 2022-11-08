@@ -4,9 +4,9 @@ common:
 btc:
   no-client-tls: false
   ca-file: /bitcoin/rpc.cert
-  endpoint: bitcoinsim:18556
+  endpoint: btcdsim:18556
   tx-fee: 2500
-  wallet-endpoint: bitcoinsim:18554
+  wallet-endpoint: btcdsim:18554
   wallet-password: walletpass
   wallet-name: default
   wallet-lock-time: 10
@@ -15,7 +15,8 @@ btc:
   username: rpcuser
   password: rpcpass
   reconnect-attempts: 3
-  polling: false
+  subscription-mode: websocket
+  zmq-endpoint: ~
 babylon:
   key: node0
   chain-id: chain-test
