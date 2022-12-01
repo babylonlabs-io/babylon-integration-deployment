@@ -45,7 +45,7 @@ grpcweb:
 submitter:
   netparams: simnet
   buffer-size: 100
-  polling-interval-seconds: 60
+  polling-interval-seconds: 5
   resend-interval-seconds: 1800
 reporter:
   netparams: simnet

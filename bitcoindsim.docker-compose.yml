@@ -45,50 +45,6 @@ services:
       localnet:
         ipv4_address: 192.168.10.3
 
-  babylondnode2:
-    container_name: babylondnode2
-    image: "babylonchain/babylond"
-    environment:
-      - DEBUG=0
-      - ID=2
-      - LOG=${LOG:-babylond.log}
-    cap_add:
-      - SYS_PTRACE
-    security_opt:
-      - seccomp:unconfined
-    ports:
-      - "26676-26677:26656-26657"
-      - "1319:1317"
-      - "9092:9090"
-      - "2347:2345"
-    volumes:
-      - ./.testnets:/data:Z
-    networks:
-      localnet:
-        ipv4_address: 192.168.10.4
-
-  babylondnode3:
-    container_name: babylondnode3
-    image: "babylonchain/babylond"
-    environment:
-      - DEBUG=0
-      - ID=3
-      - LOG=${LOG:-babylond.log}
-    cap_add:
-      - SYS_PTRACE
-    security_opt:
-      - seccomp:unconfined
-    ports:
-      - "26686-26687:26656-26657"
-      - "1320:1317"
-      - "9093:9090"
-      - "2348:2345"
-    volumes:
-      - ./.testnets:/data:Z
-    networks:
-      localnet:
-        ipv4_address: 192.168.10.5
-
   bitcoindsim:
     build:
       context: contrib/images/bitcoindsim/
@@ -106,7 +62,7 @@ services:
       - RPC_PASS=rpcpass
       - WALLET_PASS=walletpass
       - WALLET_NAME=default
-      - GENERATE_INTERVAL_SECS=30
+      - GENERATE_INTERVAL_SECS=20
     ports:
       - "18443:18443"
       - "29000:29000"
@@ -166,6 +122,19 @@ services:
     networks:
       localnet:
         ipv4_address: 192.168.10.10
+
+  ibcsim:
+    container_name: ibcsim
+    image: babylonchain/ibcsim
+    ports:
+      - "5183:5183"
+    volumes:
+      - ./.testnets:/data:Z
+    networks:
+      localnet:
+        ipv4_address: 192.168.10.11
+    depends_on:
+      - babylondnode1
 
 networks:
   localnet:

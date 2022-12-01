@@ -2,12 +2,14 @@
 
 This repository hosts a local deployment of the entire Babylon stack for
 testing purposes. It involves:
-- 4 validator nodes
+- 2 validator nodes
 - 1 vigilante submitter
 - 1 vigilante reporter
 - 1 bitcoin instance (currently btcd, in the future there is going to be
   support for bitcoind)
 - 1 explorer
+- 1 [gaiad](https://github.com/cosmos/gaia) instance connected to the validator
+  node throuth an IBC [relayer](https://github.com/cosmos/relayer).
 
 ### Prerequisites
 
@@ -20,10 +22,9 @@ testing purposes. It involves:
 
 ### Dependencies
 
-- [Babylon v0.1.0](https://github.com/babylonchain/babylon/tree/v0.1.0)
-- [Vigilante commit bec27883e567097ea1b34d73b804b57d8dbbeed0](https://github.com/babylonchain/vigilante/tree/bec27883e567097ea1b34d73b804b57d8dbbeed0/).
-  This will be updated to a stable version later on.
-- [Explorer commit 1e0c7f9b035bbaa03147ec4e161433dfcdd92e51](https://github.com/babylonchain/babylon-explorer/tree/1e0c7f9b035bbaa03147ec4e161433dfcdd92e51/).
+- [Babylon v0.3.0](https://github.com/babylonchain/babylon/tree/v0.3.0)
+- [Vigilante v0.3.0](https://github.com/babylonchain/vigilante/tree/v0.3.0/).
+- [Explorer commit a0878479581216107ae21fd6368f806a5be2a16f](https://github.com/babylonchain/babylon-explorer/tree/a0878479581216107ae21fd6368f806a5be2a16f/).
   This will be updated to a stable version when there is one for the explorer.
 
 ### Deploying
@@ -44,7 +45,7 @@ make stop-deployment-btcd
 ### System parameters
 
 The Babylon nodes are deployed with the following parameters:
-- 4 validators with 2 active ones
+- 2 validators
 - `chain-test` as the chain ID
 - `bbt0` as the checkpoint tags
 - 10 blocks epoch interval
