@@ -111,7 +111,7 @@ services:
       - ./nginx.conf.template:/etc/nginx/templates/explorer.conf.template
     environment:
       - LISTPORT=26661
-      - BBNNODE=host.docker.internal
+      - BBNNODE=babylondnode0
       - PROMPORT=26660
       - EXPNODE=explorer
       - EXPPORT=8080
