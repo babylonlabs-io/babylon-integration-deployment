@@ -6,7 +6,7 @@ btcdsim:
 
 bitcoindsim:
 	docker build --tag babylonchain/bitcoindsim -f bitcoindsim/Dockerfile \
-		$(shell git rev-parse --show-toplevel)/contrib/images/bitcoind
+		$(shell git rev-parse --show-toplevel)/contrib/images/bitcoindsim
 
 ibcsim:
 	docker build --tag babylonchain/ibcsim -f ibcsim/Dockerfile \
