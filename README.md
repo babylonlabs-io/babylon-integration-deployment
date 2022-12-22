@@ -23,7 +23,7 @@ testing purposes. It involves:
 ### Dependencies
 
 - [Babylon v0.3.0](https://github.com/babylonchain/babylon/tree/v0.3.0)
-- [Vigilante v0.3.0](https://github.com/babylonchain/vigilante/tree/v0.3.0/).
+- [Vigilante v0.4.0](https://github.com/babylonchain/vigilante/tree/v0.4.0/).
 - [Explorer commit a0878479581216107ae21fd6368f806a5be2a16f](https://github.com/babylonchain/babylon-explorer/tree/a0878479581216107ae21fd6368f806a5be2a16f/).
   This will be updated to a stable version when there is one for the explorer.
 

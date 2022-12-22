@@ -33,13 +33,14 @@ start-deployment-btcd: stop-deployment-btcd build-deployment-btcd
 			  testnet init-files --v 2 -o /data \
 			  --starting-ip-address 192.168.10.2 --keyring-backend=test \
 			  --chain-id chain-test --btc-checkpoint-tag bbt0 --epoch-interval 10 \
+			  --minimum-gas-prices 0.000006ubbn \
 			  --btc-finalization-timeout 2 --btc-confirmation-depth 1
 	# volume in which the bitcoin configuration will be mounted
 	mkdir -p $(CURDIR)/.testnets/bitcoin
 	# TODO: Once vigilante implements a testnet command we will use that one instead of
 	#  		manually creating and copying the config file
 	mkdir -p $(CURDIR)/.testnets/vigilante
-	cp $(CURDIR)/vigilante.yml $(CURDIR)/.testnets/vigilante/vigilante.yml
+	cp $(CURDIR)/vigilante-btcd.yml $(CURDIR)/.testnets/vigilante/vigilante.yml
 	# Start the docker compose
 	docker-compose -f btcdsim.docker-compose.yml up -d
 
@@ -50,6 +51,7 @@ start-deployment-bitcoind: stop-deployment-bitcoind build-deployment-bitcoind
 			  --starting-ip-address 192.168.10.2 --keyring-backend=test \
 			  --chain-id chain-test --btc-checkpoint-tag bbt0 --epoch-interval 10 \
 			  --btc-finalization-timeout 2 --btc-confirmation-depth 1 \
+			  --minimum-gas-prices 0.000006ubbn \
 			  --btc-base-header 0100000000000000000000000000000000000000000000000000000000000000000000003ba3edfd7a7b12b27ac72c3e67768f617fc81bc3888a51323a9fb8aa4b1e5e4adae5494dffff7f2002000000 \
 			  --btc-network regtest
 	# volume in which the bitcoin configuration will be mounted

@@ -16,10 +16,6 @@ rpcpassword=$RPC_PASS
 # ZMQ notification options.
 zmqpubsequence=tcp://0.0.0.0:$ZMQ_PORT
 
-# TODO: Remove this once we support segwit bech32 addresses.
-addresstype=legacy
-changetype=legacy
-
 # Allow all IPs to access the RPC server.
 [regtest]
 rpcbind=0.0.0.0

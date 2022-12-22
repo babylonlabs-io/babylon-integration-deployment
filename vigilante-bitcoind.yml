@@ -5,7 +5,9 @@ btc:
   no-client-tls: true   # use true for bitcoind as it does not support tls
   ca-file: ~
   endpoint: bitcoindsim:18443  # use port 18443 for bitcoind regtest
-  tx-fee: 2500
+  tx-fee-min: 1000
+  tx-fee-max: 100000
+  target-block-num: 2
   wallet-endpoint: ~
   wallet-password: walletpass
   wallet-name: default
