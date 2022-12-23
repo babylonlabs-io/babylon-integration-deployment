@@ -37,6 +37,12 @@ git submodule init && git submodule update
 ```shell
 make GITHUBUSER="your_github_username" GITHUBTOKEN="your_github_access_token" start-deployment-btcd
 ```
+
+*There is also the possibility to deploy the system along with a
+Prometheus/Grafana monitoring stack (Grafana UI under port `3000`)*:
+```shell
+make GITHUBUSER="your_github_username" GITHUBTOKEN="your_github_access_token" start-monitored-deployment-btcd
+```
 3. Stop the system
 ```shell
 make stop-deployment-btcd

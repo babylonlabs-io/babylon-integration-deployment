@@ -42,8 +42,10 @@ start-deployment-btcd: stop-deployment-btcd build-deployment-btcd
 	mkdir -p $(CURDIR)/.testnets/vigilante
 	cp $(CURDIR)/vigilante-btcd.yml $(CURDIR)/.testnets/vigilante/vigilante.yml
 	# Start the docker compose
-	docker-compose -f btcdsim.docker-compose.yml up -d
+	docker-compose -f btcdsim.docker-compose.yml up -d explorer vigilante-reporter vigilante-submitter ibcsim babylondnode0 babylondnode1 nginx-proxy btcdsim
 
+start-monitored-deployment-btcd: start-deployment-btcd
+	docker-compose -f btcdsim.docker-compose.yml up -d prometheus grafana
 
 start-deployment-bitcoind: stop-deployment-bitcoind build-deployment-bitcoind
 	$(DOCKER) run --rm -v $(CURDIR)/.testnets:/data babylonchain/babylond \
@@ -61,7 +63,10 @@ start-deployment-bitcoind: stop-deployment-bitcoind build-deployment-bitcoind
 	mkdir -p $(CURDIR)/.testnets/vigilante
 	cp $(CURDIR)/vigilante-bitcoind.yml $(CURDIR)/.testnets/vigilante/vigilante.yml
 	# Start the docker compose
-	docker-compose -f bitcoindsim.docker-compose.yml up -d
+	docker-compose -f bitcoindsim.docker-compose.yml up -d explorer vigilante-reporter vigilante-submitter ibcsim babylondnode0 babylondnode1 nginx-proxy bitcoindsim
+
+start-monitored-deployment-bitcoind: start-deployment-bitcoind
+	docker-compose -f bitcoindsim.docker-compose.yml up -d prometheus grafana
 
 stop-deployment-btcd:
 	docker-compose -f btcdsim.docker-compose.yml down

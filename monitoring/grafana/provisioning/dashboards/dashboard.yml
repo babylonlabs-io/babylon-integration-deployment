@@ -1,0 +1,15 @@
+apiVersion: 1
+providers:
+- name: cosmos
+  folder: ''
+  type: file
+  allowUiUpdates: true
+  options:
+    path: /etc/grafana/provisioning/dashboards/src/cosmos.json
+
+- name: go
+  folder: ''
+  type: file
+  allowUiUpdates: true
+  options:
+    path: /etc/grafana/provisioning/dashboards/src/go.json
