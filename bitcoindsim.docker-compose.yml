@@ -99,12 +99,27 @@ services:
       - babylondnode0
     restart: on-failure:10
 
+  vigilante-monitor:
+    container_name: vigilante-monitor
+    image: babylonchain/vigilante-monitor
+    networks:
+      localnet:
+        ipv4_address: 192.168.10.9
+    volumes:
+      - ./.testnets/bitcoin:/bitcoin
+      - ./.testnets/node0/babylond:/babylon
+      - ./.testnets/vigilante:/vigilante
+    depends_on:
+      - bitcoindsim
+      - babylondnode0
+    restart: on-failure:10
+
   explorer:
     container_name: explorer
     image: babylonchain/explorer
     networks:
       localnet:
-        ipv4_address: 192.168.10.9
+        ipv4_address: 192.168.10.10
 
   nginx-proxy:
     container_name: nginx-proxy
@@ -121,7 +136,7 @@ services:
       - EXPPORT=8080
     networks:
       localnet:
-        ipv4_address: 192.168.10.10
+        ipv4_address: 192.168.10.11
 
   ibcsim:
     container_name: ibcsim
@@ -132,7 +147,7 @@ services:
       - ./.testnets:/data:Z
     networks:
       localnet:
-        ipv4_address: 192.168.10.11
+        ipv4_address: 192.168.10.12
     depends_on:
       - babylondnode1
 
@@ -145,7 +160,7 @@ services:
       - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
     networks:
       localnet:
-        ipv4_address: 192.168.10.12
+        ipv4_address: 192.168.10.13
 
   grafana:
     container_name: grafana
@@ -158,7 +173,7 @@ services:
       - ./monitoring/grafana/provisioning/grafana.env
     networks:
       localnet:
-        ipv4_address: 192.168.10.13
+        ipv4_address: 192.168.10.14
     depends_on:
       - prometheus
 

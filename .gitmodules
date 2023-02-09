@@ -7,3 +7,6 @@
 [submodule "babylon-explorer"]
 	path = babylon-explorer
 	url = git@github.com:babylonchain/babylon-explorer.git
+[submodule "faucet"]
+	path = faucet
+	url = https://github.com/babylonchain/faucet

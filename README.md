@@ -22,10 +22,14 @@ testing purposes. It involves:
 
 ### Dependencies
 
-- [Babylon v0.3.0](https://github.com/babylonchain/babylon/tree/v0.3.0)
-- [Vigilante v0.4.0](https://github.com/babylonchain/vigilante/tree/v0.4.0/).
+- [Babylon v0.5.0](https://github.com/babylonchain/babylon/tree/v0.5.0).
+- [Vigilante commit 4f97912eb5a80f8f7cc80fb3f9a1b9bf62f24495](https://github.com/babylonchain/vigilante/tree/4f97912eb5a80f8f7cc80fb3f9a1b9bf62f24495).
+  This commit additionally includes `monitor` deployment to [v0.5.0](https://github.com/babylonchain/vigilante/tree/v0.5.0).
+  Will be updated to `v0.6.0` when there is one for the vigilante.
 - [Explorer commit a0878479581216107ae21fd6368f806a5be2a16f](https://github.com/babylonchain/babylon-explorer/tree/a0878479581216107ae21fd6368f806a5be2a16f/).
   This will be updated to a stable version when there is one for the explorer.
+- [Faucet commit 5b6d9559c4b3d3a0b9fd2c745f3dd9d53ad398d4](https://github.com/babylonchain/faucet/tree/5b6d9559c4b3d3a0b9fd2c745f3dd9d53ad398d4).
+  This will be updated to a stable version when there is one for the faucet.
 
 ### Deploying
 
@@ -35,17 +39,25 @@ git submodule init && git submodule update
 ```
 2. Deploy the system
 ```shell
-make GITHUBUSER="your_github_username" GITHUBTOKEN="your_github_access_token" start-deployment-btcd
+make start-deployment-btcd
 ```
 
 *There is also the possibility to deploy the system along with a
 Prometheus/Grafana monitoring stack (Grafana UI under port `3000`)*:
 ```shell
-make GITHUBUSER="your_github_username" GITHUBTOKEN="your_github_access_token" start-monitored-deployment-btcd
+make start-monitored-deployment-btcd
 ```
 3. Stop the system
 ```shell
 make stop-deployment-btcd
+```
+4. Deploy the faucet (the faucet frontend under port `3000` and the backend under port `3001`)
+```shell
+make start-deployment-faucet
+```
+5. Stop the faucet
+```shell
+make stop-deployment-faucet
 ```
 
 ### System parameters
@@ -91,6 +103,7 @@ testing, with the following names:
 - `babylonchain/vigilante-submitter` for the submitter
 - `babylonchain/explorer` for the explorer
 - `babylonchain/nginx-proxy` for the explorer
+- `babylonchain/faucet` for the faucet
 
 #### Logs
 
@@ -106,6 +119,8 @@ This deployment uses the following service names:
 - `btcdsim` for the btcd service
 - `explorer` for the explorer
 - `nginx-proxy` for the nginx proxy
+- `faucet-frontend` for the frontend of the faucet
+- `faucet-backend` for the backend of the faucet
 
 #### Sanity checks
 

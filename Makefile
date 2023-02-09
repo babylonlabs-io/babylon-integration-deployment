@@ -20,13 +20,22 @@ build-vigilante-reporter:
 build-vigilante-submitter:
 	$(MAKE) -C vigilante submitter-build
 
+build-vigilante-monitor:
+	$(MAKE) -C vigilante monitor-build
+
+build-faucet:
+	$(MAKE) -C faucet frontend-build
+	$(MAKE) -C faucet backend-build
+
 build-explorer:
 	$(MAKE) -C babylon-explorer localnet-build-explorer
 	$(MAKE) -C babylon-explorer localnet-build-nginx-proxy
 
-build-deployment-btcd: build-btcdsim build-ibcsim build-babylond build-vigilante-reporter build-vigilante-submitter build-explorer
+build-deployment-btcd: build-btcdsim build-ibcsim build-babylond build-vigilante-reporter build-vigilante-submitter build-vigilante-monitor build-explorer
 
-build-deployment-bitcoind: build-bitcoindsim build-ibcsim build-babylond build-vigilante-reporter build-vigilante-submitter build-explorer
+build-deployment-bitcoind: build-bitcoindsim build-ibcsim build-babylond build-vigilante-reporter build-vigilante-submitter build-vigilante-monitor build-explorer
+
+build-deployment-faucet: build-babylond build-faucet
 
 start-deployment-btcd: stop-deployment-btcd build-deployment-btcd
 	$(DOCKER) run --rm -v $(CURDIR)/.testnets:/data babylonchain/babylond \
@@ -42,7 +51,7 @@ start-deployment-btcd: stop-deployment-btcd build-deployment-btcd
 	mkdir -p $(CURDIR)/.testnets/vigilante
 	cp $(CURDIR)/vigilante-btcd.yml $(CURDIR)/.testnets/vigilante/vigilante.yml
 	# Start the docker compose
-	docker-compose -f btcdsim.docker-compose.yml up -d explorer vigilante-reporter vigilante-submitter ibcsim babylondnode0 babylondnode1 nginx-proxy btcdsim
+	docker-compose -f btcdsim.docker-compose.yml up -d explorer vigilante-reporter vigilante-submitter vigilante-monitor ibcsim babylondnode0 babylondnode1 nginx-proxy btcdsim
 
 start-monitored-deployment-btcd: start-deployment-btcd
 	docker-compose -f btcdsim.docker-compose.yml up -d prometheus grafana
@@ -63,10 +72,22 @@ start-deployment-bitcoind: stop-deployment-bitcoind build-deployment-bitcoind
 	mkdir -p $(CURDIR)/.testnets/vigilante
 	cp $(CURDIR)/vigilante-bitcoind.yml $(CURDIR)/.testnets/vigilante/vigilante.yml
 	# Start the docker compose
-	docker-compose -f bitcoindsim.docker-compose.yml up -d explorer vigilante-reporter vigilante-submitter ibcsim babylondnode0 babylondnode1 nginx-proxy bitcoindsim
+	docker-compose -f bitcoindsim.docker-compose.yml up -d explorer vigilante-reporter vigilante-submitter vigilante-monitor ibcsim babylondnode0 babylondnode1 nginx-proxy bitcoindsim
 
 start-monitored-deployment-bitcoind: start-deployment-bitcoind
 	docker-compose -f bitcoindsim.docker-compose.yml up -d prometheus grafana
+
+start-deployment-faucet: stop-deployment-faucet build-deployment-faucet
+	$(DOCKER) run --rm -v $(CURDIR)/.testnets:/data babylonchain/babylond \
+				  testnet init-files --v 2 -o /data \
+				  --starting-ip-address 192.168.10.2 --keyring-backend=test \
+				  --chain-id chain-test --btc-checkpoint-tag bbt0 --epoch-interval 10 \
+				  --minimum-gas-prices 0.000006ubbn \
+				  --btc-finalization-timeout 2 --btc-confirmation-depth 1
+	mkdir -p $(CURDIR)/.testnets/faucet
+	cp $(CURDIR)/faucet-config.yml $(CURDIR)/.testnets/faucet/config.yml
+	# Start the docker compose
+	docker-compose -f faucet.docker-compose.yml up -d babylondnode0 babylondnode1 faucet-frontend faucet-backend
 
 stop-deployment-btcd:
 	docker-compose -f btcdsim.docker-compose.yml down
@@ -74,4 +95,8 @@ stop-deployment-btcd:
 
 stop-deployment-bitcoind:
 	docker-compose -f bitcoindsim.docker-compose.yml down
+	rm -rf $(CURDIR)/.testnets
+
+stop-deployment-faucet:
+	docker-compose -f faucet.docker-compose.yml down
 	rm -rf $(CURDIR)/.testnets
