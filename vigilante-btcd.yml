@@ -3,7 +3,7 @@ common:
   max-retry-sleep-time: 1m
 btc:
   no-client-tls: false
-  ca-file: /bitcoin/rpc.cert
+  ca-file: /home/vigilante/btcconfig/rpc.cert
   endpoint: btcdsim:18556
   tx-fee-min: 1000
   tx-fee-max: 100000
@@ -12,7 +12,7 @@ btc:
   wallet-password: walletpass
   wallet-name: default
   wallet-lock-time: 10
-  wallet-ca-file: /bitcoin/rpc-wallet.cert
+  wallet-ca-file: /home/vigilante/btcconfig/rpc-wallet.cert
   net-params: simnet
   username: rpcuser
   password: rpcpass
@@ -28,22 +28,24 @@ babylon:
   keyring-backend: test
   gas-adjustment: 1.2
   gas-prices: 2ubbn
-  key-directory: /babylon
+  key-directory: /home/vigilante/bbnconfig
   debug: true
   timeout: 20s
   block-timeout: ~
   output-format: json
   submitter-address: bbn1v6k7k9s8md3k29cu9runasstq5zaa0lpznk27w
   sign-mode: direct
-  tag-idx: "0"
 grpc:
   onetime-tls-key: true
   rpc-key: ""
-  rpc-cert: /vigilante/rpc.cert
+  rpc-cert: /home/vigilante/config/rpc.cert
   endpoints:
     - localhost:8080
 grpcweb:
   placeholder: grpcwebconfig
+metrics:
+  host: 0.0.0.0
+  server-port: 2112
 submitter:
   netparams: simnet
   buffer-size: 100

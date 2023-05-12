@@ -8,11 +8,11 @@ ENV GO111MODULE=on
 
 # Install gaia
 RUN git clone https://github.com/cosmos/gaia.git
-RUN cd gaia && git checkout v7.0.3 && make install && cd -
+RUN cd gaia && git fetch origin && git checkout v9.0.3 && make install && cd -
 
 # Install the relayer
 RUN git clone https://github.com/cosmos/relayer.git
-RUN cd relayer && git checkout v2.1.2 && make install && cd -
+RUN cd relayer && git checkout v2.3.0 && make install && cd -
 
 RUN apk add bash jq
 WORKDIR /ibcsim

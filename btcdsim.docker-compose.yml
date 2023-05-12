@@ -4,10 +4,8 @@ services:
   babylondnode0:
     container_name: babylondnode0
     image: "babylonchain/babylond"
-    environment:
-      - DEBUG=1
-      - HOME=/data/node0/babylond
-      - LOG=${LOG:-babylond.log}
+    command: >
+      babylond --home /babylondhome start --log_format 'plain' 2>&1 | tee /babylondhome/babylond.log
     cap_add:
       - SYS_PTRACE
     security_opt:
@@ -18,7 +16,7 @@ services:
       - "9090:9090"
       - "2345:2345"
     volumes:
-      - ./.testnets:/data:Z
+      - ./.testnets/node0/babylond:/babylondhome:Z
     networks:
       localnet:
         ipv4_address: 192.168.10.2
@@ -26,10 +24,8 @@ services:
   babylondnode1:
     container_name: babylondnode1
     image: "babylonchain/babylond"
-    environment:
-      - DEBUG=0
-      - HOME=/data/node1/babylond
-      - LOG=${LOG:-babylond.log}
+    command: >
+      babylond --home /babylondhome start --log_format 'plain' 2>&1 | tee /babylondhome/babylond.log
     cap_add:
       - SYS_PTRACE
     security_opt:
@@ -40,7 +36,7 @@ services:
       - "9091:9090"
       - "2346:2345"
     volumes:
-      - ./.testnets:/data:Z
+      - ./.testnets/node1/babylond:/babylondhome:Z
     networks:
       localnet:
         ipv4_address: 192.168.10.3
@@ -67,14 +63,16 @@ services:
 
   vigilante-reporter:
     container_name: vigilante-reporter
-    image: babylonchain/vigilante-reporter
+    image: babylonchain/vigilante
+    command: >
+      vigilante reporter --config /home/vigilante/config/vigilante.yml 2>&1 | tee /home/vigilante/config/reporter.log
     networks:
       localnet:
         ipv4_address: 192.168.10.7
     volumes:
-      - ./.testnets/bitcoin:/bitcoin
-      - ./.testnets/node0/babylond:/babylon
-      - ./.testnets/vigilante:/vigilante
+      - ./.testnets/node0/babylond:/home/vigilante/bbnconfig
+      - ./.testnets/vigilante:/home/vigilante/config
+      - ./.testnets/bitcoin:/home/vigilante/btcconfig
     depends_on:
       - btcdsim
       - babylondnode0
@@ -82,14 +80,16 @@ services:
 
   vigilante-submitter:
     container_name: vigilante-submitter
-    image: babylonchain/vigilante-submitter
+    image: babylonchain/vigilante
+    command: >
+      vigilante submitter --config /home/vigilante/config/vigilante.yml 2>&1 | tee /home/vigilante/config/submitter.log
     networks:
       localnet:
         ipv4_address: 192.168.10.8
     volumes:
-      - ./.testnets/bitcoin:/bitcoin
-      - ./.testnets/node0/babylond:/babylon
-      - ./.testnets/vigilante:/vigilante
+      - ./.testnets/node0/babylond:/home/vigilante/bbnconfig
+      - ./.testnets/vigilante:/home/vigilante/config
+      - ./.testnets/bitcoin:/home/vigilante/btcconfig
     depends_on:
       - btcdsim
       - babylondnode0
@@ -97,42 +97,20 @@ services:
 
   vigilante-monitor:
     container_name: vigilante-monitor
-    image: babylonchain/vigilante-monitor
+    image: babylonchain/vigilante
+    command: >
+      vigilante monitor --config /home/vigilante/config/vigilante.yml --genesis /home/vigilante/bbnconfig/config/genesis.json 2>&1 | tee /home/vigilante/config/monitor.log
     networks:
       localnet:
         ipv4_address: 192.168.10.9
     volumes:
-      - ./.testnets/bitcoin:/bitcoin
-      - ./.testnets/node0/babylond:/babylon
-      - ./.testnets/vigilante:/vigilante
+      - ./.testnets/node0/babylond:/home/vigilante/bbnconfig
+      - ./.testnets/vigilante:/home/vigilante/config
+      - ./.testnets/bitcoin:/home/vigilante/btcconfig
     depends_on:
       - btcdsim
       - babylondnode0
     restart: on-failure:10
-
-  explorer:
-    container_name: explorer
-    image: babylonchain/explorer
-    networks:
-      localnet:
-        ipv4_address: 192.168.10.10
-
-  nginx-proxy:
-    container_name: nginx-proxy
-    image: babylonchain/nginx-proxy
-    ports:
-      - "26661:26661"
-    volumes:
-      - ./nginx.conf.template:/etc/nginx/templates/explorer.conf.template
-    environment:
-      - LISTPORT=26661
-      - BBNNODE=babylondnode0
-      - PROMPORT=26660
-      - EXPNODE=explorer
-      - EXPPORT=8080
-    networks:
-      localnet:
-        ipv4_address: 192.168.10.11
 
   ibcsim:
     container_name: ibcsim

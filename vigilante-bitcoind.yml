@@ -26,31 +26,33 @@ babylon:
   grpc-addr: https://babylondnode0:9090
   account-prefix: bbn
   keyring-backend: test
-  gas-adjustment: 1.2
+  gas-adjustment: 1.5
   gas-prices: 2ubbn
-  key-directory: /babylon
+  key-directory: /home/vigilante/bbnconfig
   debug: true
   timeout: 20s
   block-timeout: ~
   output-format: json
   submitter-address: bbn1v6k7k9s8md3k29cu9runasstq5zaa0lpznk27w
   sign-mode: direct
-  tag-idx: "0"
 grpc:
   onetime-tls-key: true
   rpc-key: ""
-  rpc-cert: /vigilante/rpc.cert
+  rpc-cert: /home/vigilante/config/rpc.cert
   endpoints:
     - localhost:8080
 grpcweb:
   placeholder: grpcwebconfig
+metrics:
+  host: 0.0.0.0
+  server-port: 2112
 submitter:
-  netparams: simnet
+  netparams: regtest
   buffer-size: 100
   polling-interval-seconds: 60
   resend-interval-seconds: 1800
 reporter:
-  netparams: simnet
+  netparams: regtest
 monitor:
   checkpoint-buffer-size: 1000
   btc-block-buffer-size: 1000

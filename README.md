@@ -5,30 +5,21 @@ testing purposes. It involves:
 - 2 validator nodes
 - 1 vigilante submitter
 - 1 vigilante reporter
+- 1 vigilante monitor
 - 1 bitcoin instance (currently btcd, in the future there is going to be
   support for bitcoind)
-- 1 explorer
 - 1 [gaiad](https://github.com/cosmos/gaia) instance connected to the validator
   node throuth an IBC [relayer](https://github.com/cosmos/relayer).
 
 ### Prerequisites
 
 - Docker
-- A github access token. The [vigilante](https://github.com/babylonchain/vigilante) repository
-  depends on the [Babylon](https://github.com/babylonchain/babylon) repository which is currently private.
-  In order for `go build` to succeed, you need a token that has access to the
-  Babylon repository. Instructions on how one can be created can be found
-  [here](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token)
 
 ### Dependencies
 
-- [Babylon v0.5.0](https://github.com/babylonchain/babylon/tree/v0.5.0).
-- [Vigilante commit 4f97912eb5a80f8f7cc80fb3f9a1b9bf62f24495](https://github.com/babylonchain/vigilante/tree/4f97912eb5a80f8f7cc80fb3f9a1b9bf62f24495).
-  This commit additionally includes `monitor` deployment to [v0.5.0](https://github.com/babylonchain/vigilante/tree/v0.5.0).
-  Will be updated to `v0.6.0` when there is one for the vigilante.
-- [Explorer commit a0878479581216107ae21fd6368f806a5be2a16f](https://github.com/babylonchain/babylon-explorer/tree/a0878479581216107ae21fd6368f806a5be2a16f/).
-  This will be updated to a stable version when there is one for the explorer.
-- [Faucet commit 5b6d9559c4b3d3a0b9fd2c745f3dd9d53ad398d4](https://github.com/babylonchain/faucet/tree/5b6d9559c4b3d3a0b9fd2c745f3dd9d53ad398d4).
+- [Babylon v0.6.0](https://github.com/babylonchain/babylon/tree/v0.6.0).
+- [Vigilante version v0.6.0-rc0](https://github.com/babylonchain/vigilante/tree/v0.6.0-rc0).
+- [Faucet commit 84e4c122d42a3b098bc92d8b8bf5e8bb596129e7](https://github.com/babylonchain/faucet/tree/84e4c122d42a3b098bc92d8b8bf5e8bb596129e7).
   This will be updated to a stable version when there is one for the faucet.
 
 ### Deploying
@@ -83,7 +74,7 @@ The corresponding node directories, Bitcoin configuration, and
 vigilante configuration can be found under `.testnets`
 ```console
 $ ls .testnets
-gentxs node0 node1 node2 node3 vigilante bitcoin
+gentxs node0 node1 vigilante bitcoin
 ```
 
 ### Testing
@@ -99,8 +90,7 @@ For local development without pushing commits,
 one can create the Docker image corresponding to the service that they're
 testing, with the following names:
 - `babylonchain/babylond` for Babylon nodes
-- `babylonchain/vigilante-reporter` for the reporter
-- `babylonchain/vigilante-submitter` for the submitter
+- `babylonchain/vigilante` for the vigilante
 - `babylonchain/explorer` for the explorer
 - `babylonchain/nginx-proxy` for the explorer
 - `babylonchain/faucet` for the faucet

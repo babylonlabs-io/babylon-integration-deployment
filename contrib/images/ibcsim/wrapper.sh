@@ -93,13 +93,17 @@ gaiad testnet \
     --output-dir            $GAIA_CONF \
     --starting-ip-address   192.168.10.2 \
     --keyring-backend       test \
+    --minimum-gas-prices    "0.00002stake" \
     --chain-id              $GAIA_CHAIN_ID
 
+echo "$(sed 's/cors_allowed_origins = \[\]/cors_allowed_origins = \[\"*\"\]/g' $GAIA_CONF/node0/gaiad/config/config.toml)" > $GAIA_CONF/node0/gaiad/config/config.toml
 # Start the gaiad service
 echo "Starting the gaiad service..."
+echo "hi"
 GAIA_LOG=$GAIA_CONF/node0/gaiad/gaiad.log
 gaiad --home $GAIA_CONF/node0/gaiad start \
       --pruning=nothing --grpc-web.enable=false \
+      --rpc.unsafe true \
       --grpc.address="0.0.0.0:9091" > $GAIA_LOG 2>&1 &
 
 echo "gaiad started. Logs outputted at $GAIA_LOG"
