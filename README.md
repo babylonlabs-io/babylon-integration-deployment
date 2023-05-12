@@ -18,7 +18,7 @@ testing purposes. It involves:
 ### Dependencies
 
 - [Babylon v0.6.0](https://github.com/babylonchain/babylon/tree/v0.6.0).
-- [Vigilante version v0.6.0-rc0](https://github.com/babylonchain/vigilante/tree/v0.6.0-rc0).
+- [Vigilante version v0.6.0](https://github.com/babylonchain/vigilante/tree/v0.6.0).
 - [Faucet commit 84e4c122d42a3b098bc92d8b8bf5e8bb596129e7](https://github.com/babylonchain/faucet/tree/84e4c122d42a3b098bc92d8b8bf5e8bb596129e7).
   This will be updated to a stable version when there is one for the faucet.
 
