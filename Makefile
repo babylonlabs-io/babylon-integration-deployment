@@ -6,8 +6,8 @@ build-btcdsim:
 build-bitcoindsim:
 	$(MAKE) -C contrib/images bitcoindsim
 
-build-ibcsim:
-	$(MAKE) -C contrib/images ibcsim
+build-ibcsim-gaia:
+	$(MAKE) -C contrib/images ibcsim-gaia
 
 build-babylond:
 	# Hack: Go does not like it when using git submodules
@@ -23,9 +23,9 @@ build-faucet:
 	$(MAKE) -C faucet frontend-build
 	$(MAKE) -C faucet backend-build
 
-build-deployment-btcd: build-babylond build-btcdsim build-ibcsim build-vigilante
+build-deployment-btcd: build-babylond build-btcdsim build-ibcsim-gaia build-vigilante
 
-build-deployment-bitcoind: build-babylond build-bitcoindsim build-ibcsim build-vigilante
+build-deployment-bitcoind: build-babylond build-bitcoindsim build-ibcsim-gaia build-vigilante
 
 build-deployment-faucet: build-babylond build-faucet
 
@@ -44,7 +44,7 @@ start-deployment-btcd: stop-deployment-btcd build-deployment-btcd
 	mkdir -p $(CURDIR)/.testnets/vigilante
 	cp $(CURDIR)/vigilante-btcd.yml $(CURDIR)/.testnets/vigilante/vigilante.yml
 	# Start the docker compose
-	docker-compose -f btcdsim.docker-compose.yml up -d vigilante-reporter vigilante-submitter vigilante-monitor ibcsim babylondnode0 babylondnode1 btcdsim
+	docker-compose -f btcdsim.docker-compose.yml up -d vigilante-reporter vigilante-submitter vigilante-monitor babylondnode0 babylondnode1 btcdsim
 
 start-monitored-deployment-btcd: start-deployment-btcd
 	docker-compose -f btcdsim.docker-compose.yml up -d prometheus grafana
@@ -66,10 +66,13 @@ start-deployment-bitcoind: stop-deployment-bitcoind build-deployment-bitcoind
 	mkdir -p $(CURDIR)/.testnets/vigilante
 	cp $(CURDIR)/vigilante-bitcoind.yml $(CURDIR)/.testnets/vigilante/vigilante.yml
 	# Start the docker compose
-	docker-compose -f bitcoindsim.docker-compose.yml up -d vigilante-reporter vigilante-submitter vigilante-monitor ibcsim babylondnode0 babylondnode1 bitcoindsim
+	docker-compose -f bitcoindsim.docker-compose.yml up -d vigilante-reporter vigilante-submitter vigilante-monitor babylondnode0 babylondnode1 bitcoindsim
 
 start-monitored-deployment-bitcoind: start-deployment-bitcoind
 	docker-compose -f bitcoindsim.docker-compose.yml up -d prometheus grafana
+
+start-deployment-bitcoind-phase1: start-deployment-bitcoind
+	docker-compose -f bitcoindsim.docker-compose.yml up -d ibcsim-gaia
 
 start-deployment-faucet: stop-deployment-faucet build-deployment-faucet
 	$(DOCKER) run --rm -v $(CURDIR)/.testnets:/data babylonchain/babylond \
