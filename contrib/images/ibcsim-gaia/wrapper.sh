@@ -7,6 +7,10 @@ BABYLON_KEY="babylon-key"
 BABYLON_CHAIN_ID="chain-test"
 GAIA_CHAIN_ID="gaia-test"
 
+mkdir -p $RELAYER_CONF_DIR
+babylon-relayer --home $RELAYER_CONF_DIR config init
+RELAYER_CONF=$RELAYER_CONF_DIR/config/config.yaml
+
 cat <<EOT > $RELAYER_CONF
 global:
     api-listen-addr: :5183
@@ -38,14 +42,11 @@ chains:
             keyring-backend: test
             timeout: 10s            
 paths:
-    akash:
+    gaia:
         src:
             chain-id: $BABYLON_CHAIN_ID
         dst:
             chain-id: $GAIA_CHAIN_ID
-        src-channel-filter:
-            rule: ""
-            channel-list: []
 EOT
 
 # 1. Create a gaiad testnet
@@ -63,7 +64,6 @@ gaiad testnet \
 echo "$(sed 's/cors_allowed_origins = \[\]/cors_allowed_origins = \[\"*\"\]/g' $GAIA_CONF/node0/gaiad/config/config.toml)" > $GAIA_CONF/node0/gaiad/config/config.toml
 # Start the gaiad service
 echo "Starting the gaiad service..."
-echo "hi"
 GAIA_LOG=$GAIA_CONF/node0/gaiad/gaiad.log
 gaiad --home $GAIA_CONF/node0/gaiad start \
       --pruning=nothing --grpc-web.enable=false \
@@ -76,11 +76,9 @@ echo "Status of Gaia node"
 gaiad status
 
 # 2. Create the relayer
-echo "Inserting the babylond key"
+echo "Inserting Babylon key"
 BABYLON_MEMO=$(cat $BABYLON_HOME/key_seed.json | jq .secret | tr -d '"')
 babylon-relayer --home $RELAYER_CONF keys restore babylon $BABYLON_KEY "$BABYLON_MEMO"
 
-sleep 30
-
-echo "Create light clients in both CZs"
-babylon-relayer --home $RELAYER_CONF keep-update-clients --interval UPDATE_CLIENTS_INTERVAL
+echo "Start the Babylon relayer"
+babylon-relayer --home $RELAYER_CONF keep-update-clients --interval $UPDATE_CLIENTS_INTERVAL

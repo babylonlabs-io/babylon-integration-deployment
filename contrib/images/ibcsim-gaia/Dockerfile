@@ -20,7 +20,7 @@ COPY wrapper.sh /ibcsim-gaia/wrapper.sh
 
 ENV BABYLON_HOME=/data/node1/babylond
 ENV BABYLON_NODE_RPC="http://babylondnode1:26657"
-ENV RELAYER_CONF=/data/relayer/config/config.yaml
+ENV RELAYER_CONF_DIR=/data/relayer
 ENV GAIA_CONF=/data/gaia
 ENV UPDATE_CLIENTS_INTERVAL=20s
 
