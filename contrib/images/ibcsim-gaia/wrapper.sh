@@ -78,9 +78,7 @@ gaiad status
 # 2. Create the relayer
 echo "Inserting Babylon key"
 BABYLON_MEMO=$(cat $BABYLON_HOME/key_seed.json | jq .secret | tr -d '"')
-echo "RELAYER_CONF" $(pwd $RELAYER_CONF)
-babylon-relayer --home $RELAYER_CONF config show
-babylon-relayer --home $RELAYER_CONF keys restore babylon $BABYLON_KEY "$BABYLON_MEMO"
+babylon-relayer --home $RELAYER_CONF_DIR keys restore babylon $BABYLON_KEY "$BABYLON_MEMO"
 
 echo "Start the Babylon relayer"
-babylon-relayer --home $RELAYER_CONF keep-update-clients --interval $UPDATE_CLIENTS_INTERVAL
+babylon-relayer --home $RELAYER_CONF_DIR keep-update-clients --interval $UPDATE_CLIENTS_INTERVAL
