@@ -75,6 +75,8 @@ sleep 10
 echo "Status of Gaia node"
 gaiad status
 
+sleep 30
+
 # 2. Create the relayer
 echo "Inserting Babylon key"
 BABYLON_MEMO=$(cat $BABYLON_HOME/key_seed.json | jq .secret | tr -d '"')
