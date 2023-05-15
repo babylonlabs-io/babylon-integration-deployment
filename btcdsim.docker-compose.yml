@@ -112,9 +112,9 @@ services:
       - babylondnode0
     restart: on-failure:10
 
-  ibcsim:
-    container_name: ibcsim
-    image: babylonchain/ibcsim
+  ibcsim-gaia:
+    container_name: ibcsim-gaia
+    image: babylonchain/ibcsim-gaia
     ports:
       - "5183:5183"
     volumes:

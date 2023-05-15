@@ -15,17 +15,17 @@ RUN git clone https://github.com/cosmos/relayer.git
 RUN cd relayer && git checkout v2.3.0 && make install && cd -
 
 RUN apk add bash jq
-WORKDIR /ibcsim
-COPY wrapper.sh /ibcsim/wrapper.sh
+WORKDIR /ibcsim-gaia
+COPY wrapper.sh /ibcsim-gaia/wrapper.sh
 
 ENV BABYLON_HOME=/data/node1/babylond
 ENV BABYLON_NODE_RPC="http://babylondnode1:26657"
 ENV RELAYER_CONF=/data/relayer
 ENV GAIA_CONF=/data/gaia
 ENV UPDATE_CLIENTS_INTERVAL_SEC=20
-ENV IBC_PATHS_CONF=/ibcsim/ibc-paths
-ENV IBC_CHAINS_CONF=/ibcsim/ibc-chains
+ENV IBC_PATHS_CONF=/ibcsim-gaia/ibc-paths
+ENV IBC_CHAINS_CONF=/ibcsim-gaia/ibc-chains
 
-ENTRYPOINT ["/ibcsim/wrapper.sh"]
+ENTRYPOINT ["/ibcsim-gaia/wrapper.sh"]
 CMD []
 STOPSIGNAL SIGTERM
