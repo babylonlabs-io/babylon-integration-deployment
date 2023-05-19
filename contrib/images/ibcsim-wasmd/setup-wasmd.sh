@@ -59,17 +59,17 @@ delegate="100000000000$DENOM"
 
 redirect $BINARY --home $CHAINDIR/$CHAINID --chain-id $CHAINID init $CHAINID
 sleep 1
-$BINARY --home $CHAINDIR/$CHAINID keys add validator $KEYRING --output json >$CHAINDIR/$CHAINID/validator_seed.json 2>&1
+$BINARY --home $CHAINDIR/$CHAINID keys add validator $KEYRING --output json > $CHAINDIR/$CHAINID/validator_seed.json 2>&1
 sleep 1
-$BINARY --home $CHAINDIR/$CHAINID keys add user $KEYRING --output json >$CHAINDIR/$CHAINID/key_seed.json 2>&1
+$BINARY --home $CHAINDIR/$CHAINID keys add user $KEYRING --output json > $CHAINDIR/$CHAINID/key_seed.json 2>&1
 sleep 1
-redirect $BINARY --home $CHAINDIR/$CHAINID add-genesis-account $($BINARY --home $CHAINDIR/$CHAINID keys $KEYRING show user -a) $coins
+redirect $BINARY --home $CHAINDIR/$CHAINID genesis add-genesis-account $($BINARY --home $CHAINDIR/$CHAINID keys $KEYRING show user -a) $coins
 sleep 1
-redirect $BINARY --home $CHAINDIR/$CHAINID add-genesis-account $($BINARY --home $CHAINDIR/$CHAINID keys $KEYRING show validator -a) $coins
+redirect $BINARY --home $CHAINDIR/$CHAINID genesis add-genesis-account $($BINARY --home $CHAINDIR/$CHAINID keys $KEYRING show validator -a) $coins
 sleep 1
-redirect $BINARY --home $CHAINDIR/$CHAINID gentx validator $delegate $KEYRING --chain-id $CHAINID
+redirect $BINARY --home $CHAINDIR/$CHAINID genesis gentx validator $delegate $KEYRING --chain-id $CHAINID
 sleep 1
-redirect $BINARY --home $CHAINDIR/$CHAINID collect-gentxs
+redirect $BINARY --home $CHAINDIR/$CHAINID genesis collect-gentxs
 sleep 1
 
 # Set proper defaults and change ports
@@ -93,10 +93,10 @@ sleep 20
 
 # upload contract code
 echo "Uploading contract code $CODE_DIR..."
-$BINARY --home $CHAINDIR/$CHAINID tx wasm store $CODE_DIR --keyring-backend="test" --from user --chain-id $CHAINID --gas 20000000000 --gas-prices 0.01ustake --node http://localhost:$RPCPORT -y
+$BINARY --home $CHAINDIR/$CHAINID tx wasm store $CODE_DIR $KEYRING --from user --chain-id $CHAINID --gas 20000000000 --gas-prices 0.01ustake --node http://localhost:$RPCPORT -y
 sleep 5
 
 # instantiate contract
 # node that the code id is guaranteed to be 1
 echo "Instantiating contract with code $CODE_DIR..."
-$BINARY --home $CHAINDIR/$CHAINID tx wasm instantiate 1 $INSTANTIATING_CFG --admin=$(wasmd --home $CHAINDIR/$CHAINID keys show user --keyring-backend test -a) --label "v0.0.1" --keyring-backend="test" --from user --chain-id $CHAINID --gas 20000000000 --gas-prices 0.001ustake --node http://localhost:$RPCPORT -y --amount 100000stake
+$BINARY --home $CHAINDIR/$CHAINID tx wasm instantiate 1 $INSTANTIATING_CFG --admin=$(wasmd --home $CHAINDIR/$CHAINID keys show user --keyring-backend test -a) --label "v0.0.1" $KEYRING --from user --chain-id $CHAINID --gas 20000000000 --gas-prices 0.001ustake --node http://localhost:$RPCPORT -y --amount 100000stake

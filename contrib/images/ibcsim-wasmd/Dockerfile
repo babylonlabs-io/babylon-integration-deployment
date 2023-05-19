@@ -25,7 +25,7 @@ RUN wget https://github.com/cosmos/relayer/releases/download/v2.3.1/Cosmos.Relay
 
 # Install wasmd
 RUN git clone https://github.com/CosmWasm/wasmd.git
-RUN cd wasmd && git fetch origin && git checkout v0.30.0 && make install && cd -
+RUN cd wasmd && git fetch origin && git checkout v0.40.0-rc.2 && make install && cd -
 
 WORKDIR /ibcsim-wasmd
 COPY wrapper.sh /ibcsim-wasmd/wrapper.sh
