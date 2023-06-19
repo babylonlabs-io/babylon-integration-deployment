@@ -26,9 +26,9 @@ build-faucet:
 	$(MAKE) -C faucet frontend-build
 	$(MAKE) -C faucet backend-build
 
-build-deployment-btcd: build-babylond build-btcdsim build-ibcsim-gaia build-ibcsim-wasmd build-vigilante
+build-deployment-btcd: build-babylond build-btcdsim build-vigilante
 
-build-deployment-bitcoind: build-babylond build-bitcoindsim build-ibcsim-gaia build-ibcsim-wasmd build-vigilante
+build-deployment-bitcoind: build-babylond build-bitcoindsim build-vigilante
 
 build-deployment-faucet: build-babylond build-faucet
 
@@ -52,7 +52,7 @@ start-deployment-btcd: stop-deployment-btcd build-deployment-btcd
 start-monitored-deployment-btcd: start-deployment-btcd
 	docker-compose -f btcdsim.docker-compose.yml up -d prometheus grafana
 
-start-deployment-bitcoind: stop-deployment-bitcoind # build-deployment-bitcoind
+start-deployment-bitcoind: stop-deployment-bitcoind build-deployment-bitcoind
 	rm -rf $(CURDIR)/.testnets && mkdir -p $(CURDIR)/.testnets && chmod o+w $(CURDIR)/.testnets
 	$(DOCKER) run --rm -v $(CURDIR)/.testnets:/data babylonchain/babylond \
 			  babylond testnet init-files --v 2 -o /data \
@@ -74,10 +74,10 @@ start-deployment-bitcoind: stop-deployment-bitcoind # build-deployment-bitcoind
 start-monitored-deployment-bitcoind: start-deployment-bitcoind
 	docker-compose -f bitcoindsim.docker-compose.yml up -d prometheus grafana
 
-start-deployment-bitcoind-phase1: start-deployment-bitcoind
+start-deployment-bitcoind-phase1: build-ibcsim-gaia start-deployment-bitcoind
 	docker-compose -f bitcoindsim.docker-compose.yml up -d ibcsim-gaia
 
-start-deployment-bitcoind-phase2: start-deployment-bitcoind
+start-deployment-bitcoind-phase2: build-ibcsim-wasmd start-deployment-bitcoind
 	docker-compose -f bitcoindsim.docker-compose.yml up -d ibcsim-wasmd
 
 start-deployment-faucet: stop-deployment-faucet build-deployment-faucet

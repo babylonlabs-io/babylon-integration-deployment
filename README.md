@@ -17,14 +17,14 @@ testing purposes. It involves:
 
 ### Dependencies
 
-- [Babylon v0.6.0](https://github.com/babylonchain/babylon/tree/v0.6.0).
-- [Vigilante version v0.6.0](https://github.com/babylonchain/vigilante/tree/v0.6.0).
-- [Faucet commit 84e4c122d42a3b098bc92d8b8bf5e8bb596129e7](https://github.com/babylonchain/faucet/tree/84e4c122d42a3b098bc92d8b8bf5e8bb596129e7).
+- [Babylon v0.7.2](https://github.com/babylonchain/babylon/tree/v0.7.2).
+- [Vigilante version v0.7.0](https://github.com/babylonchain/vigilante/tree/v0.7.0).
+- [Faucet v0.2.0](https://github.com/babylonchain/faucet/tree/v0.2.0).
   This will be updated to a stable version when there is one for the faucet.
 
 ### Deploying
 
-1. Retrieve the underlying repositories for Babylon, vigilante, and explorer:
+1. Retrieve the underlying repositories for Babylon, vigilante, and faucet:
 ```shell
 git submodule init && git submodule update
 ```
@@ -59,14 +59,10 @@ The Babylon nodes are deployed with the following parameters:
 - `bbt0` as the checkpoint tags
 - 10 blocks epoch interval
 - Validators are accessible through the `192.168.10.[2-5]` IP addresses.
-- The explorer is accessible at port `localhost:26661`. This can be changed by
-  modifying `LISTPORT` on the `docker-compose.yml` file.
 - Bitcoin uses a block generation time of 30 seconds. This can be changed by
   adding an environment variable `GENERATE_INTERVAL_SECS` on the
   `docker-compose.yml` file.
 
-
-The explorer is accessible at `localhost:26661`.
 
 ### Configuration files
 
@@ -91,8 +87,6 @@ one can create the Docker image corresponding to the service that they're
 testing, with the following names:
 - `babylonchain/babylond` for Babylon nodes
 - `babylonchain/vigilante` for the vigilante
-- `babylonchain/explorer` for the explorer
-- `babylonchain/nginx-proxy` for the explorer
 - `babylonchain/faucet` for the faucet
 
 #### Logs
@@ -107,19 +101,5 @@ This deployment uses the following service names:
 - `vigilante-reporter` for the reporter
 - `vigilante-submitter` for the submitter
 - `btcdsim` for the btcd service
-- `explorer` for the explorer
-- `nginx-proxy` for the nginx proxy
 - `faucet-frontend` for the frontend of the faucet
 - `faucet-backend` for the backend of the faucet
-
-#### Sanity checks
-
-Here are some checks that one can use to quickly verify if some basic things
-are working properly (by viewing the explorer):
-- On the first minutes, at least 100 blocks get reported
-- Checkpoints become sealed
-- Sealed checkpoints become submitted relativelly quickly when new Bitcoin
-  blocks get generated
-- Checkpoints become confirmed and finalized
-
-If something goes wrong, viewing the logs for services can help. 
