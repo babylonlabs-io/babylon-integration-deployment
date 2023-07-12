@@ -58,6 +58,7 @@ services:
       - RPC_PASS=rpcpass
       - WALLET_PASS=walletpass
       - WALLET_NAME=default
+      - BTCSTAKER_WALLET_NAME=btcstaker
       - GENERATE_INTERVAL_SECS=20
     ports:
       - "18443:18443"

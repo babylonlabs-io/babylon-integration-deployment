@@ -16,6 +16,9 @@ rpcpassword=$RPC_PASS
 # ZMQ notification options.
 zmqpubsequence=tcp://0.0.0.0:$ZMQ_PORT
 
+# Fallback fee
+fallbackfee=0.00001
+
 # Allow all IPs to access the RPC server.
 [regtest]
 rpcbind=0.0.0.0
@@ -31,8 +34,12 @@ sleep 3
 echo "Creating a wallet..."
 bitcoin-cli -regtest -rpcuser="$RPC_USER" -rpcpassword="$RPC_PASS" createwallet "$WALLET_NAME" false false "$WALLET_PASS"
 
+echo "Creating a wallet and address for btcstaker..."
+bitcoin-cli -regtest -rpcuser="$RPC_USER" -rpcpassword="$RPC_PASS" createwallet "$BTCSTAKER_WALLET_NAME" false false "$WALLET_PASS"
+BTCSTAKER_ADDR=$(bitcoin-cli -regtest -rpcuser="$RPC_USER" -rpcpassword="$RPC_PASS" -rpcwallet="$BTCSTAKER_WALLET_NAME" getnewaddress)
+
 echo "Generating 101 blocks for the first coinbase to mature..."
-bitcoin-cli -regtest -rpcuser="$RPC_USER" -rpcpassword="$RPC_PASS" -generate 101
+bitcoin-cli -regtest -rpcuser="$RPC_USER" -rpcpassword="$RPC_PASS" -rpcwallet="$WALLET_NAME" -generate 101
 
 # Allow some time for the wallet to catch up.
 sleep 5
@@ -44,6 +51,9 @@ echo "Generating a block every ${GENERATE_INTERVAL_SECS} seconds."
 echo "Press [CTRL+C] to stop..."
 while true
 do
-  bitcoin-cli -regtest -rpcuser="$RPC_USER" -rpcpassword="$RPC_PASS" -generate 1
+  bitcoin-cli -regtest -rpcuser="$RPC_USER" -rpcpassword="$RPC_PASS" -rpcwallet="$WALLET_NAME" -generate 1
+  echo "Periodically send funds to btcstaker address..."
+  bitcoin-cli -regtest -rpcuser="$RPC_USER" -rpcpassword="$RPC_PASS" -rpcwallet="$WALLET_NAME" walletpassphrase "$WALLET_PASS" 1
+  bitcoin-cli -regtest -rpcuser="$RPC_USER" -rpcpassword="$RPC_PASS" -rpcwallet="$WALLET_NAME" sendtoaddress "$BTCSTAKER_ADDR" 10
   sleep "${GENERATE_INTERVAL_SECS}"
 done

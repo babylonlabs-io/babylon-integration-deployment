@@ -55,6 +55,7 @@ services:
       - BITCOIN_CONF=/bitcoinconf
     ports:
       - 18554-18556:18554-18556
+      - 18564:18564
     networks:
       localnet:
         ipv4_address: 192.168.10.6

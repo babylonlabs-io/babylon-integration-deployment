@@ -47,9 +47,10 @@ set WALLET_PASS [lindex $argv 2]
 set WALLET_CERT_FILE [lindex $argv 3]
 set WALLET_KEY_FILE [lindex $argv 4]
 set CA_FILE [lindex $argv 5]
+set WALLET_DIR [lindex $argv 6]
 
 set timeout -1
-spawn btcwallet --simnet -u $RPC_USER -P $RPC_PASS --rpccert $WALLET_CERT_FILE --rpckey $WALLET_KEY_FILE --cafile $CA_FILE --create
+spawn btcwallet --simnet -u $RPC_USER -P $RPC_PASS --rpccert $WALLET_CERT_FILE --rpckey $WALLET_KEY_FILE --cafile $CA_FILE --appdata $WALLET_DIR --create
 match_max 100000
 expect -exact "Enter the private passphrase for your new wallet: "
 send -- "$WALLET_PASS\r"

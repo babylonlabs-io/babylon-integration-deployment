@@ -6,7 +6,7 @@
 	url = git@github.com:babylonchain/vigilante.git
 [submodule "faucet"]
 	path = faucet
-	url = https://github.com/babylonchain/faucet
+	url = git@github.com:babylonchain/faucet
 [submodule "contrib/images/ibcsim-wasmd/babylon-contract"]
 	path = contrib/images/ibcsim-wasmd/babylon-contract
-	url = https://github.com/babylonchain/babylon-contract.git
+	url = git@github.com:babylonchain/babylon-contract.git
