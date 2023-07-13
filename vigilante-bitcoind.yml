@@ -20,7 +20,7 @@ btc:
   btc-backend: bitcoind # {btcd, bitcoind}
   zmq-endpoint: tcp://bitcoindsim:29000 # use tcp://127.0.0.1:29000 if subscription-mode is zmq
 babylon:
-  key: node0
+  key: vigilante
   chain-id: chain-test
   rpc-addr: http://babylondnode0:26657
   grpc-addr: https://babylondnode0:9090

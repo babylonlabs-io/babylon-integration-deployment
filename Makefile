@@ -39,7 +39,8 @@ start-deployment-btcd: stop-deployment-btcd build-deployment-btcd
 			  --starting-ip-address 192.168.10.2 --keyring-backend=test \
 			  --chain-id chain-test --epoch-interval 10 \
 			  --minimum-gas-prices 0.000006ubbn \
-			  --btc-finalization-timeout 2 --btc-confirmation-depth 1
+			  --btc-finalization-timeout 2 --btc-confirmation-depth 1 \
+			  --additional-sender-account
 	# volume in which the bitcoin configuration will be mounted
 	mkdir -p $(CURDIR)/.testnets/bitcoin
 	# TODO: Once vigilante implements a testnet command we will use that one instead of
@@ -48,6 +49,13 @@ start-deployment-btcd: stop-deployment-btcd build-deployment-btcd
 	cp $(CURDIR)/vigilante-btcd.yml $(CURDIR)/.testnets/vigilante/vigilante.yml
 	# Start the docker compose
 	docker-compose -f btcdsim.docker-compose.yml up -d vigilante-reporter vigilante-submitter vigilante-monitor babylondnode0 babylondnode1 btcdsim
+	# Create keyrings and send funds to Babylon Node Consumers (stored on babylondnode0)
+	sleep 15
+	$(DOCKER) exec babylondnode0 /bin/sh -c ' \
+		VIGILANTE_ADDR=$$(/bin/babylond --home /babylondhome keys add \
+			vigilante --output json | jq -r .address) && \
+		/bin/babylond --home /babylondhome tx bank send test-spending-key \
+			$${VIGILANTE_ADDR} 100000000ubbn --fees 2ubbn -y'
 
 start-monitored-deployment-btcd: start-deployment-btcd
 	docker-compose -f btcdsim.docker-compose.yml up -d prometheus grafana
@@ -61,7 +69,7 @@ start-deployment-bitcoind: stop-deployment-bitcoind build-deployment-bitcoind
 			  --btc-finalization-timeout 2 --btc-confirmation-depth 1 \
 			  --minimum-gas-prices 0.000006ubbn \
 			  --btc-base-header 0100000000000000000000000000000000000000000000000000000000000000000000003ba3edfd7a7b12b27ac72c3e67768f617fc81bc3888a51323a9fb8aa4b1e5e4adae5494dffff7f2002000000 \
-			  --btc-network regtest
+			  --btc-network regtest --additional-sender-account
 	# volume in which the bitcoin configuration will be mounted
 	mkdir -p $(CURDIR)/.testnets/bitcoin
 	# TODO: Once vigilante implements a testnet command we will use that one instead of
@@ -70,6 +78,13 @@ start-deployment-bitcoind: stop-deployment-bitcoind build-deployment-bitcoind
 	cp $(CURDIR)/vigilante-bitcoind.yml $(CURDIR)/.testnets/vigilante/vigilante.yml
 	# Start the docker compose
 	docker-compose -f bitcoindsim.docker-compose.yml up -d vigilante-reporter vigilante-submitter vigilante-monitor babylondnode0 babylondnode1 bitcoindsim
+	# Create keyrings and send funds to Babylon Node Consumers (stored on babylondnode0)
+	sleep 15
+	$(DOCKER) exec babylondnode0 /bin/sh -c ' \
+		VIGILANTE_ADDR=$$(/bin/babylond --home /babylondhome keys add \
+			vigilante --output json | jq -r .address) && \
+		/bin/babylond --home /babylondhome tx bank send test-spending-key \
+			$${VIGILANTE_ADDR} 100000000ubbn --fees 2ubbn -y'
 
 start-monitored-deployment-bitcoind: start-deployment-bitcoind
 	docker-compose -f bitcoindsim.docker-compose.yml up -d prometheus grafana
