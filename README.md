@@ -103,3 +103,13 @@ This deployment uses the following service names:
 - `btcdsim` for the btcd service
 - `faucet-frontend` for the frontend of the faucet
 - `faucet-backend` for the backend of the faucet
+
+### BTC Staking
+
+1. Retrieve a babylon-private deployment key and store it in a file
+2. Run `make BBN_PRIV_DEPLOY_KEY="$DEPLOY_KEY_LOCATION" build-docker`
+
+If there is any issue with building Docker images, you can go to the relevant
+repos and build the Docker image manually with the appropriate name (using `make build-docker` commands)
+and then remove the `build-<name>` part from the Makefile so that your manually
+built docker image is used.

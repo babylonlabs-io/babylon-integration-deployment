@@ -1,6 +1,6 @@
 [submodule "babylon"]
 	path = babylon
-	url = git@github.com:babylonchain/babylon.git
+	url = git@github.com:babylonchain/babylon-private.git
 [submodule "vigilante"]
 	path = vigilante
 	url = git@github.com:babylonchain/vigilante.git
@@ -10,3 +10,6 @@
 [submodule "contrib/images/ibcsim-wasmd/babylon-contract"]
 	path = contrib/images/ibcsim-wasmd/babylon-contract
 	url = git@github.com:babylonchain/babylon-contract.git
+[submodule "btc-staker"]
+	path = btc-staker
+	url = git@github.com:babylonchain/btc-staker.git
