@@ -13,3 +13,6 @@
 [submodule "btc-staker"]
 	path = btc-staker
 	url = git@github.com:babylonchain/btc-staker.git
+[submodule "btc-validator"]
+	path = btc-validator
+	url = https://github.com/babylonchain/btc-validator.git

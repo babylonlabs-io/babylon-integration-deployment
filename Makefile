@@ -26,7 +26,13 @@ build-btc-staker:
 	# Hack: Go does not like it when using git submodules
 	# See: https://github.com/golang/go/issues/53640
 	cd btc-staker; mv .git .git.bk; cp -R ../.git/modules/btc-staker .git; \
-		$(MAKE) BBN_PRIV_DEPLOY_KEY=${BBN_PRIV_DEPLOY_KEY} build-docker build-docker; rm -rf .git; mv .git.bk .git
+		$(MAKE) BBN_PRIV_DEPLOY_KEY=${BBN_PRIV_DEPLOY_KEY} build-docker; rm -rf .git; mv .git.bk .git
+
+build-btc-validator:
+	# Hack: Go does not like it when using git submodules
+	# See: https://github.com/golang/go/issues/53640
+	cd btc-validator; mv .git .git.bk; cp -R ../.git/modules/btc-validator .git; \
+		$(MAKE) BBN_PRIV_DEPLOY_KEY=${BBN_PRIV_DEPLOY_KEY} build-docker; rm -rf .git; mv .git.bk .git
 
 build-faucet:
 	$(MAKE) -C faucet frontend-build
@@ -38,7 +44,7 @@ build-deployment-bitcoind: build-babylond build-bitcoindsim build-vigilante
 
 build-deployment-faucet: build-babylond build-faucet
 
-build-deployment-btcstaking-bitcoind: build-babylond build-bitcoindsim build-vigilante build-btc-staker
+build-deployment-btcstaking-bitcoind: build-babylond build-bitcoindsim build-vigilante build-btc-staker build-btc-validator
 
 start-deployment-btcstaking-bitcoind: stop-deployment-btcstaking-bitcoind build-deployment-btcstaking-bitcoind
 	rm -rf $(CURDIR)/.testnets && mkdir -p $(CURDIR)/.testnets && chmod o+w $(CURDIR)/.testnets
@@ -59,22 +65,13 @@ start-deployment-btcstaking-bitcoind: stop-deployment-btcstaking-bitcoind build-
 	# volume in which the btc-staker configuration will be mounted
 	mkdir -p $(CURDIR)/.testnets/btc-staker
 	cp $(CURDIR)/stakerd-bitcoind.conf $(CURDIR)/.testnets/btc-staker/stakerd.conf
+	# volume in which the btc-validator configuration will be mounted
+	mkdir -p $(CURDIR)/.testnets/btc-validator
+	cp $(CURDIR)/vald-bitcoind.conf $(CURDIR)/.testnets/btc-validator/vald.conf
 	# Start the docker compose
 	docker-compose -f btc-staking-bitcoind.docker-compose.yml up -d
-	# Create keyrings and send funds to Babylon Node Consumers (stored on babylondnode0)
-	sleep 15
-	$(DOCKER) exec babylondnode0 /bin/sh -c ' \
-		BTC_STAKER_ADDR=$$(/bin/babylond --home /babylondhome keys add \
-			btc-staker --output json | jq -r .address) && \
-		/bin/babylond --home /babylondhome tx bank send test-spending-key \
-			$${BTC_STAKER_ADDR} 100000000ubbn --fees 2ubbn -y'
-	sleep 15
-	$(DOCKER) exec babylondnode0 /bin/sh -c ' \
-		VIGILANTE_ADDR=$$(/bin/babylond --home /babylondhome keys add \
-			vigilante --output json | jq -r .address) && \
-		/bin/babylond --home /babylondhome tx bank send test-spending-key \
-			$${VIGILANTE_ADDR} 100000000ubbn --fees 2ubbn -y'
-
+	# Execute the wrapper script that invokes a sequence of bash commands on different Docker containers
+	./btcstaking-wrapper.sh
 
 start-deployment-btcd: stop-deployment-btcd build-deployment-btcd
 	rm -rf $(CURDIR)/.testnets && mkdir -p $(CURDIR)/.testnets && chmod o+w $(CURDIR)/.testnets

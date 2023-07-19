@@ -128,6 +128,19 @@ services:
       - babylondnode0
     restart: on-failure:10
 
+  btc-validator:
+    container_name: btc-validator
+    image: babylonchain/btc-validator
+    networks:
+      localnet:
+        ipv4_address: 192.168.10.11
+    volumes:
+      - ./.testnets/btc-validator:/home/btcvalidator/.vald
+      - ./.testnets/node0/babylond:/home/btcvalidator/bbnconfig
+    depends_on:
+      - bitcoindsim
+      - babylondnode0
+    restart: on-failure:10
 
 networks:
   localnet:
