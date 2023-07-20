@@ -28,7 +28,7 @@ babylon:
   keyring-backend: test
   gas-adjustment: 1.5
   gas-prices: 2ubbn
-  key-directory: /home/vigilante/bbnconfig
+  key-directory: /home/vigilante/config/
   debug: true
   timeout: 20s
   block-timeout: ~

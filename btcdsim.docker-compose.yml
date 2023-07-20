@@ -71,7 +71,6 @@ services:
       localnet:
         ipv4_address: 192.168.10.7
     volumes:
-      - ./.testnets/node0/babylond:/home/vigilante/bbnconfig
       - ./.testnets/vigilante:/home/vigilante/config
       - ./.testnets/bitcoin:/home/vigilante/btcconfig
     depends_on:
@@ -88,7 +87,6 @@ services:
       localnet:
         ipv4_address: 192.168.10.8
     volumes:
-      - ./.testnets/node0/babylond:/home/vigilante/bbnconfig
       - ./.testnets/vigilante:/home/vigilante/config
       - ./.testnets/bitcoin:/home/vigilante/btcconfig
     depends_on:
@@ -100,12 +98,12 @@ services:
     container_name: vigilante-monitor
     image: babylonchain/vigilante
     command: >
-      vigilante monitor --config /home/vigilante/config/vigilante.yml --genesis /home/vigilante/bbnconfig/config/genesis.json 2>&1 | tee /home/vigilante/config/monitor.log
+      vigilante monitor --config /home/vigilante/config/vigilante.yml --genesis /home/vigilante/config/bbnconfig/genesis.json 2>&1 | tee /home/vigilante/config/monitor.log
     networks:
       localnet:
         ipv4_address: 192.168.10.9
     volumes:
-      - ./.testnets/node0/babylond:/home/vigilante/bbnconfig
+      - ./.testnets/node0/babylond/config:/home/vigilante/config/bbnconfig
       - ./.testnets/vigilante:/home/vigilante/config
       - ./.testnets/bitcoin:/home/vigilante/btcconfig
     depends_on:

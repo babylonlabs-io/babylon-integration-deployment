@@ -67,7 +67,7 @@ start-deployment-btcstaking-bitcoind: stop-deployment-btcstaking-bitcoind build-
 	cp $(CURDIR)/stakerd-bitcoind.conf $(CURDIR)/.testnets/btc-staker/stakerd.conf
 	# volume in which the btc-validator configuration will be mounted
 	mkdir -p $(CURDIR)/.testnets/btc-validator
-	cp $(CURDIR)/vald-bitcoind.conf $(CURDIR)/.testnets/btc-validator/vald.conf
+	cp $(CURDIR)/vald.conf $(CURDIR)/.testnets/btc-validator/vald.conf
 	# Start the docker compose
 	docker-compose -f btc-staking-bitcoind.docker-compose.yml up -d
 	# Execute the wrapper script that invokes a sequence of bash commands on different Docker containers
@@ -90,13 +90,7 @@ start-deployment-btcd: stop-deployment-btcd build-deployment-btcd
 	cp $(CURDIR)/vigilante-btcd.yml $(CURDIR)/.testnets/vigilante/vigilante.yml
 	# Start the docker compose
 	docker-compose -f btcdsim.docker-compose.yml up -d vigilante-reporter vigilante-submitter vigilante-monitor babylondnode0 babylondnode1 btcdsim
-	# Create keyrings and send funds to Babylon Node Consumers (stored on babylondnode0)
-	sleep 15
-	$(DOCKER) exec babylondnode0 /bin/sh -c ' \
-		VIGILANTE_ADDR=$$(/bin/babylond --home /babylondhome keys add \
-			vigilante --output json | jq -r .address) && \
-		/bin/babylond --home /babylondhome tx bank send test-spending-key \
-			$${VIGILANTE_ADDR} 100000000ubbn --fees 2ubbn -y'
+	./btcd-deployment-wrapper.sh
 
 start-monitored-deployment-btcd: start-deployment-btcd
 	docker-compose -f btcdsim.docker-compose.yml up -d prometheus grafana
@@ -119,13 +113,7 @@ start-deployment-bitcoind: stop-deployment-bitcoind build-deployment-bitcoind
 	cp $(CURDIR)/vigilante-bitcoind.yml $(CURDIR)/.testnets/vigilante/vigilante.yml
 	# Start the docker compose
 	docker-compose -f bitcoindsim.docker-compose.yml up -d vigilante-reporter vigilante-submitter vigilante-monitor babylondnode0 babylondnode1 bitcoindsim
-	# Create keyrings and send funds to Babylon Node Consumers (stored on babylondnode0)
-	sleep 15
-	$(DOCKER) exec babylondnode0 /bin/sh -c ' \
-		VIGILANTE_ADDR=$$(/bin/babylond --home /babylondhome keys add \
-			vigilante --output json | jq -r .address) && \
-		/bin/babylond --home /babylondhome tx bank send test-spending-key \
-			$${VIGILANTE_ADDR} 100000000ubbn --fees 2ubbn -y'
+	./bitcoind-deployment-wrapper.sh
 
 start-monitored-deployment-bitcoind: start-deployment-bitcoind
 	docker-compose -f bitcoindsim.docker-compose.yml up -d prometheus grafana
