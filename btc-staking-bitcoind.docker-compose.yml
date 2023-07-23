@@ -52,7 +52,9 @@ services:
       localnet:
         ipv4_address: 192.168.10.15
     environment:
-      - ZMQ_PORT=29000
+      - ZMQ_SEQUENCE_PORT=29000
+      - ZMQ_RAWBLOCK_PORT=29001
+      - ZMQ_RAWTR_PORT=29002
       - RPC_PORT=18443
       - RPC_USER=rpcuser
       - RPC_PASS=rpcpass
@@ -62,7 +64,7 @@ services:
       - GENERATE_INTERVAL_SECS=20
     ports:
       - "18443:18443"
-      - "29000:29000"
+      - "29000-29002:29000-29002"
     volumes:
       - ./.testnets/bitcoin:/bitcoindsim/.bitcoin:Z
 
@@ -120,6 +122,8 @@ services:
         ipv4_address: 192.168.10.10
     volumes:
       - ./.testnets/btc-staker:/home/btcstaker/.stakerd
+    ports:
+      - "15912:15812"
     depends_on:
       - bitcoindsim
       - babylondnode0
@@ -136,7 +140,6 @@ services:
     volumes:
       - ./.testnets/btc-validator:/home/btcvalidator/.vald
     depends_on:
-      - bitcoindsim
       - babylondnode0
     restart: on-failure:10
 

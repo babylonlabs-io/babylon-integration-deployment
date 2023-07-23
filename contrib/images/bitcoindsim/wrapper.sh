@@ -14,7 +14,13 @@ rpcuser=$RPC_USER
 rpcpassword=$RPC_PASS
 
 # ZMQ notification options.
-zmqpubsequence=tcp://0.0.0.0:$ZMQ_PORT
+# Enable publish hash block and tx sequence
+zmqpubsequence=tcp://*:$ZMQ_SEQUENCE_PORT
+# Enable publishing of raw block hex.
+zmqpubrawblock=tcp://*:$ZMQ_RAWBLOCK_PORT
+# Enable publishing of raw transaction.
+zmqpubrawtx=tcp://*:$ZMQ_RAWTR_PORT
+
 
 # Fallback fee
 fallbackfee=0.00001
@@ -38,8 +44,13 @@ echo "Creating a wallet and address for btcstaker..."
 bitcoin-cli -regtest -rpcuser="$RPC_USER" -rpcpassword="$RPC_PASS" createwallet "$BTCSTAKER_WALLET_NAME" false false "$WALLET_PASS"
 BTCSTAKER_ADDR=$(bitcoin-cli -regtest -rpcuser="$RPC_USER" -rpcpassword="$RPC_PASS" -rpcwallet="$BTCSTAKER_WALLET_NAME" getnewaddress)
 
-echo "Generating 101 blocks for the first coinbase to mature..."
-bitcoin-cli -regtest -rpcuser="$RPC_USER" -rpcpassword="$RPC_PASS" -rpcwallet="$WALLET_NAME" -generate 101
+echo "Generating 110 blocks for the first coinbases to mature..."
+bitcoin-cli -regtest -rpcuser="$RPC_USER" -rpcpassword="$RPC_PASS" -rpcwallet="$WALLET_NAME" -generate 110
+# Generate some UTXOs for the btc-staker
+bitcoin-cli -regtest -rpcuser="$RPC_USER" -rpcpassword="$RPC_PASS" -rpcwallet="$WALLET_NAME" walletpassphrase "$WALLET_PASS" 1
+bitcoin-cli -regtest -rpcuser="$RPC_USER" -rpcpassword="$RPC_PASS" -rpcwallet="$WALLET_NAME" sendtoaddress "$BTCSTAKER_ADDR" 10
+bitcoin-cli -regtest -rpcuser="$RPC_USER" -rpcpassword="$RPC_PASS" -rpcwallet="$WALLET_NAME" sendtoaddress "$BTCSTAKER_ADDR" 10
+bitcoin-cli -regtest -rpcuser="$RPC_USER" -rpcpassword="$RPC_PASS" -rpcwallet="$WALLET_NAME" sendtoaddress "$BTCSTAKER_ADDR" 10
 
 # Allow some time for the wallet to catch up.
 sleep 5

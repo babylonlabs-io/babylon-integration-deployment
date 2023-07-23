@@ -55,7 +55,7 @@ start-deployment-btcstaking-bitcoind: stop-deployment-btcstaking-bitcoind build-
 			  --btc-finalization-timeout 2 --btc-confirmation-depth 1 \
 			  --minimum-gas-prices 0.000006ubbn \
 			  --btc-base-header 0100000000000000000000000000000000000000000000000000000000000000000000003ba3edfd7a7b12b27ac72c3e67768f617fc81bc3888a51323a9fb8aa4b1e5e4adae5494dffff7f2002000000 \
-			  --btc-network regtest --additional-sender-account
+			  --btc-network regtest --additional-sender-account --slashing-address "mfcGAzvis9JQAb6avB6WBGiGrgWzLxuGaC"
 	# volume in which the bitcoin configuration will be mounted
 	mkdir -p $(CURDIR)/.testnets/bitcoin
 	# TODO: Once vigilante implements a testnet command we will use that one instead of
@@ -104,7 +104,7 @@ start-deployment-bitcoind: stop-deployment-bitcoind build-deployment-bitcoind
 			  --btc-finalization-timeout 2 --btc-confirmation-depth 1 \
 			  --minimum-gas-prices 0.000006ubbn \
 			  --btc-base-header 0100000000000000000000000000000000000000000000000000000000000000000000003ba3edfd7a7b12b27ac72c3e67768f617fc81bc3888a51323a9fb8aa4b1e5e4adae5494dffff7f2002000000 \
-			  --btc-network regtest --additional-sender-account
+			  --btc-network regtest --additional-sender-account --slashing-address "mfcGAzvis9JQAb6avB6WBGiGrgWzLxuGaC"
 	# volume in which the bitcoin configuration will be mounted
 	mkdir -p $(CURDIR)/.testnets/bitcoin
 	# TODO: Once vigilante implements a testnet command we will use that one instead of

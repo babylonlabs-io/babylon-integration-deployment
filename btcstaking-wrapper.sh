@@ -31,6 +31,32 @@ echo "Created keyrings and sent funds"
 
 # TODO: user story 1: create BTC validator and BTC delegation
 
+NUM_VALIDATORS=3
+echo "Create $NUM_VALIDATORS Bitcoin validators"
+
+for idx in `seq 1 $NUM_VALIDATORS`; do
+    docker exec btc-validator /bin/sh -c "
+        /bin/valcli dn cv --key-name validator$idx && \
+        /bin/valcli dn rv --key-name validator$idx
+    "
+done
+
+echo "Make a delegation to each of the validators"
+sleep 30
+# Get the public keys of the validators
+btcPks=$(docker exec btc-staker /bin/sh -c '/bin/stakercli dn bv' | jq ".validators[].btcPublicKey" | tr -d '"')
+
+# Get the Bitcoin address of the delegator
+delAddr=$(docker exec btc-staker /bin/sh -c '/bin/stakercli dn list-outputs | jq ".outputs[].address"' | head -1 | tr -d '"')
+
+for btcPk in $btcPks
+do
+    echo "Delegating from $delAddr to $btcPk";
+    docker exec btc-staker /bin/sh -c \
+        "/bin/stakercli dn stake --staker-address $delAddr --staking-amount 1000000 --validator-pk $btcPk --staking-time 100"
+done
+
+
 # TODO: user story 2: jury signature to BTC delegation
 
 # TODO: user story 3: commit public randomness and vote blocks
