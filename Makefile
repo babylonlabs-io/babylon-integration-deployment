@@ -55,7 +55,9 @@ start-deployment-btcstaking-bitcoind: stop-deployment-btcstaking-bitcoind build-
 			  --btc-finalization-timeout 2 --btc-confirmation-depth 1 \
 			  --minimum-gas-prices 0.000006ubbn \
 			  --btc-base-header 0100000000000000000000000000000000000000000000000000000000000000000000003ba3edfd7a7b12b27ac72c3e67768f617fc81bc3888a51323a9fb8aa4b1e5e4adae5494dffff7f2002000000 \
-			  --btc-network regtest --additional-sender-account --slashing-address "mfcGAzvis9JQAb6avB6WBGiGrgWzLxuGaC"
+			  --btc-network regtest --additional-sender-account --slashing-address "mfcGAzvis9JQAb6avB6WBGiGrgWzLxuGaC" \
+			  --jury-pk "945feee5f9e5dd1dfc43717987ffef60b9d8ee4301d0deebae6be0637964dcbe" # should be updated if `jury-keyring` dir is changed`
+			
 	# volume in which the bitcoin configuration will be mounted
 	mkdir -p $(CURDIR)/.testnets/bitcoin
 	# TODO: Once vigilante implements a testnet command we will use that one instead of
@@ -67,7 +69,11 @@ start-deployment-btcstaking-bitcoind: stop-deployment-btcstaking-bitcoind build-
 	cp $(CURDIR)/stakerd-bitcoind.conf $(CURDIR)/.testnets/btc-staker/stakerd.conf
 	# volume in which the btc-validator configuration will be mounted
 	mkdir -p $(CURDIR)/.testnets/btc-validator
-	cp $(CURDIR)/vald.conf $(CURDIR)/.testnets/btc-validator/vald.conf
+	cp $(CURDIR)/vald-bitcoind.conf $(CURDIR)/.testnets/btc-validator/vald.conf
+	# volume in which the btc-jury configuration will be mounted
+	mkdir -p $(CURDIR)/.testnets/btc-jury
+	cp $(CURDIR)/juryd-bitcoind.conf $(CURDIR)/.testnets/btc-jury/vald.conf
+	cp -R $(CURDIR)/jury-keyring $(CURDIR)/.testnets/btc-jury/keyring-test
 	# Start the docker compose
 	docker-compose -f btc-staking-bitcoind.docker-compose.yml up -d
 	# Execute the wrapper script that invokes a sequence of bash commands on different Docker containers

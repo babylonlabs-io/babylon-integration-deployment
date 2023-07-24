@@ -9,7 +9,10 @@ docker exec babylondnode0 /bin/sh -c '
     /bin/babylond --home /babylondhome tx bank send test-spending-key \
         ${BTC_STAKER_ADDR} 100000000ubbn --fees 2ubbn -y --keyring-backend test
 '
-mv .testnets/node0/babylond/.tmpdir/keyring-test .testnets/btc-staker/
+mkdir -p .testnets/btc-staker/keyring-test
+cp -R .testnets/node0/babylond/.tmpdir/keyring-test/* .testnets/btc-staker/keyring-test
+rm -rf .testnets/node0/babylond/.tmpdir/keyring-test/*
+
 sleep 10
 docker exec babylondnode0 /bin/sh -c ' 
     BTC_VALIDATOR_ADDR=$(/bin/babylond --home /babylondhome/.tmpdir keys add \
@@ -17,7 +20,21 @@ docker exec babylondnode0 /bin/sh -c '
     /bin/babylond --home /babylondhome tx bank send test-spending-key \
         ${BTC_VALIDATOR_ADDR} 100000000ubbn --fees 2ubbn -y --keyring-backend test
 '
-mv .testnets/node0/babylond/.tmpdir/keyring-test .testnets/btc-validator/
+mkdir -p .testnets/btc-validator/keyring-test
+cp -R .testnets/node0/babylond/.tmpdir/keyring-test/* .testnets/btc-validator/keyring-test
+rm -rf .testnets/node0/babylond/.tmpdir/keyring-test/*
+
+sleep 10
+docker exec babylondnode0 /bin/sh -c ' 
+    BTC_JURY_ADDR=$(/bin/babylond --home /babylondhome/.tmpdir keys add \
+        btc-jury --output json --keyring-backend test | jq -r .address) && \
+    /bin/babylond --home /babylondhome tx bank send test-spending-key \
+        ${BTC_JURY_ADDR} 100000000ubbn --fees 2ubbn -y --keyring-backend test
+'
+mkdir -p .testnets/btc-jury/keyring-test
+cp -R .testnets/node0/babylond/.tmpdir/keyring-test/* .testnets/btc-jury/keyring-test
+rm -rf .testnets/node0/babylond/.tmpdir/keyring-test/*
+
 sleep 10
 docker exec babylondnode0 /bin/sh -c ' 
     VIGILANTE_ADDR=$(/bin/babylond --home /babylondhome/.tmpdir keys add \
@@ -25,7 +42,8 @@ docker exec babylondnode0 /bin/sh -c '
     /bin/babylond --home /babylondhome tx bank send test-spending-key \
         ${VIGILANTE_ADDR} 100000000ubbn --fees 2ubbn -y --keyring-backend test
 '
-mv .testnets/node0/babylond/.tmpdir/keyring-test .testnets/vigilante/
+mkdir -p .testnets/vigilante/keyring-test
+cp -R .testnets/node0/babylond/.tmpdir/keyring-test/* .testnets/vigilante/keyring-test
 
 echo "Created keyrings and sent funds"
 
@@ -53,7 +71,7 @@ for btcPk in $btcPks
 do
     echo "Delegating from $delAddr to $btcPk";
     docker exec btc-staker /bin/sh -c \
-        "/bin/stakercli dn stake --staker-address $delAddr --staking-amount 1000000 --validator-pk $btcPk --staking-time 100"
+        "/bin/stakercli dn stake --staker-address $delAddr --staking-amount 1000000 --validator-pk $btcPk --staking-time 500"
 done
 
 

@@ -136,9 +136,23 @@ services:
       localnet:
         ipv4_address: 192.168.10.11
     ports:
-      - "15812:15812"
+      - "15822:15812"
     volumes:
       - ./.testnets/btc-validator:/home/btcvalidator/.vald
+    depends_on:
+      - babylondnode0
+    restart: on-failure:10
+
+  btc-jury:
+    container_name: btc-jury
+    image: babylonchain/btc-validator
+    networks:
+      localnet:
+        ipv4_address: 192.168.10.12
+    ports:
+      - "15832:15822"
+    volumes:
+      - ./.testnets/btc-jury:/home/btcvalidator/.vald
     depends_on:
       - babylondnode0
     restart: on-failure:10
