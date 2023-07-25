@@ -15,7 +15,7 @@ build-ibcsim-wasmd:
 build-babylond:
 	# Hack: Go does not like it when using git submodules
 	# See: https://github.com/golang/go/issues/53640
-	cd babylon; mv .git .git.bk; cp -R ../.git/modules/babylon .git; $(MAKE) build-docker; rm -rf .git; mv .git.bk .git
+	cd babylon-private; mv .git .git.bk; cp -R ../.git/modules/babylon-private .git; $(MAKE) build-docker; rm -rf .git; mv .git.bk .git
 
 build-vigilante:
 	# Hack: Go does not like it when using git submodules

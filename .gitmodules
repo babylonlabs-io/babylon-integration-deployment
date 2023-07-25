@@ -1,5 +1,8 @@
 [submodule "babylon"]
 	path = babylon
+	url = git@github.com:babylonchain/babylon.git
+[submodule "babylon-private"]
+	path = babylon-private
 	url = git@github.com:babylonchain/babylon-private.git
 [submodule "vigilante"]
 	path = vigilante
