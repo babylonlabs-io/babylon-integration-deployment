@@ -13,26 +13,16 @@ build-ibcsim-wasmd:
 	$(MAKE) -C contrib/images ibcsim-wasmd
 
 build-babylond:
-	# Hack: Go does not like it when using git submodules
-	# See: https://github.com/golang/go/issues/53640
-	cd babylon-private; mv .git .git.bk; cp -R ../.git/modules/babylon-private .git; $(MAKE) build-docker; rm -rf .git; mv .git.bk .git
+	cd babylon-private/contrib/images; $(MAKE) babylond
 
 build-vigilante:
-	# Hack: Go does not like it when using git submodules
-	# See: https://github.com/golang/go/issues/53640
-	cd vigilante; mv .git .git.bk; cp -R ../.git/modules/vigilante .git; $(MAKE) build-docker; rm -rf .git; mv .git.bk .git
+	cd vigilante/contrib/images; $(MAKE) vigilante
 
 build-btc-staker:
-	# Hack: Go does not like it when using git submodules
-	# See: https://github.com/golang/go/issues/53640
-	cd btc-staker; mv .git .git.bk; cp -R ../.git/modules/btc-staker .git; \
-		$(MAKE) BBN_PRIV_DEPLOY_KEY=${BBN_PRIV_DEPLOY_KEY} build-docker; rm -rf .git; mv .git.bk .git
+	cd btc-staker; $(MAKE) BBN_PRIV_DEPLOY_KEY=${BBN_PRIV_DEPLOY_KEY} build-docker
 
 build-btc-validator:
-	# Hack: Go does not like it when using git submodules
-	# See: https://github.com/golang/go/issues/53640
-	cd btc-validator; mv .git .git.bk; cp -R ../.git/modules/btc-validator .git; \
-		$(MAKE) BBN_PRIV_DEPLOY_KEY=${BBN_PRIV_DEPLOY_KEY} build-docker; rm -rf .git; mv .git.bk .git
+	cd btc-validator; $(MAKE) BBN_PRIV_DEPLOY_KEY=${BBN_PRIV_DEPLOY_KEY} build-docker
 
 build-faucet:
 	$(MAKE) -C faucet frontend-build
