@@ -76,7 +76,7 @@ services:
     depends_on:
       - btcdsim
       - babylondnode0
-    restart: on-failure:10
+    restart: unless-stopped
 
   vigilante-submitter:
     container_name: vigilante-submitter
@@ -92,7 +92,7 @@ services:
     depends_on:
       - btcdsim
       - babylondnode0
-    restart: on-failure:10
+    restart: unless-stopped
 
   vigilante-monitor:
     container_name: vigilante-monitor
@@ -109,7 +109,7 @@ services:
     depends_on:
       - btcdsim
       - babylondnode0
-    restart: on-failure:10
+    restart: unless-stopped
 
   ibcsim-gaia:
     container_name: ibcsim-gaia

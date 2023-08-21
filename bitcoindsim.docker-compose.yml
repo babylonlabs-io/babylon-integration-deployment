@@ -61,6 +61,7 @@ services:
       - WALLET_PASS=walletpass
       - WALLET_NAME=default
       - BTCSTAKER_WALLET_NAME=btcstaker
+      - BTCSTAKER_WALLET_ADDR_COUNT=3
       - GENERATE_INTERVAL_SECS=20
     ports:
       - "18443:18443"
@@ -81,7 +82,7 @@ services:
     depends_on:
       - bitcoindsim
       - babylondnode0
-    restart: on-failure:10
+    restart: unless-stopped
 
   vigilante-submitter:
     container_name: vigilante-submitter
@@ -96,7 +97,7 @@ services:
     depends_on:
       - bitcoindsim
       - babylondnode0
-    restart: on-failure:10
+    restart: unless-stopped
 
   vigilante-monitor:
     container_name: vigilante-monitor
@@ -112,7 +113,7 @@ services:
     depends_on:
       - bitcoindsim
       - babylondnode0
-    restart: on-failure:10
+    restart: unless-stopped
 
   ibcsim-gaia:
     container_name: ibcsim-gaia

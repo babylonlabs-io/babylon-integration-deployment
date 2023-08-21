@@ -16,7 +16,7 @@ build-babylond:
 	cd babylon-private/contrib/images; $(MAKE) babylond
 
 build-vigilante:
-	cd vigilante/contrib/images; $(MAKE) vigilante
+	cd vigilante-private; $(MAKE) BBN_PRIV_DEPLOY_KEY=${BBN_PRIV_DEPLOY_KEY} build-docker
 
 build-btc-staker:
 	cd btc-staker; $(MAKE) BBN_PRIV_DEPLOY_KEY=${BBN_PRIV_DEPLOY_KEY} build-docker
@@ -65,7 +65,7 @@ start-deployment-btcstaking-bitcoind: stop-deployment-btcstaking-bitcoind build-
 	cp $(CURDIR)/juryd-bitcoind.conf $(CURDIR)/.testnets/btc-jury/vald.conf
 	cp -R $(CURDIR)/jury-keyring $(CURDIR)/.testnets/btc-jury/keyring-test
 	# Start the docker compose
-	docker-compose -f btc-staking-bitcoind.docker-compose.yml up -d
+	docker compose -f btc-staking-bitcoind.docker-compose.yml up -d
 	# Execute the wrapper script that invokes a sequence of bash commands on different Docker containers
 	./btcstaking-wrapper.sh
 
@@ -85,11 +85,11 @@ start-deployment-btcd: stop-deployment-btcd build-deployment-btcd
 	mkdir -p $(CURDIR)/.testnets/vigilante
 	cp $(CURDIR)/vigilante-btcd.yml $(CURDIR)/.testnets/vigilante/vigilante.yml
 	# Start the docker compose
-	docker-compose -f btcdsim.docker-compose.yml up -d vigilante-reporter vigilante-submitter vigilante-monitor babylondnode0 babylondnode1 btcdsim
+	docker compose -f btcdsim.docker-compose.yml up -d vigilante-reporter vigilante-submitter vigilante-monitor babylondnode0 babylondnode1 btcdsim
 	./btcd-deployment-wrapper.sh
 
 start-monitored-deployment-btcd: start-deployment-btcd
-	docker-compose -f btcdsim.docker-compose.yml up -d prometheus grafana
+	docker compose -f btcdsim.docker-compose.yml up -d prometheus grafana
 
 start-deployment-bitcoind: stop-deployment-bitcoind build-deployment-bitcoind
 	rm -rf $(CURDIR)/.testnets && mkdir -p $(CURDIR)/.testnets && chmod o+w $(CURDIR)/.testnets
@@ -108,17 +108,17 @@ start-deployment-bitcoind: stop-deployment-bitcoind build-deployment-bitcoind
 	mkdir -p $(CURDIR)/.testnets/vigilante
 	cp $(CURDIR)/vigilante-bitcoind.yml $(CURDIR)/.testnets/vigilante/vigilante.yml
 	# Start the docker compose
-	docker-compose -f bitcoindsim.docker-compose.yml up -d vigilante-reporter vigilante-submitter vigilante-monitor babylondnode0 babylondnode1 bitcoindsim
+	docker compose -f bitcoindsim.docker-compose.yml up -d vigilante-reporter vigilante-submitter vigilante-monitor babylondnode0 babylondnode1 bitcoindsim
 	./bitcoind-deployment-wrapper.sh
 
 start-monitored-deployment-bitcoind: start-deployment-bitcoind
-	docker-compose -f bitcoindsim.docker-compose.yml up -d prometheus grafana
+	docker compose -f bitcoindsim.docker-compose.yml up -d prometheus grafana
 
 start-deployment-bitcoind-phase1: build-ibcsim-gaia start-deployment-bitcoind
-	docker-compose -f bitcoindsim.docker-compose.yml up -d ibcsim-gaia
+	docker compose -f bitcoindsim.docker-compose.yml up -d ibcsim-gaia
 
 start-deployment-bitcoind-phase2: build-ibcsim-wasmd start-deployment-bitcoind
-	docker-compose -f bitcoindsim.docker-compose.yml up -d ibcsim-wasmd
+	docker compose -f bitcoindsim.docker-compose.yml up -d ibcsim-wasmd
 
 start-deployment-faucet: stop-deployment-faucet build-deployment-faucet
 	$(DOCKER) run --rm -v $(CURDIR)/.testnets:/data babylonchain/babylond \
@@ -130,20 +130,20 @@ start-deployment-faucet: stop-deployment-faucet build-deployment-faucet
 	mkdir -p $(CURDIR)/.testnets/faucet
 	cp $(CURDIR)/faucet-config.yml $(CURDIR)/.testnets/faucet/config.yml
 	# Start the docker compose
-	docker-compose -f faucet.docker-compose.yml up -d babylondnode0 babylondnode1 faucet-frontend faucet-backend
+	docker compose -f faucet.docker-compose.yml up -d babylondnode0 babylondnode1 faucet-frontend faucet-backend
 
 stop-deployment-btcd:
-	docker-compose -f btcdsim.docker-compose.yml down
+	docker compose -f btcdsim.docker-compose.yml down
 	rm -rf $(CURDIR)/.testnets
 
 stop-deployment-bitcoind:
-	docker-compose -f bitcoindsim.docker-compose.yml down
+	docker compose -f bitcoindsim.docker-compose.yml down
 	rm -rf $(CURDIR)/.testnets
 
 stop-deployment-btcstaking-bitcoind:
-	docker-compose -f btc-staking-bitcoind.docker-compose.yml down
+	docker compose -f btc-staking-bitcoind.docker-compose.yml down
 	rm -rf $(CURDIR)/.testnets
 
 stop-deployment-faucet:
-	docker-compose -f faucet.docker-compose.yml down
+	docker compose -f faucet.docker-compose.yml down
 	rm -rf $(CURDIR)/.testnets

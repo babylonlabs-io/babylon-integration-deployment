@@ -51,6 +51,7 @@ submitter:
   buffer-size: 100
   polling-interval-seconds: 60
   resend-interval-seconds: 1800
+  resubmit-fee-multiplier: 1
 reporter:
   netparams: regtest
 monitor:
@@ -60,4 +61,6 @@ monitor:
   btc-confirmation-depth: 6
   liveness-check-interval-seconds: 100
   max-live-btc-heights: 200
-  liveness-checker: true
+  enable-liveness-checker: true
+  enable-slasher: true
+  btcnetparams: regtest

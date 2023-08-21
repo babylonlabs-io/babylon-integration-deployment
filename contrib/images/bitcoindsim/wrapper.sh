@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 set -e
 
 # Create bitcoin data directory and initialize bitcoin configuration file.
@@ -40,17 +40,23 @@ sleep 3
 echo "Creating a wallet..."
 bitcoin-cli -regtest -rpcuser="$RPC_USER" -rpcpassword="$RPC_PASS" createwallet "$WALLET_NAME" false false "$WALLET_PASS"
 
-echo "Creating a wallet and address for btcstaker..."
+echo "Creating a wallet and $BTCSTAKER_WALLET_ADDR_COUNT addresses for btcstaker..."
 bitcoin-cli -regtest -rpcuser="$RPC_USER" -rpcpassword="$RPC_PASS" createwallet "$BTCSTAKER_WALLET_NAME" false false "$WALLET_PASS"
-BTCSTAKER_ADDR=$(bitcoin-cli -regtest -rpcuser="$RPC_USER" -rpcpassword="$RPC_PASS" -rpcwallet="$BTCSTAKER_WALLET_NAME" getnewaddress)
+
+BTCSTAKER_ADDRS=()
+for i in `seq 0 1 $((BTCSTAKER_WALLET_ADDR_COUNT - 1))`
+do
+  BTCSTAKER_ADDRS+=($(bitcoin-cli -regtest -rpcuser="$RPC_USER" -rpcpassword="$RPC_PASS" -rpcwallet="$BTCSTAKER_WALLET_NAME" getnewaddress))
+done
 
 echo "Generating 110 blocks for the first coinbases to mature..."
 bitcoin-cli -regtest -rpcuser="$RPC_USER" -rpcpassword="$RPC_PASS" -rpcwallet="$WALLET_NAME" -generate 110
-# Generate some UTXOs for the btc-staker
+# Generate a UTXO for each btc-staker address
 bitcoin-cli -regtest -rpcuser="$RPC_USER" -rpcpassword="$RPC_PASS" -rpcwallet="$WALLET_NAME" walletpassphrase "$WALLET_PASS" 1
-bitcoin-cli -regtest -rpcuser="$RPC_USER" -rpcpassword="$RPC_PASS" -rpcwallet="$WALLET_NAME" sendtoaddress "$BTCSTAKER_ADDR" 10
-bitcoin-cli -regtest -rpcuser="$RPC_USER" -rpcpassword="$RPC_PASS" -rpcwallet="$WALLET_NAME" sendtoaddress "$BTCSTAKER_ADDR" 10
-bitcoin-cli -regtest -rpcuser="$RPC_USER" -rpcpassword="$RPC_PASS" -rpcwallet="$WALLET_NAME" sendtoaddress "$BTCSTAKER_ADDR" 10
+for addr in "${BTCSTAKER_ADDRS[@]}"
+do
+  bitcoin-cli -regtest -rpcuser="$RPC_USER" -rpcpassword="$RPC_PASS" -rpcwallet="$WALLET_NAME" sendtoaddress "$addr" 10
+done
 
 # Allow some time for the wallet to catch up.
 sleep 5
@@ -63,8 +69,11 @@ echo "Press [CTRL+C] to stop..."
 while true
 do
   bitcoin-cli -regtest -rpcuser="$RPC_USER" -rpcpassword="$RPC_PASS" -rpcwallet="$WALLET_NAME" -generate 1
-  echo "Periodically send funds to btcstaker address..."
+  echo "Periodically send funds to btcstaker addresses..."
   bitcoin-cli -regtest -rpcuser="$RPC_USER" -rpcpassword="$RPC_PASS" -rpcwallet="$WALLET_NAME" walletpassphrase "$WALLET_PASS" 1
-  bitcoin-cli -regtest -rpcuser="$RPC_USER" -rpcpassword="$RPC_PASS" -rpcwallet="$WALLET_NAME" sendtoaddress "$BTCSTAKER_ADDR" 10
+  for addr in "${BTCSTAKER_ADDRS[@]}"
+  do
+    bitcoin-cli -regtest -rpcuser="$RPC_USER" -rpcpassword="$RPC_PASS" -rpcwallet="$WALLET_NAME" sendtoaddress "$addr" 10
+  done
   sleep "${GENERATE_INTERVAL_SECS}"
 done

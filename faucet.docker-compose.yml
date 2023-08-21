@@ -58,7 +58,7 @@ services:
       - ./.testnets/faucet:/faucet
     depends_on:
       - babylondnode0
-    restart: on-failure:10
+    restart: unless-stopped
 
   faucet-backend:
     container_name: faucet-backend
@@ -74,7 +74,7 @@ services:
     depends_on:
       - babylondnode0
       - faucet-frontend
-    restart: on-failure:10
+    restart: unless-stopped
 
 networks:
   localnet:
