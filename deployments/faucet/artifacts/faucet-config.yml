@@ -1,0 +1,23 @@
+common:
+  retry-sleep-time: 5s
+  max-retry-sleep-time: 5m
+faucet:
+  coin: 10ubbn
+  host: 0.0.0.0
+  port: 3001
+  memo: Babylon faucet
+  request-limit-window: 86400s
+  discord-token: ~
+  listen-channel-id: ~
+  listen-channel-id-test: ~
+babylon:
+  key: faucet
+  chain-id: chain-test
+  rpc-addr: http://host.docker.internal:26657
+  account-prefix: bbn
+  keyring-backend: test
+  gas-adjustment: 1.5
+  gas-prices: 2ubbn
+  debug: true
+  timeout: 20s
+  key-directory: /babylon

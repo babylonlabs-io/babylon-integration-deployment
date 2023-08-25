@@ -13,9 +13,9 @@ ibcsim-gaia:
 		$(shell git rev-parse --show-toplevel)/contrib/images/ibcsim-gaia
 
 ibcsim-wasmd:
-	make -C $(CURDIR)/ibcsim-wasmd/babylon-contract build-optimized
+	make -C ./ibcsim-wasmd/babylon-contract build-optimized
 	docker build --tag babylonchain/ibcsim-wasmd -f ibcsim-wasmd/Dockerfile \
-		$(CURDIR)/ibcsim-wasmd
+		$(shell git rev-parse --show-toplevel)/contrib/images/ibcsim-wasmd
 
 btcdsim-rmi:
 	docker rmi babylonchain/btcdsim 2>/dev/null; true
@@ -29,4 +29,4 @@ ibcsim-gaia-rmi:
 ibcsim-wasmd-rmi:
 	docker rmi babylonchain/ibcsim-wasmd 2>/dev/null; true
 
-.PHONY: all btcdsim btcdsim-rmi bitcoindsim bitcoindsim-rmi ibcsim-gaia ibcsim-gaia-rmi
+.PHONY: all btcdsim btcdsim-rmi bitcoindsim bitcoindsim-rmi ibcsim-gaia ibcsim-gaia-rmi ibcsim-wasmd ibcsim-wasmd-rmi

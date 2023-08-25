@@ -1,0 +1,124 @@
+version: "3"
+
+services:
+  babylondnode0:
+    container_name: babylondnode0
+    image: "babylonchain/babylond"
+    command: >
+      babylond --home /babylondhome start --log_format 'plain' 2>&1 | tee /babylondhome/babylond.log
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
+    ports:
+      - "26656-26657:26656-26657"
+      - "1317:1317"
+      - "9090:9090"
+      - "2345:2345"
+    volumes:
+      - ../.testnets/node0/babylond:/babylondhome:Z
+    networks:
+      localnet:
+        ipv4_address: 192.168.10.2
+
+  babylondnode1:
+    container_name: babylondnode1
+    image: "babylonchain/babylond"
+    command: >
+      babylond --home /babylondhome start --log_format 'plain' 2>&1 | tee /babylondhome/babylond.log
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
+    ports:
+      - "26666-26667:26656-26657"
+      - "1318:1317"
+      - "9091:9090"
+      - "2346:2345"
+    volumes:
+      - ../.testnets/node1/babylond:/babylondhome:Z
+    networks:
+      localnet:
+        ipv4_address: 192.168.10.3
+
+  bitcoindsim:
+    build:
+      context: contrib/images/bitcoindsim/
+      dockerfile: ./Dockerfile
+    image: babylonchain/bitcoindsim:latest
+    platform: linux/amd64
+    container_name: bitcoindsim
+    networks:
+      localnet:
+        ipv4_address: 192.168.10.15
+    environment:
+      - ZMQ_SEQUENCE_PORT=29000
+      - ZMQ_RAWBLOCK_PORT=29001
+      - ZMQ_RAWTR_PORT=29002
+      - RPC_PORT=18443
+      - RPC_USER=rpcuser
+      - RPC_PASS=rpcpass
+      - WALLET_PASS=walletpass
+      - WALLET_NAME=default
+      - BTCSTAKER_WALLET_NAME=btcstaker
+      - BTCSTAKER_WALLET_ADDR_COUNT=3
+      - GENERATE_INTERVAL_SECS=10
+    ports:
+      - "18443:18443"
+      - "29000-29002:29000-29002"
+    volumes:
+      - ../.testnets/bitcoin:/bitcoindsim/.bitcoin:Z
+
+  vigilante-reporter:
+    container_name: vigilante-reporter
+    image: babylonchain/vigilante
+    command: >
+      vigilante reporter --config /home/vigilante/config/vigilante.yml 2>&1 | tee /home/vigilante/config/reporter.log
+    networks:
+      localnet:
+        ipv4_address: 192.168.10.7
+    volumes:
+      - ../.testnets/vigilante:/home/vigilante/config
+    depends_on:
+      - bitcoindsim
+      - babylondnode0
+    restart: unless-stopped
+
+  vigilante-submitter:
+    container_name: vigilante-submitter
+    image: babylonchain/vigilante
+    command: >
+      vigilante submitter --config /home/vigilante/config/vigilante.yml 2>&1 | tee /home/vigilante/config/submitter.log
+    networks:
+      localnet:
+        ipv4_address: 192.168.10.8
+    volumes:
+      - ../.testnets/vigilante:/home/vigilante/config
+    depends_on:
+      - bitcoindsim
+      - babylondnode0
+    restart: unless-stopped
+
+  vigilante-monitor:
+    container_name: vigilante-monitor
+    image: babylonchain/vigilante
+    command: >
+      vigilante monitor --config /home/vigilante/config/vigilante.yml --genesis /home/vigilante/config/bbnconfig/genesis.json 2>&1 | tee /home/vigilante/config/monitor.log
+    networks:
+      localnet:
+        ipv4_address: 192.168.10.9
+    volumes:
+      - ../.testnets/node0/babylond/config:/home/vigilante/config/bbnconfig
+      - ../.testnets/vigilante:/home/vigilante/config
+    depends_on:
+      - bitcoindsim
+      - babylondnode0
+    restart: unless-stopped
+
+networks:
+  localnet:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.10.0/25
