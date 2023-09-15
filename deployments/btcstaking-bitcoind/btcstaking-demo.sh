@@ -69,8 +69,8 @@ docker exec btc-validator /bin/sh -c \
 
 echo "Validator with Bitcoin public key $attackerBabylonPk submitted a conflicting finality signature for Babylon height $attackHeight; the Validator's private BTC key has been extracted and the Validator will now be slashed"
 
-echo "Wait a few minutes for the last, shortert BTC delegation (10 BTC blocks) to expire..."
-sleep 90
+echo "Wait a few minutes for the last, shortest BTC delegation (10 BTC blocks) to expire..."
+sleep 180
 
 echo "Unbond the expired staked BTC funds"
 docker exec btc-staker /bin/sh -c \
