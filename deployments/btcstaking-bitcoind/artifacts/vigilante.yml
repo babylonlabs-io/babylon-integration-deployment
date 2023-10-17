@@ -56,6 +56,7 @@ submitter:
   resubmit-fee-multiplier: 2
 reporter:
   netparams: regtest
+  btc_cache_size: 1000
 monitor:
   checkpoint-buffer-size: 1000
   btc-block-buffer-size: 1000

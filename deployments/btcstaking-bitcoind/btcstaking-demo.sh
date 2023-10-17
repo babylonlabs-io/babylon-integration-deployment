@@ -4,8 +4,9 @@ echo "Create $NUM_VALIDATORS Bitcoin validators"
 
 for idx in `seq 1 $NUM_VALIDATORS`; do
     docker exec btc-validator /bin/sh -c "
-        /bin/valcli dn cv --key-name validator$idx && \
-        /bin/valcli dn rv --key-name validator$idx
+        BTC_PK=\$(/bin/valcli dn cv --key-name validator$idx \
+            --chain-id chain-test | jq -r .btc_pk ); \
+        /bin/valcli dn rv --btc-pk \$BTC_PK
     "
 done
 
@@ -16,7 +17,6 @@ sleep 10
 
 # Get the public keys of the validators
 btcPks=$(docker exec btc-staker /bin/sh -c '/bin/stakercli dn bv | jq -r ".validators[].bitcoin_public_Key"')
-babylonPks=$(docker exec btc-staker /bin/sh -c '/bin/stakercli dn bv | jq -r ".validators[].babylon_public_Key"')
 
 # Get the available BTC addresses for delegations
 delAddrs=($(docker exec btc-staker /bin/sh -c '/bin/stakercli dn list-outputs | jq -r ".outputs[].address" | sort | uniq'))
@@ -60,18 +60,18 @@ done
 
 echo "Attack Babylon by submitting a conflicting finality signature for a validator"
 # Select the first Validator
-attackerBabylonPk=$(echo ${babylonPks}  | cut -d " " -f 1)
+attackerBtcPk=$(echo ${btcPks}  | cut -d " " -f 1)
 attackHeight=$(docker exec btc-validator /bin/sh -c '/bin/valcli dn ls | jq -r ".validators[].last_voted_height" | head -n 1')
 
 # Execute the attack for the first height that every validator voted
 docker exec btc-validator /bin/sh -c \
-    "/bin/valcli dn afs --babylon-pk $attackerBabylonPk --height $attackHeight"
+    "/bin/valcli dn afs --btc-pk $attackerBtcPk --height $attackHeight"
 
-echo "Validator with Bitcoin public key $attackerBabylonPk submitted a conflicting finality signature for Babylon height $attackHeight; the Validator's private BTC key has been extracted and the Validator will now be slashed"
+echo "Validator with Bitcoin public key $attackerBtcPk submitted a conflicting finality signature for Babylon height $attackHeight; the Validator's private BTC key has been extracted and the Validator will now be slashed"
 
 echo "Wait a few minutes for the last, shortest BTC delegation (10 BTC blocks) to expire..."
 sleep 180
 
-echo "Unbond the expired staked BTC funds"
+echo "Withdraw the expired staked BTC funds"
 docker exec btc-staker /bin/sh -c \
     "/bin/stakercli dn ust --staking-transaction-hash $btcTxHash"
