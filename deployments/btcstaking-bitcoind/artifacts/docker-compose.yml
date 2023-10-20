@@ -50,7 +50,7 @@ services:
     container_name: bitcoindsim
     networks:
       localnet:
-        ipv4_address: 192.168.10.15
+        ipv4_address: 192.168.10.30
     environment:
       - ZMQ_SEQUENCE_PORT=29000
       - ZMQ_RAWBLOCK_PORT=29001
@@ -144,12 +144,26 @@ services:
       - babylondnode0
     restart: unless-stopped
 
+  eotsmanager:
+    container_name: eotsmanager
+    image: babylonchain/eots-manager
+    networks:
+      localnet:
+        ipv4_address: 192.168.10.14
+    ports:
+      - "15823:15813"
+    volumes:
+      - ../.testnets/eotsmanager:/home/eotsmanager/.eotsd
+    depends_on:
+      - babylondnode0
+    restart: unless-stopped
+
   btc-jury:
     container_name: btc-jury
     image: babylonchain/btc-validator
     networks:
       localnet:
-        ipv4_address: 192.168.10.14
+        ipv4_address: 192.168.10.15
     ports:
       - "15832:15822"
     volumes:

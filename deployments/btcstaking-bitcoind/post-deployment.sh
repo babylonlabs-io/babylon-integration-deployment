@@ -2,6 +2,8 @@
 
 echo "Creating keyrings and sending funds to Babylon Node Consumers"
 
+[[ "$(uname)" == "Linux" ]] && chown -R 1138:1138 .testnets/eotsmanager
+
 sleep 15
 docker exec babylondnode0 /bin/sh -c '
     BTC_STAKER_ADDR=$(/bin/babylond --home /babylondhome/.tmpdir keys add \

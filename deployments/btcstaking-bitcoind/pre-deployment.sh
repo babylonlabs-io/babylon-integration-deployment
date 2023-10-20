@@ -18,9 +18,11 @@ mkdir -p .testnets/bitcoin
 mkdir -p .testnets/vigilante
 mkdir -p .testnets/btc-staker
 mkdir -p .testnets/btc-validator
+mkdir -p .testnets/eotsmanager
 mkdir -p .testnets/btc-jury
 cp artifacts/vigilante.yml .testnets/vigilante/vigilante.yml
 cp artifacts/stakerd.conf .testnets/btc-staker/stakerd.conf
 cp artifacts/vald.conf .testnets/btc-validator/vald.conf
+cp artifacts/eotsd.conf .testnets/eotsmanager/eotsd.conf
 cp artifacts/juryd.conf .testnets/btc-jury/vald.conf
 cp -R artifacts/jury-keyring .testnets/btc-jury/keyring-test
