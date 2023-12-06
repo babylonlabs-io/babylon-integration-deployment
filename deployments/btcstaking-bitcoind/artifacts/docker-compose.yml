@@ -108,7 +108,6 @@ services:
       localnet:
         ipv4_address: 192.168.10.9
     volumes:
-      - ../.testnets/node0/babylond/config:/home/vigilante/config/bbnconfig
       - ../.testnets/vigilante:/home/vigilante/config
     depends_on:
       - bitcoindsim
@@ -130,44 +129,75 @@ services:
       - babylondnode0
     restart: unless-stopped
 
-  btc-validator:
-    container_name: btc-validator
+  btc-validator0:
+    container_name: btc-validator0
     image: babylonchain/btc-validator
+    command: vald start
     networks:
       localnet:
         ipv4_address: 192.168.10.13
     ports:
       - "15822:15812"
     volumes:
-      - ../.testnets/btc-validator:/home/btcvalidator/.vald
+      - ../.testnets/btc-validator0:/home/btcvalidator/.vald
+    depends_on:
+      - babylondnode0
+    restart: unless-stopped
+
+  btc-validator1:
+    container_name: btc-validator1
+    image: babylonchain/btc-validator
+    command: vald start
+    networks:
+      localnet:
+        ipv4_address: 192.168.10.14
+    ports:
+      - "15823:15812"
+    volumes:
+      - ../.testnets/btc-validator1:/home/btcvalidator/.vald
+    depends_on:
+      - babylondnode0
+    restart: unless-stopped
+
+  btc-validator2:
+    container_name: btc-validator2
+    image: babylonchain/btc-validator
+    command: vald start
+    networks:
+      localnet:
+        ipv4_address: 192.168.10.15
+    ports:
+      - "15824:15812"
+    volumes:
+      - ../.testnets/btc-validator2:/home/btcvalidator/.vald
     depends_on:
       - babylondnode0
     restart: unless-stopped
 
   eotsmanager:
     container_name: eotsmanager
-    image: babylonchain/eots-manager
+    image: babylonchain/btc-validator
+    command: eotsd
     networks:
       localnet:
-        ipv4_address: 192.168.10.14
+        ipv4_address: 192.168.10.16
     ports:
-      - "15823:15813"
+      - "15825:15813"
     volumes:
-      - ../.testnets/eotsmanager:/home/eotsmanager/.eotsd
+      - ../.testnets/eotsmanager:/home/btcvalidator/.eotsd
     depends_on:
       - babylondnode0
     restart: unless-stopped
 
-  btc-jury:
-    container_name: btc-jury
+  covenant:
+    container_name: covenant
     image: babylonchain/btc-validator
+    command: covd start
     networks:
       localnet:
-        ipv4_address: 192.168.10.15
-    ports:
-      - "15832:15822"
+        ipv4_address: 192.168.10.17
     volumes:
-      - ../.testnets/btc-jury:/home/btcvalidator/.vald
+      - ../.testnets/covenant:/home/btcvalidator/.covd
     depends_on:
       - babylondnode0
     restart: unless-stopped

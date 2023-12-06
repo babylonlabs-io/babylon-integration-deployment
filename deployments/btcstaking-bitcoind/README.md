@@ -14,7 +14,7 @@ Timestamping protocols comprises the following components:
   dedicated BTC Validator; the daemon connects to a BTC wallet that manages
   multiple private/public keys and performs staking requests from BTC public
   keys to dedicated BTC Validators
-- **BTC covenant emulation Jury** daemon: Pre-signs the BTC slashing
+- **BTC covenant emulation** daemon: Pre-signs the BTC slashing
   transaction to enforce that malicious stakers' stake will be sent to a
   pre-defined burn BTC address in case they attack Babylon
 - **Vigilante Monitor** daemon: Detects attacks to Babylon and submits slashing
@@ -43,7 +43,7 @@ that spins up the network:
  ✔ Container btc-validator        Started                                                               1.0s 
  ✔ Container vigilante-monitor    Started                                                               2.0s 
  ✔ Container btc-staker           Started                                                               1.2s 
- ✔ Container btc-jury             Started                                                               1.0s 
+ ✔ Container covenant             Started                                                               1.0s 
 ```
 
 ## Inspecting the BTC Staking Protocol demo
@@ -139,18 +139,18 @@ The following events are occurring here:
   receives `X` confirmations (in our case, `X = 2`)
 - The BTC Staker creates and pre-signs a BTC slashing transaction, which will
   be sent to the BTC simnet in case the BTC Validator attacks Babylon
-- The BTC Staker submits this transaction to Babylon, so that BTC Jury can
+- The BTC Staker submits this transaction to Babylon, so that the covenant can
   pre-sign it too
 
 The delegation has now been created, but is not activated yet. The last step
-is for BTC Jury to also pre-sign the slashing BTC transaction.
+is for the covenant to also pre-sign the slashing BTC transaction.
 
-Through BTC Jury daemon logs, we can inspect this event:
+Through the covenant daemon logs, we can inspect this event:
 
 ```shell
-$ docker logs -f btc-jury
+$ docker logs -f covenant
 ...
-time="2023-08-18T10:29:42Z" level=info msg="successfully submit Jury sig over Bitcoin delegation to Babylon" delBtcPk=46748d01a2f00dfabf8be55031932c68dcea5636d47f9e2e3bdc29d36e8b440b txHash=959F16BA3A0D790E70CF486D48BFA3F8753E7A46EE2D79C97CF67D35711C7791 valBtcPubKey=1083b0c28491e9660cd252afa9fd36431e93a86adf21801533f365de265de4ba
+time="2023-08-18T10:29:42Z" level=info msg="successfully submit covenant sig over Bitcoin delegation to Babylon" delBtcPk=46748d01a2f00dfabf8be55031932c68dcea5636d47f9e2e3bdc29d36e8b440b txHash=959F16BA3A0D790E70CF486D48BFA3F8753E7A46EE2D79C97CF67D35711C7791 valBtcPubKey=1083b0c28491e9660cd252afa9fd36431e93a86adf21801533f365de265de4ba
 ...
 ```
 

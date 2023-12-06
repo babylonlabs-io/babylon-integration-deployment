@@ -16,10 +16,7 @@ build-btc-staker:
 build-btc-validator:
 	$(MAKE) -C $(GIT_TOPLEVEL)/btc-validator BBN_PRIV_DEPLOY_KEY=${BBN_PRIV_DEPLOY_KEY} build-docker
 
-build-eots-manager:
-	$(MAKE) -C $(GIT_TOPLEVEL)/btc-validator/eotsmanager BBN_PRIV_DEPLOY_KEY=${BBN_PRIV_DEPLOY_KEY} build-docker
-
-build-deployment-btcstaking-bitcoind: build-babylond build-bitcoindsim build-vigilante build-btc-staker build-btc-validator build-eots-manager
+build-deployment-btcstaking-bitcoind: build-babylond build-bitcoindsim build-vigilante build-btc-staker build-btc-validator
 
 start-deployment-btcstaking-bitcoind: stop-deployment-btcstaking-bitcoind build-deployment-btcstaking-bitcoind
 	./pre-deployment.sh
