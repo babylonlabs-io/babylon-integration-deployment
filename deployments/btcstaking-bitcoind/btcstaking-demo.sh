@@ -4,9 +4,9 @@ echo "Create $NUM_VALIDATORS Bitcoin validators"
 
 for idx in $(seq 0 $((NUM_VALIDATORS-1))); do
     docker exec btc-validator$idx /bin/sh -c "
-        BTC_PK=\$(/bin/valcli dn cv --key-name validator$idx \
+        BTC_PK=\$(/bin/valcli cv --key-name validator$idx \
             --chain-id chain-test | jq -r .btc_pk ); \
-        /bin/valcli dn rv --btc-pk \$BTC_PK
+        /bin/valcli rv --btc-pk \$BTC_PK
     "
 done
 
@@ -47,7 +47,7 @@ echo "Made a delegation to each of the validators"
 echo "Wait a few minutes for the delegations to become active..."
 while true; do
     delegationsActive=$(docker exec btc-validator0 /bin/sh -c \
-        'valcli dn ls | jq ".validators[].last_voted_height != null"')
+        'valcli ls | jq ".validators[].last_voted_height != null"')
 
     if [[ $delegationsActive == *"false"* ]]
     then
@@ -60,12 +60,12 @@ done
 
 echo "Attack Babylon by submitting a conflicting finality signature for a validator"
 # Select the first Validator
-attackerBtcPk=$(docker exec btc-validator0 /bin/sh -c '/bin/valcli dn ls | jq -r ".validators[].btc_pk_hex" | head -n 1')
-attackHeight=$(docker exec btc-validator0 /bin/sh -c '/bin/valcli dn ls | jq -r ".validators[].last_voted_height" | head -n 1')
+attackerBtcPk=$(docker exec btc-validator0 /bin/sh -c '/bin/valcli ls | jq -r ".validators[].btc_pk_hex" | head -n 1')
+attackHeight=$(docker exec btc-validator0 /bin/sh -c '/bin/valcli ls | jq -r ".validators[].last_voted_height" | head -n 1')
 
 # Execute the attack for the first height that every validator voted
 docker exec btc-validator0 /bin/sh -c \
-    "/bin/valcli dn afs --btc-pk $attackerBtcPk --height $attackHeight"
+    "/bin/valcli afs --btc-pk $attackerBtcPk --height $attackHeight"
 
 echo "Validator with Bitcoin public key $attackerBtcPk submitted a conflicting finality signature for Babylon height $attackHeight; the Validator's private BTC key has been extracted and the Validator will now be slashed"
 

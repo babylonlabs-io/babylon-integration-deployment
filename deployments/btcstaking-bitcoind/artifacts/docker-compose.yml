@@ -177,7 +177,7 @@ services:
   eotsmanager:
     container_name: eotsmanager
     image: babylonchain/btc-validator
-    command: eotsd
+    command: eotsd start
     networks:
       localnet:
         ipv4_address: 192.168.10.16

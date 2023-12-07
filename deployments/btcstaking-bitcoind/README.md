@@ -240,7 +240,7 @@ $ docker exec -it btc-validator sh
 # public key (where the staked tokens will be sent to) and a Babylon account
 # (where the Babylon reward tokens will be sent to). The public keys of both are
 # visible from the command output.
-~ valcli daemon create-validator --key-name my_validator
+~ valcli create-validator --key-name my_validator
 {
     "babylon_pk": "0251259b5c88d6ac79d86615220a8111ebb238047df0689357274f004fba3e5a89",
     "btc_pk": "f6eae95d0e30e790bead4e4359a0ea596f2179a10f96dcedd953f07331918ca7"
@@ -248,7 +248,7 @@ $ docker exec -it btc-validator sh
 # Register the Validator with Babylon. Now, the Validator is ready to receive
 # delegations. The output contains the hash of the validator registration
 # Babylon transaction.
-~ valcli daemon register-validator --key-name my_validator
+~ valcli register-validator --key-name my_validator
 {
     "tx_hash": "800AE5BBDADE974C5FA5BD44336C7F1A952FAB9F5F9B43F7D4850BA449319BAA"
 }
@@ -260,7 +260,7 @@ $ docker exec -it btc-validator sh
 #   not anymore OR has been slashed)
 # The `last_committed_height` field is the Babylon height up to which the
 # Validator has committed sufficient EOTS randomness
-~ valcli daemon list-validators
+~ valcli list-validators
 {
     "validators": [
         ...
@@ -323,12 +323,12 @@ the daemon through its CLI utility, `valcli`.
 $ docker exec -it btc-validator sh
 # Find the latest height for which the Validators have submitted finality
 # signatures
-~ attackHeight=$(valcli dn ls | jq -r ".validators[].last_voted_height" | sort -nr | head -n 1)
+~ attackHeight=$(valcli ls | jq -r ".validators[].last_voted_height" | sort -nr | head -n 1)
 # Add a signature for a conflicting block using the Validator's Babylon public
 # key; the command will by default vote for a predefined conflicting block.
 # To override the predefined conflicting block, the flag `--last-commit-hash`
 # can be utilized.
-~ valcli dn add-finality-sig --height $attackHeight \
+~ valcli add-finality-sig --height $attackHeight \
 --babylon-pk 0251259b5c88d6ac79d86615220a8111ebb238047df0689357274f004fba3e5a89
 {
     "tx_hash": "A7D69335C19C3E7F312A5C4BD71FBFC1DD27B863A13C8AD3CABBCCFDCA218461",
