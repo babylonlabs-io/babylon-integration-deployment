@@ -129,8 +129,8 @@ services:
       - babylondnode0
     restart: unless-stopped
 
-  btc-validator0:
-    container_name: btc-validator0
+  btc-validator:
+    container_name: btc-validator
     image: babylonchain/btc-validator
     command: vald start
     networks:
@@ -139,37 +139,7 @@ services:
     ports:
       - "15822:15812"
     volumes:
-      - ../.testnets/btc-validator0:/home/btcvalidator/.vald
-    depends_on:
-      - babylondnode0
-    restart: unless-stopped
-
-  btc-validator1:
-    container_name: btc-validator1
-    image: babylonchain/btc-validator
-    command: vald start
-    networks:
-      localnet:
-        ipv4_address: 192.168.10.14
-    ports:
-      - "15823:15812"
-    volumes:
-      - ../.testnets/btc-validator1:/home/btcvalidator/.vald
-    depends_on:
-      - babylondnode0
-    restart: unless-stopped
-
-  btc-validator2:
-    container_name: btc-validator2
-    image: babylonchain/btc-validator
-    command: vald start
-    networks:
-      localnet:
-        ipv4_address: 192.168.10.15
-    ports:
-      - "15824:15812"
-    volumes:
-      - ../.testnets/btc-validator2:/home/btcvalidator/.vald
+      - ../.testnets/btc-validator:/home/btcvalidator/.vald
     depends_on:
       - babylondnode0
     restart: unless-stopped
@@ -180,7 +150,7 @@ services:
     command: eotsd start
     networks:
       localnet:
-        ipv4_address: 192.168.10.16
+        ipv4_address: 192.168.10.14
     ports:
       - "15825:15813"
     volumes:
@@ -195,7 +165,7 @@ services:
     command: covd start
     networks:
       localnet:
-        ipv4_address: 192.168.10.17
+        ipv4_address: 192.168.10.15
     volumes:
       - ../.testnets/covenant:/home/btcvalidator/.covd
     depends_on:

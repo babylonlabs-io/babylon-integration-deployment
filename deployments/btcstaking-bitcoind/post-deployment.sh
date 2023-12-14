@@ -24,33 +24,9 @@ docker exec babylondnode0 /bin/sh -c '
         ${BTC_VALIDATOR_ADDR} 100000000ubbn --fees 2ubbn -y \
         --chain-id chain-test --keyring-backend test
 '
-mkdir -p .testnets/btc-validator0/keyring-test
-mv .testnets/node0/babylond/.tmpdir/keyring-test/* .testnets/btc-validator0/keyring-test
-[[ "$(uname)" == "Linux" ]] && chown -R 1138:1138 .testnets/btc-validator0
-
-sleep 10
-docker exec babylondnode0 /bin/sh -c '
-    BTC_VALIDATOR_ADDR=$(/bin/babylond --home /babylondhome/.tmpdir keys add \
-        btc-validator --output json --keyring-backend test | jq -r .address) && \
-    /bin/babylond --home /babylondhome tx bank send test-spending-key \
-        ${BTC_VALIDATOR_ADDR} 100000000ubbn --fees 2ubbn -y \
-        --chain-id chain-test --keyring-backend test
-'
-mkdir -p .testnets/btc-validator1/keyring-test
-mv .testnets/node0/babylond/.tmpdir/keyring-test/* .testnets/btc-validator1/keyring-test
-[[ "$(uname)" == "Linux" ]] && chown -R 1138:1138 .testnets/btc-validator1
-
-sleep 10
-docker exec babylondnode0 /bin/sh -c '
-    BTC_VALIDATOR_ADDR=$(/bin/babylond --home /babylondhome/.tmpdir keys add \
-        btc-validator --output json --keyring-backend test | jq -r .address) && \
-    /bin/babylond --home /babylondhome tx bank send test-spending-key \
-        ${BTC_VALIDATOR_ADDR} 100000000ubbn --fees 2ubbn -y \
-        --chain-id chain-test --keyring-backend test
-'
-mkdir -p .testnets/btc-validator2/keyring-test
-mv .testnets/node0/babylond/.tmpdir/keyring-test/* .testnets/btc-validator2/keyring-test
-[[ "$(uname)" == "Linux" ]] && chown -R 1138:1138 .testnets/btc-validator2
+mkdir -p .testnets/btc-validator/keyring-test
+mv .testnets/node0/babylond/.tmpdir/keyring-test/* .testnets/btc-validator/keyring-test
+[[ "$(uname)" == "Linux" ]] && chown -R 1138:1138 .testnets/btc-validator
 
 sleep 10
 docker exec babylondnode0 /bin/sh -c '
