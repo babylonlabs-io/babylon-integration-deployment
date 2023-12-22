@@ -10,9 +10,9 @@
 [submodule "btc-staker"]
 	path = btc-staker
 	url = git@github.com:babylonchain/btc-staker.git
-[submodule "btc-validator"]
-	path = btc-validator
-	url = git@github.com:babylonchain/btc-validator.git
 [submodule "vigilante-private"]
 	path = vigilante-private
 	url = git@github.com:babylonchain/vigilante-private.git
+[submodule "finality-provider"]
+	path = finality-provider
+	url = git@github.com:babylonchain/finality-provider.git

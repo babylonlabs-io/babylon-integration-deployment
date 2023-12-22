@@ -121,7 +121,7 @@ that will showcase the full lifecycle of Babylon's BTC Staking Protocol**,
 execute the following:
 
 ```shell
-make BBN_PRIV_DEPLOY_KEY=/fullpath/to/private/ssh/key NUM_VALIDATORS=3 start-deployment-btcstaking-bitcoind-demo
+make BBN_PRIV_DEPLOY_KEY=/fullpath/to/private/ssh/key NUM_FINALITY_PROVIDERS=3 start-deployment-btcstaking-bitcoind-demo
 ```
 
 where:
@@ -129,8 +129,9 @@ where:
   created and added to GitHub before. As mentioned, **this key must have no
   passphrase - otherwise the network startup will fail.** This applies for the
   rest of this document.
-- `NUM_VALIDATORS` is the number of BTC Validators that will be created and used
-  throughout the demo. We recommend utilizing 3 Validators.
+- `NUM_FINALITY_PROVIDERS` is the number of Finality Providers that will be
+  created and used throughout the demo. We recommend utilizing 3 Finality
+  Providers.
 
 Alternatively, to just start the network:
 

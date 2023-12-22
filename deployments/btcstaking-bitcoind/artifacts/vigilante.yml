@@ -1,6 +1,8 @@
 common:
   retry-sleep-time: 1s
   max-retry-sleep-time: 1m
+  log-format: "auto"
+  log-level: "debug"
 btc:
   no-client-tls: true   # use true for bitcoind as it does not support tls
   ca-file: ~
@@ -20,7 +22,9 @@ btc:
   password: rpcpass
   reconnect-attempts: 3
   btc-backend: bitcoind # {btcd, bitcoind}
-  zmq-endpoint: tcp://bitcoindsim:29000 # use tcp://127.0.0.1:29000 if subscription-mode is zmq
+  zmq-seq-endpoint: tcp://bitcoindsim:29000
+  zmq-block-endpoint: tcp://bitcoindsim:29001
+  zmq-tx-endpoint: tcp://bitcoindsim:29002
 babylon:
   key: vigilante
   chain-id: chain-test
@@ -67,3 +71,9 @@ monitor:
   enable-liveness-checker: true
   enable-slasher: true
   btcnetparams: regtest
+unbonding-watcher:
+  check-delegations-interval: 1m
+  delegations-batch-size: 100
+  check-if-delegation-active-interval: 5m
+  retry-submit-unbonding-interval: 1m
+  max-jitter-interval: 30s

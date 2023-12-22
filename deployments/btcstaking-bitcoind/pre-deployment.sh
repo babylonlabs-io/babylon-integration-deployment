@@ -20,12 +20,12 @@ docker run --rm -v $(pwd)/.testnets:/data babylonchain/babylond \
 mkdir -p .testnets/bitcoin
 mkdir -p .testnets/vigilante
 mkdir -p .testnets/btc-staker
-mkdir -p .testnets/btc-validator
+mkdir -p .testnets/finality-provider
 mkdir -p .testnets/eotsmanager
 mkdir -p .testnets/covenant
 cp artifacts/vigilante.yml .testnets/vigilante/vigilante.yml
 cp artifacts/stakerd.conf .testnets/btc-staker/stakerd.conf
-cp artifacts/vald.conf .testnets/btc-validator/vald.conf
+cp artifacts/fpd.conf .testnets/finality-provider/fpd.conf
 cp artifacts/eotsd.conf .testnets/eotsmanager/eotsd.conf
 cp artifacts/covd.conf .testnets/covenant/covd.conf
 cp -R artifacts/covenant-keyring .testnets/covenant/keyring-test

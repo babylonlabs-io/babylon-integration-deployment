@@ -18,15 +18,15 @@ mv .testnets/node0/babylond/.tmpdir/keyring-test/* .testnets/btc-staker/keyring-
 
 sleep 10
 docker exec babylondnode0 /bin/sh -c '
-    BTC_VALIDATOR_ADDR=$(/bin/babylond --home /babylondhome/.tmpdir keys add \
-        btc-validator --output json --keyring-backend test | jq -r .address) && \
+    FINALITY_PROVIDER_ADDR=$(/bin/babylond --home /babylondhome/.tmpdir keys add \
+        finality-provider --output json --keyring-backend test | jq -r .address) && \
     /bin/babylond --home /babylondhome tx bank send test-spending-key \
-        ${BTC_VALIDATOR_ADDR} 100000000ubbn --fees 2ubbn -y \
+        ${FINALITY_PROVIDER_ADDR} 100000000ubbn --fees 2ubbn -y \
         --chain-id chain-test --keyring-backend test
 '
-mkdir -p .testnets/btc-validator/keyring-test
-mv .testnets/node0/babylond/.tmpdir/keyring-test/* .testnets/btc-validator/keyring-test
-[[ "$(uname)" == "Linux" ]] && chown -R 1138:1138 .testnets/btc-validator
+mkdir -p .testnets/finality-provider/keyring-test
+mv .testnets/node0/babylond/.tmpdir/keyring-test/* .testnets/finality-provider/keyring-test
+[[ "$(uname)" == "Linux" ]] && chown -R 1138:1138 .testnets/finality-provider
 
 sleep 10
 docker exec babylondnode0 /bin/sh -c '

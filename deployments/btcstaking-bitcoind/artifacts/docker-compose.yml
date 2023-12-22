@@ -114,12 +114,27 @@ services:
       - babylondnode0
     restart: unless-stopped
 
+  vigilante-unbonding-watcher:
+    container_name: vigilante-unbonding-watcher
+    image: babylonchain/vigilante
+    command: >
+      vigilante uwatcher --config /home/vigilante/config/vigilante.yml 2>&1 | tee /home/vigilante/config/unbonding-watcher.log
+    networks:
+      localnet:
+        ipv4_address: 192.168.10.10
+    volumes:
+      - ../.testnets/vigilante:/home/vigilante/config
+    depends_on:
+      - bitcoindsim
+      - babylondnode0
+    restart: unless-stopped
+
   btc-staker:
     container_name: btc-staker
     image: babylonchain/btc-staker
     networks:
       localnet:
-        ipv4_address: 192.168.10.10
+        ipv4_address: 192.168.10.11
     volumes:
       - ../.testnets/btc-staker:/home/btcstaker/.stakerd
     ports:
@@ -129,24 +144,24 @@ services:
       - babylondnode0
     restart: unless-stopped
 
-  btc-validator:
-    container_name: btc-validator
-    image: babylonchain/btc-validator
-    command: vald start
+  finality-provider:
+    container_name: finality-provider
+    image: babylonchain/finality-provider
+    command: fpd start --all
     networks:
       localnet:
         ipv4_address: 192.168.10.13
     ports:
       - "15822:15812"
     volumes:
-      - ../.testnets/btc-validator:/home/btcvalidator/.vald
+      - ../.testnets/finality-provider:/home/finality-provider/.fpd
     depends_on:
       - babylondnode0
     restart: unless-stopped
 
   eotsmanager:
     container_name: eotsmanager
-    image: babylonchain/btc-validator
+    image: babylonchain/finality-provider
     command: eotsd start
     networks:
       localnet:
@@ -154,20 +169,20 @@ services:
     ports:
       - "15825:15813"
     volumes:
-      - ../.testnets/eotsmanager:/home/btcvalidator/.eotsd
+      - ../.testnets/eotsmanager:/home/finality-provider/.eotsd
     depends_on:
       - babylondnode0
     restart: unless-stopped
 
   covenant:
     container_name: covenant
-    image: babylonchain/btc-validator
+    image: babylonchain/finality-provider
     command: covd start
     networks:
       localnet:
         ipv4_address: 192.168.10.15
     volumes:
-      - ../.testnets/covenant:/home/btcvalidator/.covd
+      - ../.testnets/covenant:/home/finality-provider/.covd
     depends_on:
       - babylondnode0
     restart: unless-stopped
