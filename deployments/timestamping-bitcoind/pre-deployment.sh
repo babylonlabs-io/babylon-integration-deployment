@@ -11,7 +11,10 @@ docker run --rm -v $(pwd)/.testnets:/data babylonchain/babylond \
     --btc-base-header 0100000000000000000000000000000000000000000000000000000000000000000000003ba3edfd7a7b12b27ac72c3e67768f617fc81bc3888a51323a9fb8aa4b1e5e4adae5494dffff7f2002000000 \
     --btc-network regtest --additional-sender-account \
     --slashing-address "mfcGAzvis9JQAb6avB6WBGiGrgWzLxuGaC" \
-    --jury-pk "945feee5f9e5dd1dfc43717987ffef60b9d8ee4301d0deebae6be0637964dcbe"
+    --slashing-rate 0.1 \
+    --min-commission-rate 0.05 \
+    --covenant-quorum 1 \
+    --covenant-pks "2d4ccbe538f846a750d82a77cd742895e51afcf23d86d05004a356b783902748" # should be updated if `covenant-keyring` dir is changed`
 
 # Create separate subpaths for each component and copy relevant configuration
 mkdir -p .testnets/bitcoin

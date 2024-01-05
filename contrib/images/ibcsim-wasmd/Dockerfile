@@ -5,7 +5,7 @@ RUN apt-get update && apt-get install -y git make jq gcc make wget
 WORKDIR /work
 
 # Download and install Go
-ENV GOLANG_VERSION 1.20
+ENV GOLANG_VERSION 1.21.4
 RUN wget -q https://golang.org/dl/go${GOLANG_VERSION}.linux-amd64.tar.gz && \
     tar -C /usr/local -xzf go${GOLANG_VERSION}.linux-amd64.tar.gz && \
     rm go${GOLANG_VERSION}.linux-amd64.tar.gz
@@ -19,13 +19,13 @@ WORKDIR /work
 ENV GO111MODULE=on
 
 # Install the relayer
-RUN wget https://github.com/cosmos/relayer/releases/download/v2.3.1/Cosmos.Relayer_2.3.1_linux_amd64.tar.gz && \
-    tar -xzf Cosmos.Relayer_2.3.1_linux_amd64.tar.gz && \
-    mv Cosmos\ Relayer_2.3.1_linux_amd64/rly /bin/rly
+RUN wget https://github.com/cosmos/relayer/releases/download/v2.4.2/Cosmos.Relayer_2.4.2_linux_amd64.tar.gz && \
+    tar -xzf Cosmos.Relayer_2.4.2_linux_amd64.tar.gz && \
+    mv Cosmos\ Relayer_2.4.2_linux_amd64/rly /bin/rly
 
 # Install wasmd
 RUN git clone https://github.com/CosmWasm/wasmd.git
-RUN cd wasmd && git fetch origin && git checkout v0.40.0-rc.2 && make install && cd -
+RUN cd wasmd && git fetch origin && git checkout v0.50.0 && make install && cd -
 
 WORKDIR /ibcsim-wasmd
 COPY wrapper.sh /ibcsim-wasmd/wrapper.sh

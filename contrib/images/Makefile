@@ -13,7 +13,6 @@ ibcsim-gaia:
 		$(shell git rev-parse --show-toplevel)/contrib/images/ibcsim-gaia
 
 ibcsim-wasmd:
-	make -C ./ibcsim-wasmd/babylon-contract build-optimized
 	docker build --tag babylonchain/ibcsim-wasmd -f ibcsim-wasmd/Dockerfile \
 		$(shell git rev-parse --show-toplevel)/contrib/images/ibcsim-wasmd
 

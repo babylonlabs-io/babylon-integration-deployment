@@ -108,7 +108,6 @@ services:
       localnet:
         ipv4_address: 192.168.10.9
     volumes:
-      - ../.testnets/node0/babylond/config:/home/vigilante/config/bbnconfig
       - ../.testnets/vigilante:/home/vigilante/config
     depends_on:
       - bitcoindsim
