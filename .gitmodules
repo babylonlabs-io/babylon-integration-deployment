@@ -16,3 +16,9 @@
 [submodule "finality-provider"]
 	path = finality-provider
 	url = git@github.com:babylonchain/finality-provider.git
+[submodule "babylon-api"]
+	path = babylon-api
+	url = git@github.com:babylonchain/babylon-api.git
+[submodule "rpc-poller"]
+	path = rpc-poller
+	url = git@github.com:babylonchain/rpc-poller.git

@@ -26,6 +26,9 @@ Timestamping protocols comprises the following components:
   Babylon and detects Babylon checkpoints that have received a BTC timestamp
   (i.e. have been confirmed in BTC)
 - A **BTC simnet** acting as the BTC network, operated through a bitcoind node
+- **Babylon API**: Acts as a data aggregator for the Babylon network
+- **RPC Poller**: Polls Babylon RPC endpoints and the network's BTC backend and stores data in a DB
+- **Mongo DB**: Babylon data store
 
 ### Expected Docker state post-deployment
 
@@ -33,7 +36,7 @@ The following containers should be created as a result of the `make` command
 that spins up the network:
 
 ```shell
-[+] Running 10/10
+[+] Running 13/13
 ✔ Network artifacts_localnet      Created                                                               0.2s 
  ✔ Container babylondnode0        Started                                                               0.5s 
  ✔ Container babylondnode1        Started                                                               0.6s 
@@ -44,6 +47,9 @@ that spins up the network:
  ✔ Container vigilante-monitor    Started                                                               2.0s 
  ✔ Container btc-staker           Started                                                               1.2s 
  ✔ Container covenant             Started                                                               1.0s 
+ ✔ Container mongodb              Started                                                               1.0s 
+ ✔ Container babylon-api          Started                                                               1.0s 
+ ✔ Container rpc-poller           Started                                                               1.0s 
 ```
 
 ## Inspecting the BTC Staking Protocol demo

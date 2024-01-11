@@ -186,6 +186,52 @@ services:
     depends_on:
       - babylondnode0
     restart: unless-stopped
+    
+  babylonapi:
+    container_name: babylon-api
+    image: babylonchain/babylon-api
+    networks:
+      localnet:
+        ipv4_address: 192.168.10.16
+    ports:
+      - "8090:8090"
+    environment:
+      - CONFIG=/home/api/config.yml
+      - CHAIN_REGISTRY=/home/api/chain-registry.json
+    volumes:
+      - ../.testnets/api/config.yml:/home/api/config.yml:Z
+      - ../.testnets/api/chain-registry.json:/home/api/chain-registry.json:Z
+    depends_on:
+      - mongodb
+      - rpcpoller
+      - btc-staker
+  
+  rpcpoller:
+    image: babylonchain/rpc-poller
+    container_name: rpc-poller
+    networks:
+      localnet:
+        ipv4_address: 192.168.10.17
+    depends_on:
+      - mongodb
+      - bitcoindsim
+    environment:
+      - CMC_PRO_API_KEY=${CMC_PRO_API_KEY}
+      - CONFIG=/home/poller/config.yml
+      - CHAIN_REGISTRY=/home/poller/chain-registry.json
+    volumes:
+      - ../.testnets/poller/config.yml:/home/poller/config.yml
+      - ../.testnets/poller/chain-registry.json:/home/poller/chain-registry.json:Z
+
+  mongodb:
+    container_name: mongodb
+    image: mongo:latest
+    restart: always
+    ports:
+      - "27017:27017"
+    networks:
+      localnet:
+        ipv4_address: 192.168.10.18
 
 networks:
   localnet:

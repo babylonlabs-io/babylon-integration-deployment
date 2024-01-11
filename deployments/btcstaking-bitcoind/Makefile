@@ -8,15 +8,21 @@ build-babylond:
 	$(MAKE) -C $(GIT_TOPLEVEL)/babylon-private/contrib/images babylond
 
 build-vigilante:
-	$(MAKE) -C $(GIT_TOPLEVEL)/vigilante-private BBN_PRIV_DEPLOY_KEY=${BBN_PRIV_DEPLOY_KEY} build-docker
+	$(MAKE) -C $(GIT_TOPLEVEL)/vigilante-private build-docker
 
 build-btc-staker:
-	$(MAKE) -C $(GIT_TOPLEVEL)/btc-staker BBN_PRIV_DEPLOY_KEY=${BBN_PRIV_DEPLOY_KEY} build-docker
+	$(MAKE) -C $(GIT_TOPLEVEL)/btc-staker build-docker
 
 build-finality-provider:
-	$(MAKE) -C $(GIT_TOPLEVEL)/finality-provider BBN_PRIV_DEPLOY_KEY=${BBN_PRIV_DEPLOY_KEY} build-docker
+	$(MAKE) -C $(GIT_TOPLEVEL)/finality-provider build-docker
 
-build-deployment-btcstaking-bitcoind: build-babylond build-bitcoindsim build-vigilante build-btc-staker build-finality-provider
+build-poller:
+	$(MAKE) -C $(GIT_TOPLEVEL)/rpc-poller build-docker
+
+build-api:
+	$(MAKE) -C $(GIT_TOPLEVEL)/babylon-api build-docker
+
+build-deployment-btcstaking-bitcoind: build-babylond build-bitcoindsim build-vigilante build-btc-staker build-finality-provider build-poller build-api
 
 start-deployment-btcstaking-bitcoind: stop-deployment-btcstaking-bitcoind build-deployment-btcstaking-bitcoind
 	./pre-deployment.sh

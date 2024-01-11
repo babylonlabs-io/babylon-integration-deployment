@@ -22,6 +22,35 @@ and run a Babylon network locally, using several different deployment scenarios.
     to the instructions
     [here](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account).
 
+4. Set up environment variables (you may also persist them to your environment)
+  
+  - SSH private key full path
+
+    `BBN_PRIV_DEPLOY_KEY` is the full path to the private SSH key that you
+    created and added to GitHub before. As mentioned, **this key must have no
+    passphrase - otherwise the network startup will fail.** This applies for the
+    rest of this document.
+
+    ```shell
+    export BBN_PRIV_DEPLOY_KEY=/path/to/private/key
+    ```
+      
+  - CoinMarketCap token (**optional**, required only by Babylon API)
+  
+    You can get one from [here](https://coinmarketcap.com/academy/article/register-for-coinmarketcap-api)
+    
+    ```shell
+    export CMC_PRO_API_KEY=XXX
+    ```
+  
+  - BTC user credential (**optional**, required only by Babylon API)
+  
+    Follow [this](https://babylon-chain.atlassian.net/wiki/spaces/BABYLON/pages/173081551/Credential+management) instruction to obtain the credentials
+    ```shell
+    export BTC_RPC_USER=XXX
+    export BTC_RPC_PASS=XXX
+    ```
+
 4. Clone the repository and initialize git submodules
 
     The aforementioned components are included in the repo as git submodules, so
@@ -31,6 +60,9 @@ and run a Babylon network locally, using several different deployment scenarios.
     git clone git@github.com:babylonchain/babylon-deployment.git
     git submodule init && git submodule update
     ```
+
+5. Enable Babylon VPN (**optional**, required only by Babylon API)
+    Refer to the [confluence documentation](https://babylon-chain.atlassian.net/wiki/spaces/BABYLON/pages/129335321/Connect+to+devnet+web+services+endpoints)
 
 ## Deployment scenarios
 
@@ -53,6 +85,8 @@ on a dedicated subdirectory.  The following scenarios are currently available:
   testnet, backed by a bitcoind-based BTC simnet
 - [Faucet](deployments/faucet):
   Spawns a Babylon network along with a Discord-based Faucet
+- [API](deployments/api):
+  Spawns Babylon network APIs along with rpc-poller. Utilise devnet enviroments for gathering babylonchain and BTC data. Write operations from API has no effect
 
 ### Subdirectory structure and deployment process
 
@@ -121,14 +155,11 @@ that will showcase the full lifecycle of Babylon's BTC Staking Protocol**,
 execute the following:
 
 ```shell
-make BBN_PRIV_DEPLOY_KEY=/fullpath/to/private/ssh/key NUM_FINALITY_PROVIDERS=3 start-deployment-btcstaking-bitcoind-demo
+make NUM_FINALITY_PROVIDERS=3 start-deployment-btcstaking-bitcoind-demo
 ```
 
 where:
-- `BBN_PRIV_DEPLOY_KEY` is the full path to the private SSH key that you
-  created and added to GitHub before. As mentioned, **this key must have no
-  passphrase - otherwise the network startup will fail.** This applies for the
-  rest of this document.
+
 - `NUM_FINALITY_PROVIDERS` is the number of Finality Providers that will be
   created and used throughout the demo. We recommend utilizing 3 Finality
   Providers.
@@ -136,13 +167,13 @@ where:
 Alternatively, to just start the network:
 
 ```shell
-make BBN_PRIV_DEPLOY_KEY=/fullpath/to/private/ssh/key start-deployment-btcstaking-bitcoind
+make start-deployment-btcstaking-bitcoind
 ```
 
 To stop the network:
 
 ```shell
-make BBN_PRIV_DEPLOY_KEY=/fullpath/to/private/ssh/key stop-deployment-btcstaking-bitcoind
+make stop-deployment-btcstaking-bitcoind
 ```
 
 ### BTC Timestamping (BTC backend: bitcoind)
@@ -150,13 +181,13 @@ make BBN_PRIV_DEPLOY_KEY=/fullpath/to/private/ssh/key stop-deployment-btcstaking
 To start the network:
 
 ```shell
-make BBN_PRIV_DEPLOY_KEY=/fullpath/to/private/ssh/key start-deployment-timestamping-bitcoind
+make start-deployment-timestamping-bitcoind
 ```
 
 To stop the network:
 
 ```shell
-make BBN_PRIV_DEPLOY_KEY=/fullpath/to/private/ssh/key stop-deployment-timestamping-bitcoind
+make stop-deployment-timestamping-bitcoind
 ```
 
 ### BTC Timestamping (BTC backend: btcd)
@@ -164,13 +195,13 @@ make BBN_PRIV_DEPLOY_KEY=/fullpath/to/private/ssh/key stop-deployment-timestampi
 To start the network:
 
 ```shell
-make BBN_PRIV_DEPLOY_KEY=/fullpath/to/private/ssh/key start-deployment-timestamping-btcd
+make start-deployment-timestamping-btcd
 ```
 
 To stop the network:
 
 ```shell
-make BBN_PRIV_DEPLOY_KEY=/fullpath/to/private/ssh/key stop-deployment-timestamping-btcd
+make stop-deployment-timestamping-btcd
 ```
 
 ### Phase 1 Integration (BTC backend: bitcoind)
@@ -178,13 +209,13 @@ make BBN_PRIV_DEPLOY_KEY=/fullpath/to/private/ssh/key stop-deployment-timestampi
 To start the network:
 
 ```shell
-make BBN_PRIV_DEPLOY_KEY=/fullpath/to/private/ssh/key start-deployment-phase1-integration-bitcoind
+make start-deployment-phase1-integration-bitcoind
 ```
 
 To stop the network:
 
 ```shell
-make BBN_PRIV_DEPLOY_KEY=/fullpath/to/private/ssh/key stop-deployment-phase1-integration-bitcoind
+make stop-deployment-phase1-integration-bitcoind
 ```
 
 ### Phase 2 Integration (BTC backend: bitcoind)
@@ -192,13 +223,13 @@ make BBN_PRIV_DEPLOY_KEY=/fullpath/to/private/ssh/key stop-deployment-phase1-int
 To start the network:
 
 ```shell
-make BBN_PRIV_DEPLOY_KEY=/fullpath/to/private/ssh/key start-deployment-phase2-integration-bitcoind
+make start-deployment-phase2-integration-bitcoind
 ```
 
 To stop the network:
 
 ```shell
-make BBN_PRIV_DEPLOY_KEY=/fullpath/to/private/ssh/key stop-deployment-phase2-integration-bitcoind
+make stop-deployment-phase2-integration-bitcoind
 ```
 
 ### Faucet
@@ -213,4 +244,18 @@ To stop the network:
 
 ```shell
 make stop-deployment-faucet
+```
+
+### API
+
+To start the api services:
+
+```shell
+make start-deployment-api
+```
+
+To stop the api services:
+
+```shell
+make stop-deployment-api
 ```

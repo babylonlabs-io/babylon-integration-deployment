@@ -1,0 +1,51 @@
+version: "3"
+
+services:
+  babylonapi:
+    container_name: babylon-api
+    image: babylonchain/babylon-api
+    networks:
+      - localnet
+    ports:
+      - "8090:8090"
+    environment:
+      - CONFIG=/home/api/config.yml
+      - CHAIN_REGISTRY=/home/api/chain-registry.json
+    volumes:
+      - ../.testnets/api/config.yml:/home/api/config.yml:Z
+      - ../.testnets/api/chain-registry.json:/home/api/chain-registry.json:Z
+    depends_on:
+      - mongodb
+      - rpcpoller
+  
+  mongodb:
+    container_name: mongodb
+    image: mongo:latest
+    restart: always
+    ports:
+      - "27017:27017"
+    networks:
+      - localnet
+  
+  rpcpoller:
+    image: babylonchain/rpc-poller
+    container_name: rpc-poller
+    networks:
+      - localnet
+    depends_on:
+      - mongodb
+    environment:
+      - CMC_PRO_API_KEY=${CMC_PRO_API_KEY}
+      - CONFIG=/home/poller/config.yml
+      - CHAIN_REGISTRY=/home/poller/chain-registry.json
+    volumes:
+      - ../.testnets/poller/config.yml:/home/poller/config.yml
+      - ../.testnets/poller/chain-registry.json:/home/poller/chain-registry.json:Z
+
+networks:
+  localnet:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.10.0/25
