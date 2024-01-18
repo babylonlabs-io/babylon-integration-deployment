@@ -43,7 +43,7 @@ cp .testnets/node0/babylond/config/genesis.json .testnets/vigilante/bbnconfig
 
 sleep 10
 mkdir -p .testnets/node0/babylond/.tmpdir/keyring-test
-cp .testnets/covenant/keyring-test/* .testnets/node0/babylond/.tmpdir/keyring-test/
+cp .testnets/covenant-emulator/keyring-test/* .testnets/node0/babylond/.tmpdir/keyring-test/
 docker exec babylondnode0 /bin/sh -c '
     COVENANT_ADDR=$(/bin/babylond --home /babylondhome/.tmpdir keys show covenant \
         --output json --keyring-backend test | jq -r .address) && \
@@ -51,6 +51,6 @@ docker exec babylondnode0 /bin/sh -c '
         ${COVENANT_ADDR} 100000000ubbn --fees 2ubbn -y \
         --chain-id chain-test --keyring-backend test
 '
-[[ "$(uname)" == "Linux" ]] && chown -R 1138:1138 .testnets/covenant
+[[ "$(uname)" == "Linux" ]] && chown -R 1138:1138 .testnets/covenant-emulator
 
 echo "Created keyrings and sent funds"

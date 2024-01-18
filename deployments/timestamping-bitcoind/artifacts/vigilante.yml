@@ -61,6 +61,7 @@ submitter:
 reporter:
   netparams: regtest
   btc_cache_size: 1000
+  max_headers_in_msg: 100
 monitor:
   checkpoint-buffer-size: 1000
   btc-block-buffer-size: 1000
@@ -71,9 +72,10 @@ monitor:
   enable-liveness-checker: true
   enable-slasher: true
   btcnetparams: regtest
-unbonding-watcher:
+btcstaking-tracker:
   check-delegations-interval: 1m
   delegations-batch-size: 100
   check-if-delegation-active-interval: 5m
   retry-submit-unbonding-interval: 1m
   max-jitter-interval: 30s
+  btcnetparams: regtest

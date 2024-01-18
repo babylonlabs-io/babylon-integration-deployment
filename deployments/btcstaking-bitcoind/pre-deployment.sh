@@ -22,14 +22,14 @@ mkdir -p .testnets/vigilante
 mkdir -p .testnets/btc-staker
 mkdir -p .testnets/finality-provider
 mkdir -p .testnets/eotsmanager
-mkdir -p .testnets/covenant
+mkdir -p .testnets/covenant-emulator
 
 cp artifacts/vigilante.yml .testnets/vigilante/vigilante.yml
 cp artifacts/stakerd.conf .testnets/btc-staker/stakerd.conf
 cp artifacts/fpd.conf .testnets/finality-provider/fpd.conf
 cp artifacts/eotsd.conf .testnets/eotsmanager/eotsd.conf
-cp artifacts/covd.conf .testnets/covenant/covd.conf
-cp -R artifacts/covenant-keyring .testnets/covenant/keyring-test
+cp artifacts/covd.conf .testnets/covenant-emulator/covd.conf
+cp -R artifacts/covenant-keyring .testnets/covenant-emulator/keyring-test
 
 # API
 mkdir -p .testnets/api

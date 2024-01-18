@@ -16,13 +16,16 @@ build-btc-staker:
 build-finality-provider:
 	$(MAKE) -C $(GIT_TOPLEVEL)/finality-provider build-docker
 
+build-covenant-emulator:
+	$(MAKE) -C $(GIT_TOPLEVEL)/covenant-emulator build-docker
+
 build-poller:
 	$(MAKE) -C $(GIT_TOPLEVEL)/rpc-poller build-docker
 
 build-api:
 	$(MAKE) -C $(GIT_TOPLEVEL)/babylon-api build-docker
 
-build-deployment-btcstaking-bitcoind: build-babylond build-bitcoindsim build-vigilante build-btc-staker build-finality-provider build-poller build-api
+build-deployment-btcstaking-bitcoind: build-babylond build-bitcoindsim build-vigilante build-btc-staker build-finality-provider build-covenant-emulator build-poller build-api
 
 start-deployment-btcstaking-bitcoind: stop-deployment-btcstaking-bitcoind build-deployment-btcstaking-bitcoind
 	./pre-deployment.sh

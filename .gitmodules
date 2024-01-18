@@ -22,3 +22,6 @@
 [submodule "rpc-poller"]
 	path = rpc-poller
 	url = git@github.com:babylonchain/rpc-poller.git
+[submodule "covenant-emulator"]
+	path = covenant-emulator
+	url = git@github.com:babylonchain/covenant-emulator.git

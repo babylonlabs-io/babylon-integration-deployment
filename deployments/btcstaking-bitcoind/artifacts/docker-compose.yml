@@ -174,20 +174,20 @@ services:
       - babylondnode0
     restart: unless-stopped
 
-  covenant:
-    container_name: covenant
-    image: babylonchain/finality-provider
+  covenant-emulator:
+    container_name: covenant-emulator
+    image: babylonchain/covenant-emulator
     command: covd start
     networks:
       localnet:
         ipv4_address: 192.168.10.15
     volumes:
-      - ../.testnets/covenant:/home/finality-provider/.covd
+      - ../.testnets/covenant-emulator:/home/covenant-emulator/.covd
     depends_on:
       - babylondnode0
     restart: unless-stopped
-    
-  babylonapi:
+
+  babylon-api:
     container_name: babylon-api
     image: babylonchain/babylon-api
     networks:
@@ -203,10 +203,10 @@ services:
       - ../.testnets/api/chain-registry.json:/home/api/chain-registry.json:Z
     depends_on:
       - mongodb
-      - rpcpoller
+      - rpc-poller
       - btc-staker
-  
-  rpcpoller:
+
+  rpc-poller:
     image: babylonchain/rpc-poller
     container_name: rpc-poller
     networks:
