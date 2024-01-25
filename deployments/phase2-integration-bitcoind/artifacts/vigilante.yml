@@ -79,4 +79,3 @@ btcstaking-tracker:
   retry-submit-unbonding-interval: 1m
   max-jitter-interval: 30s
   btcnetparams: regtest
-

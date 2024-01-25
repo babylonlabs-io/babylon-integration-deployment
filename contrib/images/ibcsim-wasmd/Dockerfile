@@ -4,11 +4,15 @@ RUN apt-get update && apt-get install -y git make jq gcc make wget
 
 WORKDIR /work
 
+ARG TARGETARCH
+
+ENV MACHINE $TARGETARCH
+
 # Download and install Go
 ENV GOLANG_VERSION 1.21.4
-RUN wget -q https://golang.org/dl/go${GOLANG_VERSION}.linux-amd64.tar.gz && \
-    tar -C /usr/local -xzf go${GOLANG_VERSION}.linux-amd64.tar.gz && \
-    rm go${GOLANG_VERSION}.linux-amd64.tar.gz
+RUN wget -q https://golang.org/dl/go${GOLANG_VERSION}.linux-${MACHINE}.tar.gz && \
+    tar -C /usr/local -xzf go${GOLANG_VERSION}.linux-${MACHINE}.tar.gz && \
+    rm go${GOLANG_VERSION}.linux-${MACHINE}.tar.gz
 # Set Go environment variables
 ENV PATH /usr/local/go/bin:$PATH
 ENV GOPATH /go
@@ -19,9 +23,8 @@ WORKDIR /work
 ENV GO111MODULE=on
 
 # Install the relayer
-RUN wget https://github.com/cosmos/relayer/releases/download/v2.4.2/Cosmos.Relayer_2.4.2_linux_amd64.tar.gz && \
-    tar -xzf Cosmos.Relayer_2.4.2_linux_amd64.tar.gz && \
-    mv Cosmos\ Relayer_2.4.2_linux_amd64/rly /bin/rly
+RUN git clone https://github.com/cosmos/relayer.git
+RUN cd relayer && git fetch origin && git checkout main && make install && cd -
 
 # Install wasmd
 RUN git clone https://github.com/CosmWasm/wasmd.git

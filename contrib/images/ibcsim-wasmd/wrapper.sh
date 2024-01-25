@@ -65,16 +65,8 @@ paths:
     wasmd:
         src:
             chain-id: $BABYLON_CHAIN_ID
-            port-id: zoneconcierge
-            channel-id: channel-0
-            order: ordered
-            version: zoneconcierge-1
         dst:
             chain-id: $WASMD_CHAIN_ID
-            port-id: $CONTRACT_PORT
-            channel-id: channel-0
-            order: ordered
-            version: zoneconcierge-1
 EOT
 
 echo "Inserting the wasmd key"
@@ -88,16 +80,9 @@ rly --home $RELAYER_CONF_DIR keys restore babylon $BABYLON_KEY "$BABYLON_MEMO"
 sleep 10
 
 # 3. Start relayer
-
-echo "Create light clients in both CZs"
-rly --home $RELAYER_CONF_DIR tx clients wasmd
-sleep 10
-
-echo "Create IBC Connection between the two CZs"
-rly --home $RELAYER_CONF_DIR tx connection wasmd
-
-echo "Create an IBC channel between the two CZs"
-rly --home $RELAYER_CONF_DIR tx channel wasmd --src-port zoneconcierge --dst-port $CONTRACT_PORT --order ordered --version zoneconcierge-1
+echo "Creating an IBC light clients, connection, and channel between the two CZs"
+rly --home $RELAYER_CONF_DIR tx link wasmd --src-port zoneconcierge --dst-port $CONTRACT_PORT --order ordered --version zoneconcierge-1
+echo "Created IBC channel successfully!"
 sleep 10
 
 echo "Start the IBC relayer"
