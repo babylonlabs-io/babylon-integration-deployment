@@ -22,35 +22,6 @@ and run a Babylon network locally, using several different deployment scenarios.
     to the instructions
     [here](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account).
 
-4. Set up environment variables (you may also persist them to your environment)
-  
-  - SSH private key full path
-
-    `BBN_PRIV_DEPLOY_KEY` is the full path to the private SSH key that you
-    created and added to GitHub before. As mentioned, **this key must have no
-    passphrase - otherwise the network startup will fail.** This applies for the
-    rest of this document.
-
-    ```shell
-    export BBN_PRIV_DEPLOY_KEY=/path/to/private/key
-    ```
-      
-  - CoinMarketCap token (**optional**, required only by Babylon API)
-  
-    You can get one from [here](https://coinmarketcap.com/academy/article/register-for-coinmarketcap-api)
-    
-    ```shell
-    export CMC_PRO_API_KEY=XXX
-    ```
-  
-  - BTC user credential (**optional**, required only by Babylon API)
-  
-    Follow [this](https://babylon-chain.atlassian.net/wiki/spaces/BABYLON/pages/173081551/Credential+management) instruction to obtain the credentials
-    ```shell
-    export BTC_RPC_USER=XXX
-    export BTC_RPC_PASS=XXX
-    ```
-
 4. Clone the repository and initialize git submodules
 
     The aforementioned components are included in the repo as git submodules, so
@@ -61,8 +32,31 @@ and run a Babylon network locally, using several different deployment scenarios.
     git submodule init && git submodule update
     ```
 
-5. Enable Babylon VPN (**optional**, required only by Babylon API)
-    Refer to the [confluence documentation](https://babylon-chain.atlassian.net/wiki/spaces/BABYLON/pages/129335321/Connect+to+devnet+web+services+endpoints)
+### Appendix: Babylon API prerequisites
+
+If you're interested in running Babylon API (an in-house blockchain data
+aggregator), you need to take the following additional actions.
+
+1. Export an env var containing a CoinMarketCap token (can be obtained from
+    [here](https://coinmarketcap.com/academy/article/register-for-coinmarketcap-api))
+
+    ```shell
+    export CMC_PRO_API_KEY=XXX
+    ```
+
+2. For the standalone [API deployment](deployments/api) that connects to the
+    Babylon Devnet, complete the following items:
+
+    - Export env vars containing credentials for the signet BTC node used by
+      the Babylon Devnet (can be obtained through
+      [here](https://babylon-chain.atlassian.net/wiki/spaces/BABYLON/pages/173081551/Credential+management))
+        ```shell
+        export BTC_RPC_USER=XXX
+        export BTC_RPC_PASS=XXX
+        ```
+
+    - Connect to the Babylon Devnet VPN (VPN config can be obtained through
+      [here](https://babylon-chain.atlassian.net/wiki/spaces/BABYLON/pages/173081551/Credential+management))
 
 ## Deployment scenarios
 

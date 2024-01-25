@@ -147,7 +147,7 @@ services:
   finality-provider:
     container_name: finality-provider
     image: babylonchain/finality-provider
-    command: fpd start --all
+    command: fpd start
     networks:
       localnet:
         ipv4_address: 192.168.10.13

@@ -2,7 +2,7 @@ DOCKER := $(shell which docker)
 GIT_TOPLEVEL := $(shell git rev-parse --show-toplevel)
 
 build-babylond:
-	$(MAKE) -C $(GIT_TOPLEVEL)/babylon-private/contrib/images babylond
+	$(MAKE) -C $(GIT_TOPLEVEL)/babylon/contrib/images babylond
 
 build-faucet:
 	$(MAKE) -C $(GIT_TOPLEVEL)/faucet backend-docker-build

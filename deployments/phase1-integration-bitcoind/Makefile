@@ -8,10 +8,10 @@ build-ibcsim-gaia:
 	$(MAKE) -C $(GIT_TOPLEVEL)/contrib/images ibcsim-gaia
 
 build-babylond:
-	$(MAKE) -C $(GIT_TOPLEVEL)/babylon-private/contrib/images babylond
+	$(MAKE) -C $(GIT_TOPLEVEL)/babylon/contrib/images babylond
 
 build-vigilante:
-	$(MAKE) -C $(GIT_TOPLEVEL)/vigilante-private BBN_PRIV_DEPLOY_KEY=${BBN_PRIV_DEPLOY_KEY} build-docker
+	$(MAKE) -C $(GIT_TOPLEVEL)/vigilante BBN_PRIV_DEPLOY_KEY=${BBN_PRIV_DEPLOY_KEY} build-docker
 
 build-deployment-phase1-integration-bitcoind: build-babylond build-bitcoindsim build-vigilante build-ibcsim-gaia
 
