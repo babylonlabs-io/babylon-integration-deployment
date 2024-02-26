@@ -87,6 +87,8 @@ on a dedicated subdirectory.  The following scenarios are currently available:
   testnet, backed by a bitcoind-based BTC simnet
 - [Faucet](deployments/faucet):
   Spawns a Babylon network along with a Discord-based Faucet
+- [BTC Discord Faucet](deployments/btc-discord-faucet):
+  Spawns a Bitcoin regtest node along with a Discord-based BTC Faucet
 - [API](deployments/api):
   Spawns Babylon network APIs along with rpc-poller. Utilise devnet enviroments for gathering babylonchain and BTC data. Write operations from API has no effect
 
@@ -246,6 +248,20 @@ To stop the network:
 
 ```shell
 make stop-deployment-faucet
+```
+
+### BTC Discord Faucet
+
+To start the network:
+
+```shell
+make start-deployment-btc-discord-faucet
+```
+
+To stop the network:
+
+```shell
+make stop-deployment-btc-discord-faucet
 ```
 
 ### API

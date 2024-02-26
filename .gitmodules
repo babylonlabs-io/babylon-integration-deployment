@@ -25,3 +25,6 @@
 [submodule "vigilante"]
 	path = vigilante
 	url = git@github.com:babylonchain/vigilante.git
+[submodule "btc-discord-faucet"]
+	path = btc-discord-faucet
+	url = git@github.com:babylonchain/btc-discord-faucet.git

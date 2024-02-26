@@ -49,6 +49,12 @@ start-deployment-faucet:
 stop-deployment-faucet:
 	$(MAKE) -C $(CURDIR)/deployments/faucet stop-deployment-faucet
 
+start-deployment-btc-discord-faucet:
+	$(MAKE) -C $(CURDIR)/deployments/btc-discord-faucet start-deployment-btc-discord-faucet
+
+stop-deployment-btc-discord-faucet:
+	$(MAKE) -C $(CURDIR)/deployments/btc-discord-faucet stop-deployment-btc-discord-faucet
+
 start-deployment-api:
 	$(MAKE) -C $(CURDIR)/deployments/api start-deployment-api
 

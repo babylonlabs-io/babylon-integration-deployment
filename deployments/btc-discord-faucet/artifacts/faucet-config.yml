@@ -1,0 +1,21 @@
+faucet:
+  sats: 1000
+  host: 0.0.0.0
+  port: 3001
+  request-limit-window: 10s
+  discord-token: ~
+  listen-channel-id: ~
+  listen-channel-id-test: ~
+btc:
+  endpoint: bitcoindsim:18443/wallet/default
+  wallet-password: walletpass
+  wallet-name: default
+  wallet-lock-time: 10
+  default-fee: 1000 # 1,000sat/kvb
+  net-params: regtest
+  username: rpcuser
+  password: rpcpass
+  reconnect-attempts: 3
+  no-client-tls: true # use true for bitcoind as it does not support tls
+  btc-backend: bitcoind # {bitcoind}
+  change-address: tb1p3dqmqy5kj0h6y8yn3xsyxu7jmsk4y24xg9sq5ekf3eavfajmqnsq4mn5fx
