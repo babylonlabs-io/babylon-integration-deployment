@@ -6,10 +6,13 @@ faucet:
   host: 0.0.0.0
   port: 3001
   memo: Babylon faucet
-  request-limit-window: 86400s
+  request-limit-window: 2s
   discord-token: ~
   listen-channel-id: ~
   listen-channel-id-test: ~
+  buffer-size: 100
+  batch-length: 10
+  batch-interval: 10s
 babylon:
   key: faucet
   chain-id: chain-test
