@@ -114,11 +114,11 @@ services:
       - babylondnode0
     restart: unless-stopped
 
-  vigilante-unbonding-watcher:
-    container_name: vigilante-unbonding-watcher
+  vigilante-bstracker:
+    container_name: vigilante-bstracker
     image: babylonchain/vigilante
     command: >
-      vigilante uwatcher --config /home/vigilante/config/vigilante.yml 2>&1 | tee /home/vigilante/config/unbonding-watcher.log
+      vigilante bstracker --config /home/vigilante/config/vigilante.yml 2>&1 | tee /home/vigilante/config/bstracker.log
     networks:
       localnet:
         ipv4_address: 192.168.10.10
