@@ -1,0 +1,26 @@
+# This is a TOML config file.
+# For more information, see https://github.com/toml-lang/toml
+
+[db-config]
+# The network chain ID
+db-name = "staking-api-service"
+# The keyring's backend, where the keys are stored (os|file|kwallet|pass|test|memory)
+address = "mongodb://mongodb:27017"
+
+[btc-config]
+# Btc node host
+host = "bitcoindsim:18443/wallet/btcstaker"
+# Btc node user
+user = "rpcuser"
+# Btc node password
+pass = "rpcpass"
+# Btc network (testnet3|mainnet|regtest|simnet|signet)
+network = "regtest"
+
+# The unsafe params configuration only for poc/mvp purposes. Storing private keys
+# in the config file is not secure. After adding more secure options remove this.
+[unsafe-params-config]
+# The list of covenant private keys
+covenant_private_keys = ["f3a3c41947aa7c2607fef099494911d6431e01e49d06388c52be519030391a94","e7cf1d26e10fcaab3a5c0b2b7549fc6d78435ea2108e59721db7466bd2d1afd3","042fd82e66b9326e57f69abf0d70ba27816a31d46c36b23fccfa6ef0f6f5b2fc","0c5e31b98ac37a328131fa7c56b571fc6dbf53e61e0089d4490333838bb954fc","a2090637121c97f04e536217d84d44e133d8b779f83fdff9ca5bc912368642ac"]
+# The quorum of the covenants required to sign the transaction
+covenant_quorum = 3

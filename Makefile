@@ -11,6 +11,18 @@ stop-deployment-btcstaking-bitcoind:
 	$(MAKE) -C $(CURDIR)/deployments/btcstaking-bitcoind \
 		stop-deployment-btcstaking-bitcoind
 
+start-deployment-btcstaking-phase1-bitcoind:
+	$(MAKE) -C $(CURDIR)/deployments/btcstaking-phase1-bitcoind \
+		start-deployment-btcstaking-phase1-bitcoind
+
+start-deployment-btcstaking-phase1-bitcoind-demo:
+	$(MAKE) -C $(CURDIR)/deployments/btcstaking-phase1-bitcoind \
+		start-deployment-btcstaking-phase1-bitcoind-demo
+
+stop-deployment-btcstaking-phase1-bitcoind:
+	$(MAKE) -C $(CURDIR)/deployments/btcstaking-phase1-bitcoind \
+		stop-deployment-btcstaking-phase1-bitcoind
+
 start-deployment-timestamping-bitcoind:
 	$(MAKE) -C $(CURDIR)/deployments/timestamping-bitcoind \
 		start-deployment-timestamping-bitcoind

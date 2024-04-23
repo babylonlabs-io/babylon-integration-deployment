@@ -70,6 +70,9 @@ aggregator), you need to take the following additional actions.
 
 Every deployment scenario lives under the [deployments](deployments/) directory,
 on a dedicated subdirectory.  The following scenarios are currently available:
+- [BTC Staking Phase-1 System (BTC backend: bitcoind)](deployments/btcstaking-phase1-bitcoind):
+  Spawns a Babylon BTC Staking Phase-1 system showcasing the lifecycle of
+  Staking requests, backed by a bitcoind-based BTC simnet
 - [BTC Staking (BTC backend: bitcoind)](deployments/btcstaking-bitcoind):
   Spawns a Babylon network showcasing Babylon's BTC Staking and BTC Timestamping protocols, backed by
   a bitcoind-based BTC simnet
@@ -150,6 +153,29 @@ be followed:
 - After having deployed a deployment scenario `X`, make sure to stop it through
   the corresponding `make` command that will be designated below before
   switching to another deployment scenario `Y`.
+
+### BTC Staking Phase-1 System (BTC backend: bitcoind)
+
+To start the system **along with executing an
+[additional post-deployment script](deployments/btcstaking-phase1-bitcoind/README.md#inspecting-the-btc-staking-phase-1-system-demo)
+that will showcase the lifecycle of Staking requests inside the Phase-1
+system**, execute the following:
+
+```shell
+make start-deployment-btcstaking-phase1-bitcoind-demo
+```
+
+Alternatively, to just start the system:
+
+```shell
+make start-deployment-btcstaking-phase1-bitcoind
+```
+
+To stop the system:
+
+```shell
+make stop-deployment-btcstaking-phase1-bitcoind
+```
 
 ### BTC Staking (BTC backend: bitcoind)
 

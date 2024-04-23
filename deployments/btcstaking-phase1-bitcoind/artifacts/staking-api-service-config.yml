@@ -1,0 +1,24 @@
+server:
+  host: 0.0.0.0
+  port: 8090
+  write-timeout: 60s
+  read-timeout: 60s
+  idle-timeout: 60s
+  allowed-origins: [ "*" ]
+  log-level: debug
+  btc-net: "regtest"
+db:
+  address: "mongodb://mongodb:27017"
+  db-name: staking-api-service
+  max-pagination-limit: 10
+  db-batch-size-limit: 100
+  logical-shard-count: 10
+queue:
+  queue_user: user # can be replaced by values in .env file
+  queue_password: password
+  url: "rabbitmq:5672"
+  processing_timeout: 30
+  msg_max_retry_attempts: 10
+metrics:
+  host: 0.0.0.0
+  port: 2112

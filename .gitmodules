@@ -28,3 +28,19 @@
 [submodule "btc-discord-faucet"]
 	path = btc-discord-faucet
 	url = git@github.com:babylonchain/btc-discord-faucet.git
+[submodule "simple-staking"]
+	path = simple-staking
+	url = https://github.com/babylonchain/simple-staking.git
+[submodule "staking-api-service"]
+	path = staking-api-service
+	url = https://github.com/babylonchain/staking-api-service.git
+[submodule "staking-indexer"]
+	path = staking-indexer
+	url = https://github.com/babylonchain/staking-indexer.git
+[submodule "cli-tools"]
+	path = cli-tools
+	url = https://github.com/babylonchain/cli-tools.git
+	branch = tx-gen-commands
+[submodule "staking-expiry-checker"]
+	path = staking-expiry-checker
+	url = https://github.com/babylonchain/staking-expiry-checker.git
