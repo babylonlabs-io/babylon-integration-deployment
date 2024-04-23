@@ -12,11 +12,11 @@ BTCWALLET="btcstaker"
 BTCWALLETPASS="walletpass"
 
 echo "Wait a bit for bitcoind regtest network to initialize.."
-sleep 10
+sleep 15
 
 echo -e "$YELLOW"
 echo -e "Start Testing Staking Transaction$NC"
-echo "Create 2 unsigned staking transactions through btc-staker"
+echo "Create 2 unsigned staking transactions"
 # The first transaction will be used to test the withdraw path
 staker_pk_w=$(docker exec bitcoindsim /bin/sh -c "bitcoin-cli -regtest -rpcuser=$BTCUSER -rpcpassword=$BTCPASSWORD -rpcwallet=$BTCWALLET listunspent" \
     | jq -r '.[0].desc | split("]") | .[1] | split(")") | .[0] | .[2:]')

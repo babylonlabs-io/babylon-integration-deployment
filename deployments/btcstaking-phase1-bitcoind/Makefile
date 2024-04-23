@@ -4,9 +4,6 @@ GIT_TOPLEVEL := $(shell git rev-parse --show-toplevel)
 build-bitcoindsim:
 	$(MAKE) -C $(GIT_TOPLEVEL)/contrib/images bitcoindsim
 
-build-btc-staker:
-	$(MAKE) -C $(GIT_TOPLEVEL)/btc-staker build-docker
-
 build-simple-staking:
 	$(MAKE) -C $(GIT_TOPLEVEL)/simple-staking build-docker
 
@@ -22,7 +19,7 @@ staking-indexer:
 cli-tools:
 	$(MAKE) -C $(GIT_TOPLEVEL)/cli-tools build-docker
 
-build-deployment-btcstaking-phase1-bitcoind: build-bitcoindsim build-btc-staker build-simple-staking build-staking-api-service build-staking-expiry-checker staking-indexer cli-tools
+build-deployment-btcstaking-phase1-bitcoind: build-bitcoindsim build-simple-staking build-staking-api-service build-staking-expiry-checker staking-indexer cli-tools
 
 start-deployment-btcstaking-phase1-bitcoind: stop-deployment-btcstaking-phase1-bitcoind build-deployment-btcstaking-phase1-bitcoind
 	./pre-deployment.sh
