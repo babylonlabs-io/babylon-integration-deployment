@@ -208,3 +208,35 @@ to `withdrawn` in MongoDB.
     # `staking_txid` is the hash of the staking transaction that's being unbonded 
     docker exec mongodb /bin/sh -c "mongosh staking-api-service --eval 'JSON.stringify(db.delegations.find({\"_id\": \"$staking_txid\"}).toArray(), null, 2)'"
     ```
+
+### Scenario 4: Withdraw Unbonded Staking Transaction
+
+We generate a BTC withdraw transaction for a previously unbonded staking
+transaction whose unbonding time has elapsed and
+send it to the Bitcoin regtest chain. Once the transaction receives enough
+confirmations, it's processed by the Staking Indexer and placed in the
+corresponding RabbitMQ queue.
+
+The Staking API Service retrieves the event and updates the delegation state
+to `withdrawn` in MongoDB.
+
+![plot](./diagrams/withdraw.png)
+
+#### Step by Step Details:
+
+1. Initiate withdraw for the unbonded transaction
+    ```shell
+    docker exec unbonding-pipeline /bin/sh -c "cli-tools create-phase1-withdaw-request ..."
+    ```
+
+2. Submit to the bitcoind regtest
+    ```shell
+    # `withdrawal_tx_hex` is generated as output of step 1
+    docker exec bitcoindsim /bin/sh -c "bitcoin-cli -regtest -rpcuser=$BTCUSER -rpcpassword=$BTCPASSWORD -rpcwallet=$BTCWALLET sendrawtransaction $withdrawal_tx_hex"
+    ```
+
+3. Watch the delegation status in MongoDB as `withdrawn`
+    ```shell
+    # `staking_txid` is the hash of the unbonded staking transaction that's being withdrawn
+    docker exec mongodb /bin/sh -c "mongosh staking-api-service --eval 'JSON.stringify(db.delegations.find({\"_id\": \"$staking_txid\"}).toArray(), null, 2)'"
+    ```

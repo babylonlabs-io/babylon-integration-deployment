@@ -138,6 +138,8 @@ sleep 10
 unbonding_txid=$(docker exec mongodb /bin/sh -c "mongosh staking-api-service --eval 'JSON.stringify(db.unbonding_queue.find().toArray(), null, 2)'" \
     | jq -r .[].unbonding_tx_hash_hex)
 echo "Unbonding transaction submitted to bitcoind regtest with tx ID $unbonding_txid"
+unbonding_tx_hex=$(docker exec mongodb /bin/sh -c "mongosh staking-api-service --eval 'JSON.stringify(db.unbonding_queue.find().toArray(), null, 2)'" \
+    | jq -r .[].unbonding_tx_hex)
 
 echo "Wait for the unbonding time to be fulfilled (5 BTC confirmations).."
 sleep 60
@@ -157,7 +159,7 @@ echo "Withdraw the expired staking transaction $staking_txid_w"
 withdraw_btc_addr=$(docker exec bitcoindsim /bin/sh -c "bitcoin-cli -regtest -rpcuser=$BTCUSER -rpcpassword=$BTCPASSWORD -rpcwallet=$BTCWALLET listunspent" \
     | jq -r '.[0].address')
 
-withdrawal_tx_hex=$(docker exec unbonding-pipeline /bin/sh -c "cli-tools create-phase1-withdaw-request \
+withdrawal_tx_hex_w=$(docker exec unbonding-pipeline /bin/sh -c "cli-tools create-phase1-withdaw-request \
     --magic-bytes 62627434 \
     --covenant-committee-pks 05149a0c7a95320adf210e47bca8b363b7bd966be86be6392dd6cf4f96995869 \
     --covenant-committee-pks e8d503cb52715249f32f3ee79cee88dfd48c2565cb0c79cf9640d291f46fd518 \
@@ -174,18 +176,46 @@ withdrawal_tx_hex=$(docker exec unbonding-pipeline /bin/sh -c "cli-tools create-
     --staker-wallet-rpc-pass $BTCPASSWORD \
     --staking-tx-hex $staking_tx_hex_w" | jq -r .withdraw_tx_hex)
 
-# Send the signed withdrawal transaction
-echo "Send the withdrawal transaction to bitcoind regtest"
-withdrawal_txid=$(docker exec bitcoindsim /bin/sh -c "bitcoin-cli -regtest -rpcuser=$BTCUSER -rpcpassword=$BTCPASSWORD -rpcwallet=$BTCWALLET \
-    sendrawtransaction $withdrawal_tx_hex")
-echo "Withdrawal transaction submitted to bitcoind regtest with tx ID $withdrawal_txid"
+echo "Withdraw the unbonded staking transaction $staking_txid_u"
+withdrawal_tx_hex_u=$(docker exec unbonding-pipeline /bin/sh -c "cli-tools create-phase1-withdaw-request \
+    --magic-bytes 62627434 \
+    --covenant-committee-pks 05149a0c7a95320adf210e47bca8b363b7bd966be86be6392dd6cf4f96995869 \
+    --covenant-committee-pks e8d503cb52715249f32f3ee79cee88dfd48c2565cb0c79cf9640d291f46fd518 \
+    --covenant-committee-pks fe81b2409a32ddfd8ec1556557e8dd949b6e4fd37047523cb7f5fefca283d542 \
+    --covenant-committee-pks bc4a1ff485d7b44faeec320b81ad31c3cad4d097813c21fcf382b4305e4cfc82 \
+    --covenant-committee-pks 001e50601a4a1c003716d7a1ee7fe25e26e55e24e909b3642edb60d30e3c40c1 \
+    --covenant-quorum 3 \
+    --network regtest \
+    --withdraw-tx-fee 1000 \
+    --withdraw-tx-destination $withdraw_btc_addr \
+    --staker-wallet-address-host bitcoindsim:18443/wallet/btcstaker \
+    --staker-wallet-passphrase $BTCWALLETPASS \
+    --staker-wallet-rpc-user $BTCUSER \
+    --staker-wallet-rpc-pass $BTCPASSWORD \
+    --staking-tx-hex $staking_tx_hex_u \
+    --unbonding-tx-hex  $unbonding_tx_hex \
+    --unbonding-time 5" | jq -r .withdraw_tx_hex)
 
-echo "Wait for the system to process the withdrawal transaction (upon receival of 3 BTC confirmations).."
+# Send the signed withdrawal transaction
+echo "Send the withdrawal transactions to bitcoind regtest"
+withdrawal_txid_w=$(docker exec bitcoindsim /bin/sh -c "bitcoin-cli -regtest -rpcuser=$BTCUSER -rpcpassword=$BTCPASSWORD -rpcwallet=$BTCWALLET \
+    sendrawtransaction $withdrawal_tx_hex_w")
+echo "Withdrawal transaction submitted to bitcoind regtest with tx ID $withdrawal_txid_w"
+
+withdrawal_txid_u=$(docker exec bitcoindsim /bin/sh -c "bitcoin-cli -regtest -rpcuser=$BTCUSER -rpcpassword=$BTCPASSWORD -rpcwallet=$BTCWALLET \
+    sendrawtransaction $withdrawal_tx_hex_u")
+echo "Withdrawal transaction submitted to bitcoind regtest with tx ID $withdrawal_txid_u"
+
+echo "Wait for the system to process the withdrawal transactions (upon receival of 3 BTC confirmations).."
 sleep 40
 
-echo "Check delegation's $staking_txid_w state in MongoDB:"
-state=$(docker exec mongodb /bin/sh -c "mongosh staking-api-service --eval 'JSON.stringify(db.delegations.find({\"_id\": \"$staking_txid_w\"}).toArray(), null, 2)'" \
-    | jq -r .[].state)
-echo -e "$BLUE  Delegation $staking_txid_w state has transitioned to $state$NC"
+echo "Check delegation $staking_txid_w and $staking_txid_u state in MongoDB:"
+delegations=$(docker exec mongodb /bin/sh -c "mongosh staking-api-service --eval 'JSON.stringify(db.delegations.find({}).toArray(), null, 2)'")
+
+state_w=$(echo "$delegations" | jq -r --arg staking_txid_w "$staking_txid_w" '.[] | select(._id == $staking_txid_w).state')
+echo -e "$BLUE Delegation $staking_txid_w state has transitioned to $state_w$NC"
+
+state_u=$(echo "$delegations" | jq -r --arg staking_txid_u "$staking_txid_u" '.[] | select(._id == $staking_txid_u).state')
+echo -e "$BLUE Delegation $staking_txid_u state has transitioned to $state_u$NC"
 
 echo -e "$GREEN==Withdrawal is now completed!==$NC"
