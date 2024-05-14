@@ -11,10 +11,12 @@ btc:
   rpc-user: rpcuser
   rpc-pass: rpcpass
 queue:
-  user: user # can be replaced by values in .env file
-  pass: password
+  queue_user: user # can be replaced by values in .env file
+  queue_password: password
   url: "rabbitmq:5672"
   processing_timeout: 5 # 5 second
+  msg_max_retry_attempts: 10
+  requeue_delay_time: 300
 metrics:
   host: 0.0.0.0
   port: 2112

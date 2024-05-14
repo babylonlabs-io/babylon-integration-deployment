@@ -23,6 +23,9 @@ comprises the following components:
 - A Bitcoin node operating an emulated **regtest Bitcoin** network
 - A **Global Configuration** file that contains system-wide parameters regarding
   the Staking transactions that are processed by it
+- **Covenant Signer**: Receives unbonding transactions and returns the same transactions signed by the covenant emulator's key
+- **Bitcoin Offline Wallet**: Stores the Covenant Signer member keys and signs unbonding transactions forwarded by the Covenant Signer
+- A **Finality Providers** config file that contains information about finality providers participating in the system 
 
 ### Expected Docker state post-deployment
 
@@ -38,7 +41,9 @@ that spins up the network:
  ✔ Container staking-api-service     Started                                                       1.0s 
  ✔ Container unbonding-pipeline      Started                                                       1.3s 
  ✔ Container staking-expiry-checker  Started                                                       1.0s 
- ✔ Container simple-staking          Started                                                       1.7s 
+ ✔ Container simple-staking          Started                                                       1.7s
+ ✔ Container bitcoindsim-signer      Started                                                       1.0s
+ ✔ Container covenant-signer         Started                                                       1.0s   
 ```
 
 ## Inspecting the BTC Staking Phase-1 system demo

@@ -1,0 +1,44 @@
+# This is a TOML config file.
+# For more information, see https://github.com/toml-lang/toml
+
+# There are two btc related configs
+# 1. [btc-config] is config for btc full node which should have transaction indexing
+# enabled. This node should be synced and can be open to the public.
+# 2. [btc-signer-config] is config for bitcoind daemon which should have only
+# wallet functionality, it should run in separate network. This bitcoind instance
+# will be used to sign psbt's
+[btc-config]
+# Btc node host
+host = "bitcoindsim:18443"
+# Btc node user
+user = "rpcuser"
+# Btc node password
+pass = "rpcpass"
+# Btc network (testnet3|mainnet|regtest|simnet|signet)
+network = "regtest"
+
+[btc-signer-config]
+# Btc node host
+host = "bitcoindsim-signer:18443/wallet/covenant-signer"
+# Btc node user
+user = "rpcuser"
+# Btc node password
+pass = "rpcpass"
+# Btc network (testnet3|mainnet|regtest|simnet|signet)
+network = "regtest"
+
+[server-config]
+# The address to listen on
+host = "0.0.0.0"
+
+# The port to listen on
+port = 9791
+
+# Read timeout in seconds
+read-timeout = 15
+
+# Write timeout in seconds
+write-timeout = 15
+
+# Idle timeout in seconds
+idle-timeout = 120

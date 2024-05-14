@@ -9,7 +9,7 @@ address = "mongodb://mongodb:27017"
 
 [btc-config]
 # Btc node host
-host = "bitcoindsim:18443/wallet/btcstaker"
+host = "bitcoindsim:18443"
 # Btc node user
 user = "rpcuser"
 # Btc node password
@@ -17,10 +17,15 @@ pass = "rpcpass"
 # Btc network (testnet3|mainnet|regtest|simnet|signet)
 network = "regtest"
 
-# The unsafe params configuration only for poc/mvp purposes. Storing private keys
-# in the config file is not secure. After adding more secure options remove this.
-[unsafe-params-config]
-# The list of covenant private keys
-covenant_private_keys = ["f3a3c41947aa7c2607fef099494911d6431e01e49d06388c52be519030391a94","e7cf1d26e10fcaab3a5c0b2b7549fc6d78435ea2108e59721db7466bd2d1afd3","042fd82e66b9326e57f69abf0d70ba27816a31d46c36b23fccfa6ef0f6f5b2fc","0c5e31b98ac37a328131fa7c56b571fc6dbf53e61e0089d4490333838bb954fc","a2090637121c97f04e536217d84d44e133d8b779f83fdff9ca5bc912368642ac"]
+[params-config]
+covenant_public_keys = ["0342301c4fdb5b1ab27a80a04d95c782f720874265889412a80d270feeb456f1f7", "03a4d2276a2a09f0e14d6a74901fec0aab3d1edf0dd22a690260acca48f5d5b3c0", "02707f3d6bf2334ecb7c336fc7babd400afa9132a34f84406b28865d06e0ba81e8"]
 # The quorum of the covenants required to sign the transaction
-covenant_quorum = 3
+covenant_quorum = 2
+# The magic bytes of the network
+magic_bytes = "62627434"
+
+[remote-signer-config]
+# The list of signer urls in the format http://covenant_pk@signer_host:port
+urls = ["http://0342301c4fdb5b1ab27a80a04d95c782f720874265889412a80d270feeb456f1f7@covenant-signer:9791", "http://03a4d2276a2a09f0e14d6a74901fec0aab3d1edf0dd22a690260acca48f5d5b3c0@covenant-signer:9791", "http://02707f3d6bf2334ecb7c336fc7babd400afa9132a34f84406b28865d06e0ba81e8@covenant-signer:9791"]
+# The timeout of each request to the remote signing server
+timeout = 10

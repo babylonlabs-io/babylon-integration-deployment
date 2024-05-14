@@ -39,8 +39,11 @@
 	url = https://github.com/babylonchain/staking-indexer.git
 [submodule "cli-tools"]
 	path = cli-tools
-	url = https://github.com/babylonchain/cli-tools.git
+	url = git@github.com/babylonchain/cli-tools.git
 	branch = tx-gen-commands
 [submodule "staking-expiry-checker"]
 	path = staking-expiry-checker
 	url = https://github.com/babylonchain/staking-expiry-checker.git
+[submodule "covenant-signer"]
+	path = covenant-signer
+	url = git@github.com:babylonchain/covenant-signer.git

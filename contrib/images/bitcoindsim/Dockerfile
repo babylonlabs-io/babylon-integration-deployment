@@ -9,11 +9,12 @@ RUN useradd --system --user-group bitcoin \
   && apt-get install vim -y \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-ENV BITCOIN_VERSION=22.0
-ENV PATH=/opt/bitcoin-${BITCOIN_VERSION}/bin:$PATH
+ARG BITCOIN_CORE_VERSION="24.2"
+ENV BITCOIN_CORE_VERSION=$BITCOIN_CORE_VERSION
+ENV PATH=/opt/bitcoin-${BITCOIN_CORE_VERSION}/bin:$PATH
 
 RUN set -ex \
-  && curl -SLO https://bitcoincore.org/bin/bitcoin-core-${BITCOIN_VERSION}/bitcoin-${BITCOIN_VERSION}-x86_64-linux-gnu.tar.gz \
+  && curl -SLO https://bitcoincore.org/bin/bitcoin-core-${BITCOIN_CORE_VERSION}/bitcoin-${BITCOIN_CORE_VERSION}-x86_64-linux-gnu.tar.gz \
   && tar -xzf *.tar.gz -C /opt
 
 WORKDIR /bitcoindsim

@@ -1,62 +1,23 @@
 {
-    "tag": "bbt4",
-    "covenant_pks": [
-        "05149a0c7a95320adf210e47bca8b363b7bd966be86be6392dd6cf4f96995869",
-        "e8d503cb52715249f32f3ee79cee88dfd48c2565cb0c79cf9640d291f46fd518",
-        "fe81b2409a32ddfd8ec1556557e8dd949b6e4fd37047523cb7f5fefca283d542",
-        "bc4a1ff485d7b44faeec320b81ad31c3cad4d097813c21fcf382b4305e4cfc82",
-        "001e50601a4a1c003716d7a1ee7fe25e26e55e24e909b3642edb60d30e3c40c1"
-    ],
-    "finality_providers": [
-        {
-            "description": {
-                "moniker": "Babylon Foundation 0",
-                "identity": "",
-                "website": "",
-                "security_contact": "",
-                "details": ""
-            },
-            "commission": "0.050000000000000000",
-            "btc_pk": "03d5a0bb72d71993e435d6c5a70e2aa4db500a62cfaae33c56050deefee64ec0"
-        },
-        {
-            "description": {
-                "moniker": "Babylon Foundation 1",
-                "identity": "",
-                "website": "",
-                "security_contact": "",
-                "details": ""
-            },
-            "commission": "0.060000000000000000",
-            "btc_pk": "063deb187a4bf11c114cf825a4726e4c2c35fea5c4c44a20ff08a30a752ec7e0"
-        },
-        {
-            "description": {
-                "moniker": "Babylon Foundation 2",
-                "identity": "",
-                "website": "",
-                "security_contact": "",
-                "details": ""
-            },
-            "commission": "0.080000000000000000",
-            "btc_pk": "094f5861be4128861d69ea4b66a5f974943f100f55400bf26f5cce124b4c9af7"
-        },
-        {
-            "description": {
-                "moniker": "Babylon Foundation 3",
-                "identity": "",
-                "website": "",
-                "security_contact": "",
-                "details": ""
-            },
-            "commission": "0.090000000000000000",
-            "btc_pk": "0d2f9728abc45c0cdeefdd73f52a0e0102470e35fb689fc5bc681959a61b021f"
-        }
-    ],
-    "covenant_quorum": 3,
-    "unbonding_time": 5,
-    "max_staking_amount": 300000,
-    "min_staking_amount": 3000,
-    "max_staking_time": 10000,
-    "min_staking_time": 1
+  "versions": [
+    {
+        "version": 0,
+        "activation_height": 1,
+        "staking_cap": 50000000000,
+        "tag": "62627434",
+        "covenant_pks": [
+          "0342301c4fdb5b1ab27a80a04d95c782f720874265889412a80d270feeb456f1f7",
+          "03a4d2276a2a09f0e14d6a74901fec0aab3d1edf0dd22a690260acca48f5d5b3c0",
+          "02707f3d6bf2334ecb7c336fc7babd400afa9132a34f84406b28865d06e0ba81e8"
+        ],
+        "covenant_quorum": 2,
+        "unbonding_time": 5,
+        "unbonding_fee": 20000,
+        "max_staking_amount": 300000,
+        "min_staking_amount": 3000,
+        "max_staking_time": 10000,
+        "min_staking_time": 1,
+        "confirmation_depth": 1
+    }
+  ]
 }

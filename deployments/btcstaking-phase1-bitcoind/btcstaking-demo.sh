@@ -20,21 +20,19 @@ echo "Create 2 unsigned staking transactions"
 # The first transaction will be used to test the withdraw path
 staker_pk_w=$(docker exec bitcoindsim /bin/sh -c "bitcoin-cli -regtest -rpcuser=$BTCUSER -rpcpassword=$BTCPASSWORD -rpcwallet=$BTCWALLET listunspent" \
     | jq -r '.[0].desc | split("]") | .[1] | split(")") | .[0] | .[2:]')
+
 unsigned_staking_tx_hex_w=$(docker exec unbonding-pipeline /bin/sh -c "cli-tools create-phase1-staking-tx \
     --magic-bytes 62627434 \
     --staker-pk $staker_pk_w \
     --staking-amount 100000 \
     --staking-time 10 \
-    --covenant-committee-pks 05149a0c7a95320adf210e47bca8b363b7bd966be86be6392dd6cf4f96995869 \
-    --covenant-committee-pks e8d503cb52715249f32f3ee79cee88dfd48c2565cb0c79cf9640d291f46fd518 \
-    --covenant-committee-pks fe81b2409a32ddfd8ec1556557e8dd949b6e4fd37047523cb7f5fefca283d542 \
-    --covenant-committee-pks bc4a1ff485d7b44faeec320b81ad31c3cad4d097813c21fcf382b4305e4cfc82 \
-    --covenant-committee-pks 001e50601a4a1c003716d7a1ee7fe25e26e55e24e909b3642edb60d30e3c40c1 \
-    --covenant-quorum 3 \
+    --covenant-committee-pks 0342301c4fdb5b1ab27a80a04d95c782f720874265889412a80d270feeb456f1f7 \
+    --covenant-committee-pks 03a4d2276a2a09f0e14d6a74901fec0aab3d1edf0dd22a690260acca48f5d5b3c0 \
+    --covenant-committee-pks 02707f3d6bf2334ecb7c336fc7babd400afa9132a34f84406b28865d06e0ba81e8 \
+    --covenant-quorum 2 \
     --network regtest \
     --finality-provider-pk 03d5a0bb72d71993e435d6c5a70e2aa4db500a62cfaae33c56050deefee64ec0" | jq .staking_tx_hex)
 
-# The second transaction will be used to test the unbonding path
 staker_pk_u=$(docker exec bitcoindsim /bin/sh -c "bitcoin-cli -regtest -rpcuser=$BTCUSER -rpcpassword=$BTCPASSWORD -rpcwallet=$BTCWALLET listunspent" \
     | jq -r '.[-1].desc | split("]") | .[1] | split(")") | .[0] | .[2:]')
 unsigned_staking_tx_hex_u=$(docker exec unbonding-pipeline /bin/sh -c "cli-tools create-phase1-staking-tx \
@@ -42,14 +40,12 @@ unsigned_staking_tx_hex_u=$(docker exec unbonding-pipeline /bin/sh -c "cli-tools
     --staker-pk $staker_pk_u \
     --staking-amount 200000 \
     --staking-time 500 \
-    --covenant-committee-pks 05149a0c7a95320adf210e47bca8b363b7bd966be86be6392dd6cf4f96995869 \
-    --covenant-committee-pks e8d503cb52715249f32f3ee79cee88dfd48c2565cb0c79cf9640d291f46fd518 \
-    --covenant-committee-pks fe81b2409a32ddfd8ec1556557e8dd949b6e4fd37047523cb7f5fefca283d542 \
-    --covenant-committee-pks bc4a1ff485d7b44faeec320b81ad31c3cad4d097813c21fcf382b4305e4cfc82 \
-    --covenant-committee-pks 001e50601a4a1c003716d7a1ee7fe25e26e55e24e909b3642edb60d30e3c40c1 \
-    --covenant-quorum 3 \
+    --covenant-committee-pks 0342301c4fdb5b1ab27a80a04d95c782f720874265889412a80d270feeb456f1f7 \
+    --covenant-committee-pks 03a4d2276a2a09f0e14d6a74901fec0aab3d1edf0dd22a690260acca48f5d5b3c0 \
+    --covenant-committee-pks 02707f3d6bf2334ecb7c336fc7babd400afa9132a34f84406b28865d06e0ba81e8 \
+    --covenant-quorum 2 \
     --network regtest \
-    --finality-provider-pk 063deb187a4bf11c114cf825a4726e4c2c35fea5c4c44a20ff08a30a752ec7e0" | jq .staking_tx_hex)
+    --finality-provider-pk 03d5a0bb72d71993e435d6c5a70e2aa4db500a62cfaae33c56050deefee64ec0" | jq .staking_tx_hex)
 
 echo "Sign the staking transactions through bitcoind wallet"
 unsigned_staking_tx_hex_w=$(docker exec bitcoindsim /bin/sh -c "bitcoin-cli -regtest -rpcuser=$BTCUSER -rpcpassword=$BTCPASSWORD -rpcwallet=$BTCWALLET \
@@ -110,14 +106,12 @@ echo "Initiate unbonding for transaction $staking_txid_u through the Staking API
 # Create the payload through a helper CLI on the unbonding-pipeline
 unbonding_api_payload=$(docker exec unbonding-pipeline /bin/sh -c "cli-tools create-phase1-unbonding-request \
     --magic-bytes 62627434 \
-    --covenant-committee-pks 05149a0c7a95320adf210e47bca8b363b7bd966be86be6392dd6cf4f96995869 \
-    --covenant-committee-pks e8d503cb52715249f32f3ee79cee88dfd48c2565cb0c79cf9640d291f46fd518 \
-    --covenant-committee-pks fe81b2409a32ddfd8ec1556557e8dd949b6e4fd37047523cb7f5fefca283d542 \
-    --covenant-committee-pks bc4a1ff485d7b44faeec320b81ad31c3cad4d097813c21fcf382b4305e4cfc82 \
-    --covenant-committee-pks 001e50601a4a1c003716d7a1ee7fe25e26e55e24e909b3642edb60d30e3c40c1 \
-    --covenant-quorum 3 \
+    --covenant-committee-pks 0342301c4fdb5b1ab27a80a04d95c782f720874265889412a80d270feeb456f1f7 \
+    --covenant-committee-pks 03a4d2276a2a09f0e14d6a74901fec0aab3d1edf0dd22a690260acca48f5d5b3c0 \
+    --covenant-committee-pks 02707f3d6bf2334ecb7c336fc7babd400afa9132a34f84406b28865d06e0ba81e8 \
+    --covenant-quorum 2 \
     --network regtest \
-    --unbonding-fee 1000 \
+    --unbonding-fee 20000 \
     --unbonding-time 5 \
     --staker-wallet-address-host bitcoindsim:18443/wallet/btcstaker \
     --staker-wallet-passphrase $BTCWALLETPASS \
@@ -161,12 +155,10 @@ withdraw_btc_addr=$(docker exec bitcoindsim /bin/sh -c "bitcoin-cli -regtest -rp
 
 withdrawal_tx_hex_w=$(docker exec unbonding-pipeline /bin/sh -c "cli-tools create-phase1-withdaw-request \
     --magic-bytes 62627434 \
-    --covenant-committee-pks 05149a0c7a95320adf210e47bca8b363b7bd966be86be6392dd6cf4f96995869 \
-    --covenant-committee-pks e8d503cb52715249f32f3ee79cee88dfd48c2565cb0c79cf9640d291f46fd518 \
-    --covenant-committee-pks fe81b2409a32ddfd8ec1556557e8dd949b6e4fd37047523cb7f5fefca283d542 \
-    --covenant-committee-pks bc4a1ff485d7b44faeec320b81ad31c3cad4d097813c21fcf382b4305e4cfc82 \
-    --covenant-committee-pks 001e50601a4a1c003716d7a1ee7fe25e26e55e24e909b3642edb60d30e3c40c1 \
-    --covenant-quorum 3 \
+    --covenant-committee-pks 0342301c4fdb5b1ab27a80a04d95c782f720874265889412a80d270feeb456f1f7 \
+    --covenant-committee-pks 03a4d2276a2a09f0e14d6a74901fec0aab3d1edf0dd22a690260acca48f5d5b3c0 \
+    --covenant-committee-pks 02707f3d6bf2334ecb7c336fc7babd400afa9132a34f84406b28865d06e0ba81e8 \
+    --covenant-quorum 2 \
     --network regtest \
     --withdraw-tx-fee 1000 \
     --withdraw-tx-destination $withdraw_btc_addr \
@@ -179,12 +171,10 @@ withdrawal_tx_hex_w=$(docker exec unbonding-pipeline /bin/sh -c "cli-tools creat
 echo "Withdraw the unbonded staking transaction $staking_txid_u"
 withdrawal_tx_hex_u=$(docker exec unbonding-pipeline /bin/sh -c "cli-tools create-phase1-withdaw-request \
     --magic-bytes 62627434 \
-    --covenant-committee-pks 05149a0c7a95320adf210e47bca8b363b7bd966be86be6392dd6cf4f96995869 \
-    --covenant-committee-pks e8d503cb52715249f32f3ee79cee88dfd48c2565cb0c79cf9640d291f46fd518 \
-    --covenant-committee-pks fe81b2409a32ddfd8ec1556557e8dd949b6e4fd37047523cb7f5fefca283d542 \
-    --covenant-committee-pks bc4a1ff485d7b44faeec320b81ad31c3cad4d097813c21fcf382b4305e4cfc82 \
-    --covenant-committee-pks 001e50601a4a1c003716d7a1ee7fe25e26e55e24e909b3642edb60d30e3c40c1 \
-    --covenant-quorum 3 \
+    --covenant-committee-pks 0342301c4fdb5b1ab27a80a04d95c782f720874265889412a80d270feeb456f1f7 \
+    --covenant-committee-pks 03a4d2276a2a09f0e14d6a74901fec0aab3d1edf0dd22a690260acca48f5d5b3c0 \
+    --covenant-committee-pks 02707f3d6bf2334ecb7c336fc7babd400afa9132a34f84406b28865d06e0ba81e8 \
+    --covenant-quorum 2 \
     --network regtest \
     --withdraw-tx-fee 1000 \
     --withdraw-tx-destination $withdraw_btc_addr \

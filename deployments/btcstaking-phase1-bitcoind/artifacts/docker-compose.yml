@@ -2,16 +2,10 @@ version: "3"
 
 services:
   bitcoindsim:
-    build:
-      context: contrib/images/bitcoindsim/
-      dockerfile: ./Dockerfile
     image: babylonchain/bitcoindsim:latest
     platform: linux/amd64
     container_name: bitcoindsim
     environment:
-      - ZMQ_SEQUENCE_PORT=29000
-      - ZMQ_RAWBLOCK_PORT=29001
-      - ZMQ_RAWTR_PORT=29002
       - RPC_PORT=18443
       - RPC_USER=rpcuser
       - RPC_PASS=rpcpass
@@ -22,9 +16,23 @@ services:
       - GENERATE_INTERVAL_SECS=10
     ports:
       - "18443:18443"
-      - "29000-29002:29000-29002"
     volumes:
       - ../.testnets/bitcoin:/bitcoindsim/.bitcoin:Z
+    networks:
+      - phase-1
+
+  bitcoindsim-signer:
+    image: babylonchain/bitcoindsim:26.1
+    platform: linux/amd64
+    container_name: bitcoindsim-signer
+    environment:
+      - RPC_PORT=18443
+      - RPC_USER=rpcuser
+      - RPC_PASS=rpcpass
+      - GENERATE_STAKER_WALLET=false
+      - GENERATE_INTERVAL_SECS=10
+    volumes:
+      - ../.testnets/bitcoin-signer:/bitcoindsim/.bitcoin:Z
     networks:
       - phase-1
 
@@ -41,7 +49,7 @@ services:
     depends_on:
       - rabbitmq
       - bitcoindsim
-    entrypoint: ["/bin/sh", "-c", "/bin/sid start --start-height 1"]
+    entrypoint: ["/bin/sh", "-c", "/bin/sid start"]
     networks:
       - phase-1
     restart: unless-stopped
@@ -56,6 +64,7 @@ services:
     volumes:
       - ../.testnets/global-params.json:/home/staking-api-service/global-params.json:Z
       - ../.testnets/staking-api-service/staking-api-service-config.yml:/home/staking-api-service/config.yml:Z
+      - ../.testnets/finality-providers.json:/home/staking-api-service/finality-providers.json:Z
     depends_on:
       - rabbitmq
       - mongodb
@@ -100,6 +109,7 @@ services:
       - bitcoindsim
     volumes:
       - ../.testnets/unbonding-pipeline/unbonding-pipeline-config.toml:/home/cli-tools/.tools/config.toml
+      - ../.testnets/global-params.json:/home/cli-tools/.tools/global-params.json:Z
     entrypoint: |
       /bin/sh -c "
       while true
@@ -137,6 +147,22 @@ services:
     networks:
       - phase-1
 
+  covenant-signer:
+    image: babylonchain/covenant-signer:latest
+    container_name: covenant-signer
+    ports:
+      - "9791:9791"
+    environment:
+      - CONFIG= /home/covenant-signer/config.yml
+    entrypoint: ["/bin/sh", "-c", "/bin/covenant-signer start"]
+    depends_on:
+      - bitcoindsim
+    volumes:
+      - ../.testnets/covenant-signer/covenant-signer-config.toml:/home/covenant-signer/.signer/config.toml:Z
+      - ../.testnets/global-params.json:/home/covenant-signer/.signer/global-params.json:Z
+    networks:
+      - phase-1
+    restart: unless-stopped
 networks:
   phase-1:
     driver: bridge

@@ -4,6 +4,9 @@ GIT_TOPLEVEL := $(shell git rev-parse --show-toplevel)
 build-bitcoindsim:
 	$(MAKE) -C $(GIT_TOPLEVEL)/contrib/images bitcoindsim
 
+build-bitcoindsim-signer:
+	$(MAKE) -C $(GIT_TOPLEVEL)/contrib/images bitcoindsim BITCOIN_CORE_VERSION=26.1
+
 build-simple-staking:
 	$(MAKE) -C $(GIT_TOPLEVEL)/simple-staking build-docker
 
@@ -19,7 +22,10 @@ staking-indexer:
 cli-tools:
 	$(MAKE) -C $(GIT_TOPLEVEL)/cli-tools build-docker
 
-build-deployment-btcstaking-phase1-bitcoind: build-bitcoindsim build-simple-staking build-staking-api-service build-staking-expiry-checker staking-indexer cli-tools
+build-covenant-signer:
+	$(MAKE) -C $(GIT_TOPLEVEL)/covenant-signer build-docker
+
+build-deployment-btcstaking-phase1-bitcoind: build-bitcoindsim build-bitcoindsim-signer build-simple-staking build-staking-api-service build-staking-expiry-checker staking-indexer cli-tools build-covenant-signer
 
 start-deployment-btcstaking-phase1-bitcoind: stop-deployment-btcstaking-phase1-bitcoind build-deployment-btcstaking-phase1-bitcoind
 	./pre-deployment.sh

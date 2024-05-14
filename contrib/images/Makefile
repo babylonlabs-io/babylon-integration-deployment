@@ -1,12 +1,15 @@
+ifeq ($(BITCOIN_CORE_VERSION),)
+	BITCOINDSIM_TAG := latest
+else
+	BITCOINDSIM_BUILD_ARG := --build-arg BITCOIN_CORE_VERSION=$(BITCOIN_CORE_VERSION)
+	BITCOINDSIM_TAG := $(BITCOIN_CORE_VERSION)
+endif
+
 all: bitcoinsim
 
-btcdsim:
-	docker build --tag babylonchain/btcdsim -f btcdsim/Dockerfile \
-		$(shell git rev-parse --show-toplevel)/contrib/images/btcdsim
-
 bitcoindsim:
-	docker build --platform "linux/amd64" --tag babylonchain/bitcoindsim -f bitcoindsim/Dockerfile \
-		$(shell git rev-parse --show-toplevel)/contrib/images/bitcoindsim
+	docker build --platform "linux/amd64" --tag babylonchain/bitcoindsim:$(BITCOINDSIM_TAG) -f bitcoindsim/Dockerfile \
+		$(shell git rev-parse --show-toplevel)/contrib/images/bitcoindsim $(BITCOINDSIM_BUILD_ARG)
 
 ibcsim-gaia:
 	docker build --tag babylonchain/ibcsim-gaia -f ibcsim-gaia/Dockerfile \
