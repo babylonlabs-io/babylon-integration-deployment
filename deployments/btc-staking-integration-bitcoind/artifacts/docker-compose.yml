@@ -187,6 +187,20 @@ services:
       - babylondnode0
     restart: unless-stopped
 
+  ibcsim-wasmd:
+    container_name: ibcsim-wasmd
+    image: babylonchain/ibcsim-wasmd
+    ports:
+      - "5183:5183"
+    volumes:
+      - ../.testnets:/data:Z
+    networks:
+      localnet:
+        ipv4_address: 192.168.10.16
+    depends_on:
+      - babylondnode0
+    restart: unless-stopped
+
 networks:
   localnet:
     driver: bridge

@@ -7,7 +7,7 @@ WASMD_KEY="wasmd-key"
 WASMD_CHAIN_ID="wasmd-test"
 
 # 1. Create a wasmd testnet with Babylon contract
-./setup-wasmd.sh $WASMD_CHAIN_ID $WASMD_CONF 26657 26656 6060 9090 ./babylon_contract.wasm '{"btc_confirmation_depth":1,"checkpoint_finalization_timeout":2,"network":"regtest","babylon_tag":"01020304","notify_cosmos_zone":false}'
+./setup-wasmd.sh $WASMD_CHAIN_ID $WASMD_CONF 26657 26656 6060 9090 ./babylon_contract.wasm ./btc_staking.wasm '{"btc_confirmation_depth":1,"checkpoint_finalization_timeout":2,"network":"regtest","babylon_tag":"01020304","notify_cosmos_zone":false, "btc_staking_code_id":2}'
 
 sleep 10
 

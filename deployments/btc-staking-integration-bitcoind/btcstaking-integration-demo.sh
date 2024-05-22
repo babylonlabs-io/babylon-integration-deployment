@@ -1,23 +1,46 @@
 #!/bin/bash
 
 BBN_CHAIN_ID="chain-test"
-CZ_CHAIN_ID="test-consumer-chain"
-CZ_CHAIN_NAME="test-consumer-chain"
-CZ_CHAIN_DESC="test-consumer-chain-description"
+CZ_CONSUMER_NAME="test-consumer"
+CZ_CONSUMER_DESC="test-consumer-description"
+
+# Wait until the IBC channels are ready
+echo "Waiting for IBC channels to be ready..."
+while true; do
+    # Fetch the port ID and channel ID from the Consumer/Wasm IBC channel list
+    channelInfoJson=$(docker exec ibcsim-wasmd /bin/sh -c "wasmd query ibc channel channels -o json")
+
+    # Check if there are any channels available
+    channelsLength=$(echo $channelInfoJson | jq -r '.channels | length')
+    if [ "$channelsLength" -gt 0 ]; then
+        portId=$(echo $channelInfoJson | jq -r '.channels[0].port_id')
+        channelId=$(echo $channelInfoJson | jq -r '.channels[0].channel_id')
+        echo "Fetched port ID: $portId"
+        echo "Fetched channel ID: $channelId"
+        break
+    else
+        echo "No channels found, retrying in 10 seconds..."
+        sleep 10
+    fi
+done
+
+# Fetch the client ID from the IBC channel client-state query using the fetched port ID and channel ID
+clientStateJson=$(docker exec ibcsim-wasmd /bin/sh -c "wasmd query ibc channel client-state $portId $channelId -o json")
+CZ_CONSUMER_ID=$(echo $clientStateJson | jq -r '.client_id')
+
+# The IBC client ID is the consumer ID
+echo "Fetched IBC client ID, this will be used as consumer ID to register consumer on Babylon: $CZ_CONSUMER_ID"
 
 sleep 10
 
 # register a consumer chain
 echo "Registering a consumer chain"
+docker exec babylondnode0 /bin/sh -c "/bin/babylond --home /babylondhome tx btcstkconsumer register-consumer \"$CZ_CONSUMER_ID\" $CZ_CONSUMER_NAME $CZ_CONSUMER_DESC --from test-spending-key --fees 2ubbn -y --chain-id $BBN_CHAIN_ID --keyring-backend test"
+echo "Registered a consumer chain with consumer ID $CZ_CONSUMER_ID"
 
-docker exec babylondnode0 /bin/sh -c "/bin/babylond --home /babylondhome tx btcstkconsumer register-chain $CZ_CHAIN_ID $CZ_CHAIN_NAME $CZ_CHAIN_DESC --from test-spending-key --fees 2ubbn -y --chain-id $BBN_CHAIN_ID --keyring-backend test"
-
-echo "Registered a consumer chain with chain ID $CZ_CHAIN_ID"
-
-# create FPs for Babylon
+# create FP for Babylon
 echo ""
 echo "Create 1 Bitcoin finality provider"
-
 docker exec finality-provider /bin/sh -c "
     BTC_PK=\$(/bin/fpcli cfp --key-name finality-provider0 \
         --chain-id $BBN_CHAIN_ID \
@@ -34,20 +57,18 @@ echo "BTC PK of Babylon finality provider: $bbn_btc_pk"
 NUM_CZ_FPs=3
 echo ""
 echo "Creating $NUM_CZ_FPs consumer chain finality providers"
-
 for idx in $(seq 1 $((NUM_CZ_FPs))); do
     docker exec finality-provider /bin/sh -c "
         BTC_PK=\$(/bin/fpcli cfp --key-name finality-provider$idx \
-            --chain-id $CZ_CHAIN_ID \
+           --chain-id \"$CZ_CONSUMER_ID\" \
             --moniker \"Finality Provider $idx\" | jq -r .btc_pk_hex ); \
         /bin/fpcli rfp --btc-pk \$BTC_PK
     "
 done
-
 echo "Created $NUM_CZ_FPs consumer chain finality providers"
 
 # Get the public keys of the consumer chain finality providers
-cz_btc_pks=$(docker exec babylondnode0 /bin/sh -c "/bin/babylond query btcstkconsumer finality-providers $CZ_CHAIN_ID --output json" | jq -r ".finality_providers[].btc_pk")
+cz_btc_pks=$(docker exec babylondnode0 /bin/sh -c "/bin/babylond query btcstkconsumer finality-providers \"$CZ_CONSUMER_ID\" --output json" | jq -r ".finality_providers[].btc_pk")
 echo ""
 echo "BTC PK of consumer chain finality providers: $cz_btc_pks"
 
@@ -55,10 +76,8 @@ echo "BTC PK of consumer chain finality providers: $cz_btc_pks"
 echo ""
 echo "Make a delegation to each of the finality providers from a dedicated BTC address"
 sleep 10
-
 # Get the available BTC addresses for delegations
 delAddrs=($(docker exec btc-staker /bin/sh -c '/bin/stakercli dn list-outputs | jq -r ".outputs[].address" | sort | uniq'))
-
 i=0
 for cz_btc_pk in $cz_btc_pks
 do
@@ -71,19 +90,60 @@ do
     echo "Delegation was successful; staking tx hash is $btcTxHash"
     i=$((i+1))
 done
-
 echo "Made a delegation to each of the finality providers"
 
+# Query babylon and check if the delegations are active
+# NOTE: avoid querying finality provider as it might be down
+# https://github.com/babylonchain/finality-provider/issues/327
 echo ""
 echo "Wait a few minutes for the delegations to become active..."
 while true; do
-    allDelegationsActive=$(docker exec finality-provider /bin/sh -c 'fpcli ls | jq ".finality_providers[].last_voted_height != null"')
+    # Get the active delegations count from Babylon
+    activeDelegations=$(docker exec babylondnode0 /bin/sh -c 'babylond q btcstaking btc-delegations active -o json | jq ".btc_delegations | length"')
 
-    if [[ $allDelegationsActive == *"false"* ]]
-    then
-        sleep 10
-    else
+    echo "Active delegations count in Babylon: $activeDelegations"
+
+    if [ "$activeDelegations" -eq "$NUM_CZ_FPs" ]; then
         echo "All delegations have become active"
         break
+    else
+        sleep 10
+    fi
+done
+
+# Query contract state and check the count of finality providers
+echo ""
+echo "Check if contract has stored the finality providers..."
+while true; do
+    # Get the contract address from the list-contract-by-code query
+    contractAddress=$(docker exec ibcsim-wasmd /bin/sh -c 'wasmd q wasm list-contract-by-code 2 -o json | jq -r ".contracts[0]"')
+
+    # Get the finality providers count from the contract state
+    finalityProvidersCount=$(docker exec ibcsim-wasmd /bin/sh -c "wasmd q wasm contract-state smart $contractAddress '{\"finality_providers\":{}}' -o json | jq '.data.fps | length'")
+
+    echo "Finality provider count in contract store: $finalityProvidersCount"
+
+    if [ "$finalityProvidersCount" -eq "$NUM_CZ_FPs" ]; then
+        echo "The number of finality providers in contract matches the expected count."
+        break
+    else
+        sleep 10
+    fi
+done
+
+# Query contract state and check the count of delegations
+echo ""
+echo "Check if contract has stored the delegations..."
+while true; do
+    # Get the delegations count from the contract state
+    delegationsCount=$(docker exec ibcsim-wasmd /bin/sh -c "wasmd q wasm contract-state smart $contractAddress '{\"delegations\":{}}' -o json | jq '.data.delegations | length'")
+
+    echo "Delegations count in contract store: $delegationsCount"
+
+    if [ "$delegationsCount" -eq "$NUM_CZ_FPs" ]; then
+        echo "The number of delegations in contract matches the expected count."
+        break
+    else
+        sleep 10
     fi
 done

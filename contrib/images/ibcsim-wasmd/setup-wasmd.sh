@@ -2,8 +2,8 @@
 
 display_usage() {
 	echo "Missing parameters. Please check if all parameters were specified."
-	echo "Usage: setup-wasmd.sh [CHAIN_ID] [CHAIN_DIR] [RPC_PORT] [P2P_PORT] [PROFILING_PORT] [GRPC_PORT] [CODE_DIR] [INSTANTIATING_CFG]"
-	echo "Example: setup-wasmd.sh test-chain-id ./data 26657 26656 6060 9090 ./babylon_contract.wasm '{"btc_confirmation_depth":1,"checkpoint_finalization_timeout":2,"network":"Regtest","babylon_tag":"bbn0"}'"
+	echo "Usage: setup-wasmd.sh [CHAIN_ID] [CHAIN_DIR] [RPC_PORT] [P2P_PORT] [PROFILING_PORT] [GRPC_PORT] [BABYLON_CONTRACT_CODE_DIR] [BTCSTAKING_CONTRACT_CODE_DIR] [INSTANTIATING_CFG]"
+	echo "Example: setup-wasmd.sh test-chain-id ./data 26657 26656 6060 9090 ./babylon_contract.wasm '{"btc_confirmation_depth":1,"checkpoint_finalization_timeout":2,"network":"Regtest","babylon_tag":"bbn0", "notify_cosmos_zone":false, "btc_staking_code_id":2}'"
 	exit 1
 }
 
@@ -32,8 +32,9 @@ RPCPORT=$3
 P2PPORT=$4
 PROFPORT=$5
 GRPCPORT=$6
-CODE_DIR=$7
-INSTANTIATING_CFG=$8
+BABYLON_CONTRACT_CODE_DIR=$7
+BTCSTAKING_CONTRACT_CODE_DIR=$8
+INSTANTIATING_CFG=$9
 
 # ensure the binary exists
 if ! command -v $BINARY &>/dev/null; then
@@ -92,11 +93,16 @@ $BINARY --home $CHAINDIR/$CHAINID start --pruning=nothing --grpc-web.enable=fals
 sleep 20
 
 # upload contract code
-echo "Uploading contract code $CODE_DIR..."
-$BINARY --home $CHAINDIR/$CHAINID tx wasm store $CODE_DIR $KEYRING --from user --chain-id $CHAINID --gas 20000000000 --gas-prices 0.01ustake --node http://localhost:$RPCPORT -y
+echo "Uploading babylon contract code $BABYLON_CONTRACT_CODE_DIR..."
+$BINARY --home $CHAINDIR/$CHAINID tx wasm store "$BABYLON_CONTRACT_CODE_DIR" $KEYRING --from user --chain-id $CHAINID --gas 20000000000 --gas-prices 0.01ustake --node http://localhost:$RPCPORT -y
+sleep 5
+
+# upload contract code
+echo "Uploading btcstaking contract code $BTCSTAKING_CONTRACT_CODE_DIR..."
+$BINARY --home $CHAINDIR/$CHAINID tx wasm store "$BTCSTAKING_CONTRACT_CODE_DIR" $KEYRING --from user --chain-id $CHAINID --gas 20000000000 --gas-prices 0.01ustake --node http://localhost:$RPCPORT -y
 sleep 5
 
 # instantiate contract
 # node that the code id is guaranteed to be 1
-echo "Instantiating contract with code $CODE_DIR..."
-$BINARY --home $CHAINDIR/$CHAINID tx wasm instantiate 1 $INSTANTIATING_CFG --admin=$(wasmd --home $CHAINDIR/$CHAINID keys show user --keyring-backend test -a) --label "v0.0.1" $KEYRING --from user --chain-id $CHAINID --gas 20000000000 --gas-prices 0.001ustake --node http://localhost:$RPCPORT -y --amount 100000stake
+echo "Instantiating contract with code $BABYLON_CONTRACT_CODE_DIR..."
+$BINARY --home $CHAINDIR/$CHAINID tx wasm instantiate 1 "$INSTANTIATING_CFG" --admin=$(wasmd --home $CHAINDIR/$CHAINID keys show user --keyring-backend test -a) --label "v0.0.1" $KEYRING --from user --chain-id $CHAINID --gas 20000000000 --gas-prices 0.001ustake --node http://localhost:$RPCPORT -y --amount 100000stake

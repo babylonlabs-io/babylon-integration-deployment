@@ -19,8 +19,8 @@ ENV PATH $GOPATH/bin:$PATH
 WORKDIR /work
 
 ENV GO111MODULE on
-ENV RELAYER_TAG main
-# ENV RELAYER_TAG v2.4.2
+#ENV RELAYER_TAG main
+ENV RELAYER_TAG v2.5.2
 
 # Install the relayer
 RUN git clone https://github.com/cosmos/relayer.git
@@ -52,7 +52,9 @@ COPY --from=build-env /go/bin/wasmd /usr/bin/wasmd
 WORKDIR /ibcsim-wasmd
 COPY wrapper.sh /ibcsim-wasmd/wrapper.sh
 COPY setup-wasmd.sh /ibcsim-wasmd/setup-wasmd.sh
+# TODO: make a script to build the artifacts from babylon-contract submodule automatically, currently you have to manually build the wasm files only then the docker build will work
 COPY babylon-contract/artifacts/babylon_contract.wasm /ibcsim-wasmd/babylon_contract.wasm
+COPY babylon-contract/artifacts/btc_staking.wasm /ibcsim-wasmd/btc_staking.wasm
 
 ENV BABYLON_HOME=/data/node1/babylond
 ENV BABYLON_NODE_RPC="http://babylondnode1:26657"
