@@ -6,6 +6,9 @@ RPCWALLETPASS="walletpass"
 
 [[ "$(uname)" == "Linux" ]] && chown -R 1138:1138 .testnets/staking-indexer
 
+# wait bit nodes to be ready
+sleep 25
+
 # Restore the covenant-signer wallet
 echo "Restoring the covenant-signer wallet"
 docker exec bitcoindsim-signer /bin/sh -c "

@@ -8,7 +8,7 @@ build-bitcoindsim-signer:
 	$(MAKE) -C $(GIT_TOPLEVEL)/contrib/images bitcoindsim BITCOIN_CORE_VERSION=26.1
 
 build-simple-staking:
-	$(MAKE) -C $(GIT_TOPLEVEL)/simple-staking build-docker
+	cd $(GIT_TOPLEVEL)/simple-staking && npm run build-docker
 
 build-staking-api-service:
 	$(MAKE) -C $(GIT_TOPLEVEL)/staking-api-service build-docker

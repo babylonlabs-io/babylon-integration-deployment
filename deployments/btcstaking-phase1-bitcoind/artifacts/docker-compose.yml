@@ -46,6 +46,8 @@ services:
       - ../.testnets/staking-indexer/logs:/home/staking-indexer/.sid/logs:Z
       - ../.testnets/staking-indexer/sid.conf:/home/staking-indexer/.sid/sid.conf:Z
       - ../.testnets/global-params.json:/home/staking-indexer/.sid/global-params.json:Z
+    ports:
+      - "2112:2112"
     depends_on:
       - rabbitmq
       - bitcoindsim
@@ -63,8 +65,8 @@ services:
       - CONFIG=/home/staking-api-service/config.yml
     volumes:
       - ../.testnets/global-params.json:/home/staking-api-service/global-params.json:Z
-      - ../.testnets/staking-api-service/staking-api-service-config.yml:/home/staking-api-service/config.yml:Z
       - ../.testnets/finality-providers.json:/home/staking-api-service/finality-providers.json:Z
+      - ../.testnets/staking-api-service/staking-api-service-config.yml:/home/staking-api-service/config.yml:Z
     depends_on:
       - rabbitmq
       - mongodb
@@ -108,8 +110,8 @@ services:
       - mongodb
       - bitcoindsim
     volumes:
+      - ../.testnets/global-params.json:/home/cli-tools/.tools/global-params.json:Z 
       - ../.testnets/unbonding-pipeline/unbonding-pipeline-config.toml:/home/cli-tools/.tools/config.toml
-      - ../.testnets/global-params.json:/home/cli-tools/.tools/global-params.json:Z
     entrypoint: |
       /bin/sh -c "
       while true
