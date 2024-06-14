@@ -207,14 +207,14 @@ time="2023-08-18T10:30:25Z" level=info msg="successfully submitted slashing tx (
 ...
 ```
 
-### Unbonding staked BTC tokens
+### Withdraw expired staked BTC tokens
 
 The last BTC staking request that was placed by the BTC Staker daemon had a
 simnet BTC token time-lock of 10 BTC blocks. This is done on purpose, so that
-the staking period expires quickly and the unbonding of expired BTC staked
+the staking period expires quickly and the withdrawal of expired BTC staked
 tokens can be demonstrated.
 
-The final action of the showcasing script is to unbond these BTC tokens.
+The final action of the showcasing script is to withdraw these BTC tokens.
 The BTC Staker daemon submits a simnet BTC transaction to this end - we can
 verify this through its logs:
 
@@ -226,8 +226,26 @@ time="2023-08-18T10:32:24Z" level=info msg="BTC Staking transaction successfully
 ...
 ```
 
-After the transaction is confirmed on BTC simnet, the unbonding of the BTC
+After the transaction is confirmed on BTC simnet, the withdrawal of the BTC
 tokens is complete.
+
+### Early unbond staked BTC tokens
+
+In this scenario, we demonstrate early unbonding and withdrawal BTC tokens before the staking period elapses.
+The script first sends an early unbond tx request. After waiting for the staking tx to be expired a withdrawal request is then submitted to retrieve the staked BTC.
+
+```shell
+$ docker logs -f btc-staker
+...
+time="2024-06-13T11:22:56Z" level=debug msg="Unbonding transaction received confirmation" confLeft=0 unbondingTxHash=9190dfbb6e8071f05a0abc96ea51f21972f76b86c78e6be0a3002f983e5b2665
+time="2024-06-13T11:22:56Z" level=debug msg="Unbonding tx confirmed" blockHash=59a57a822b53679984dae86f8345877f01c6f53f30a1a3f317670b8b270bec6c blockHeight=143 stakingTxHash=da508826931228a1143e66667778d945161c73ebb0222d951a762028f2e94bb0 unbondingTxHash=9190dfbb6e8071f05a0abc96ea51f21972f76b86c78e6be0a3002f983e5b2665
+time="2024-06-13T11:26:10Z" level=debug msg="Received staking event" event=SPEND_STAKE_TX_CONFIRMED_ON_BTC eventId=da508826931228a1143e66667778d945161c73ebb0222d951a762028f2e94bb0
+time="2024-06-13T11:26:10Z" level=debug msg="Processed staking event" event=SPEND_STAKE_TX_CONFIRMED_ON_BTC eventId=da508826931228a1143e66667778d945161c73ebb0222d951a762028f2e94bb0
+...
+```
+After the transaction is confirmed on BTC simnet, the process of early unbonding staked BTC
+tokens is complete.
+
 
 ## Interacting with the BTC Staking Protocol manually
 
@@ -343,7 +361,7 @@ $ docker exec -it finality-provider sh
 }
 ```
 
-### Unbonding staked BTC tokens manually
+### Withdraw staked BTC tokens manually
 
 Up to now, we have created a Finality Provider, staked tokens to it and submitted
 a conflicting finality signature for it; this led to its slashing. As a result,
@@ -356,10 +374,10 @@ and
 repeated. This time, the manual BTC staking request should last for **10 BTC
 blocks** - so that it will expire quickly enough for us to unbond its tokens
 (in up to 3 minutes, given that our simnet's BTC block creation rate is 10
-seconds). After this amount of time has passed, we can now unbond the BTC
+seconds). After this amount of time has passed, we can now withdraw the BTC
 tokens from the expired delegation.
 
-To unbond the tokens, we need to take shell into the same BTC Staker container
+To withdraw the tokens, we need to take shell into the same BTC Staker container
 and interact with the daemon through its CLI utility, `stakercli`.
 
 ```shell

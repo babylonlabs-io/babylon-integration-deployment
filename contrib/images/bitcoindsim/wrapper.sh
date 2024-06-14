@@ -13,6 +13,14 @@ server=1
 rpcuser=$RPC_USER
 rpcpassword=$RPC_PASS
 
+# ZMQ notification options.
+# Enable publish hash block and tx sequence
+zmqpubsequence=tcp://*:$ZMQ_SEQUENCE_PORT
+# Enable publishing of raw block hex.
+zmqpubrawblock=tcp://*:$ZMQ_RAWBLOCK_PORT
+# Enable publishing of raw transaction.
+zmqpubrawtx=tcp://*:$ZMQ_RAWTR_PORT
+
 txindex=1
 deprecatedrpc=create_bdb
 

@@ -23,6 +23,7 @@ btcPks=$(docker exec btc-staker /bin/sh -c '/bin/stakercli dn bfp | jq -r ".fina
 delAddrs=($(docker exec btc-staker /bin/sh -c '/bin/stakercli dn list-outputs | jq -r ".outputs[].address" | sort | uniq'))
 
 i=0
+declare -a txHashes=()
 for btcPk in $btcPks
 do
     # Let `X=NUM_FINALITY_PROVIDERS`
@@ -41,6 +42,7 @@ do
     btcTxHash=$(docker exec btc-staker /bin/sh -c \
         "/bin/stakercli dn stake --staker-address ${delAddrs[i]} --staking-amount 1000000 --finality-providers-pks $btcPk --staking-time $stakingTime | jq -r '.tx_hash'")
     echo "Delegation was successful; staking tx hash is $btcTxHash"
+    txHashes+=("$btcTxHash")  # Store the tx hash in the array
     i=$((i+1))
 done
 
@@ -77,3 +79,14 @@ sleep 180
 echo "Withdraw the expired staked BTC funds (staking tx hash: $btcTxHash)"
 docker exec btc-staker /bin/sh -c \
     "/bin/stakercli dn ust --staking-transaction-hash $btcTxHash"
+
+echo "Unbond staked BTC tokens (staking tx hash: ${txHashes[1]}"
+docker exec btc-staker /bin/sh -c \
+        "/bin/stakercli dn unbond --staking-transaction-hash ${txHashes[1]}"
+
+echo "Wait for the unbond transaction to expire"
+sleep 60
+
+echo "Withdraw the expired staked BTC funds from unbonding (staking tx hash: ${txHashes[1]}"
+docker exec btc-staker /bin/sh -c \
+        "/bin/stakercli dn unstake --staking-transaction-hash ${txHashes[1]}"
