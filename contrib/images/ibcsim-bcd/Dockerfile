@@ -26,9 +26,14 @@ ENV RELAYER_TAG v2.5.2
 RUN git clone https://github.com/cosmos/relayer.git
 RUN cd relayer && git fetch origin && git checkout ${RELAYER_TAG} && make install && cd -
 
-# Install wasmd
-RUN git clone https://github.com/CosmWasm/wasmd.git
-RUN cd wasmd && git fetch origin && git checkout v0.50.0 && make install && cd -
+# Install bcd
+RUN git clone https://github.com/babylonchain/babylon-sdk.git
+
+RUN mkdir -p /root/.ssh && ssh-keyscan github.com >> /root/.ssh/known_hosts
+RUN git config --global url."git@github.com:".insteadOf "https://github.com/"
+ENV GOPRIVATE=github.com/babylonchain/*
+
+RUN --mount=type=secret,id=sshKey,target=/root/.ssh/id_rsa cd babylon-sdk && git fetch origin && git checkout origin/main && make install && cd -
 
 FROM debian:bullseye-slim AS run
 
@@ -36,7 +41,7 @@ RUN apt-get update && apt-get install -y bash curl jq wget
 
 # Install libraries
 # Cosmwasm - Download correct libwasmvm version
-COPY --from=build-env /work/wasmd/go.mod /tmp
+COPY --from=build-env /work/babylon-sdk/demo/go.mod /tmp
 RUN WASMVM_VERSION=$(grep github.com/CosmWasm/wasmvm /tmp/go.mod | cut -d' ' -f2) && \
     wget https://github.com/CosmWasm/wasmvm/releases/download/$WASMVM_VERSION/libwasmvm.$(uname -m).so \
         -O /lib/libwasmvm.$(uname -m).so && \
@@ -47,21 +52,20 @@ RUN rm -f /tmp/go.mod
 
 # Install binaries
 COPY --from=build-env /go/bin/rly /usr/bin/rly
-COPY --from=build-env /go/bin/wasmd /usr/bin/wasmd
+COPY --from=build-env /go/bin/bcd /usr/bin/bcd
 
-WORKDIR /ibcsim-wasmd
-COPY wrapper.sh /ibcsim-wasmd/wrapper.sh
-COPY setup-wasmd.sh /ibcsim-wasmd/setup-wasmd.sh
-# TODO: make a script to build the artifacts from babylon-contract submodule automatically, currently you have to manually build the wasm files only then the docker build will work
-COPY babylon-contract/artifacts/babylon_contract.wasm /ibcsim-wasmd/babylon_contract.wasm
-COPY babylon-contract/artifacts/btc_staking.wasm /ibcsim-wasmd/btc_staking.wasm
+WORKDIR /ibcsim-bcd
+COPY wrapper.sh /ibcsim-bcd/wrapper.sh
+COPY setup-bcd.sh /ibcsim-bcd/setup-bcd.sh
+COPY --from=build-env /work/babylon-sdk/tests/testdata/babylon_contract.wasm /ibcsim-bcd/babylon_contract.wasm
+COPY --from=build-env /work/babylon-sdk/tests/testdata/btc_staking.wasm /ibcsim-bcd/btc_staking.wasm
 
 ENV BABYLON_HOME=/data/node1/babylond
 ENV BABYLON_NODE_RPC="http://babylondnode1:26657"
 ENV RELAYER_CONF_DIR=/data/relayer
-ENV WASMD_CONF=/data/wasmd
+ENV CONSUMER_CONF=/data/bcd
 ENV UPDATE_CLIENTS_INTERVAL=20s
 
-ENTRYPOINT ["/ibcsim-wasmd/wrapper.sh"]
+ENTRYPOINT ["/ibcsim-bcd/wrapper.sh"]
 CMD []
 STOPSIGNAL SIGTERM

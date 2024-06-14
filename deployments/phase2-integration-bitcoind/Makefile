@@ -4,8 +4,8 @@ GIT_TOPLEVEL := $(shell git rev-parse --show-toplevel)
 build-bitcoindsim:
 	$(MAKE) -C $(GIT_TOPLEVEL)/contrib/images bitcoindsim
 
-build-ibcsim-wasmd:
-	$(MAKE) -C $(GIT_TOPLEVEL)/contrib/images ibcsim-wasmd
+build-ibcsim-bcd:
+	$(MAKE) -C $(GIT_TOPLEVEL)/contrib/images ibcsim-bcd
 
 build-babylond:
 	$(MAKE) -C $(GIT_TOPLEVEL)/babylon/contrib/images babylond
@@ -13,7 +13,7 @@ build-babylond:
 build-vigilante:
 	$(MAKE) -C $(GIT_TOPLEVEL)/vigilante BBN_PRIV_DEPLOY_KEY=${BBN_PRIV_DEPLOY_KEY} build-docker
 
-build-deployment-phase2-integration-bitcoind: build-babylond build-bitcoindsim build-vigilante build-ibcsim-wasmd
+build-deployment-phase2-integration-bitcoind: build-babylond build-bitcoindsim build-vigilante build-ibcsim-bcd
 
 start-deployment-phase2-integration-bitcoind: stop-deployment-phase2-integration-bitcoind build-deployment-phase2-integration-bitcoind
 	./pre-deployment.sh

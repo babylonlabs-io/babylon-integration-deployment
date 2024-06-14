@@ -187,9 +187,9 @@ services:
       - babylondnode0
     restart: unless-stopped
 
-  ibcsim-wasmd:
-    container_name: ibcsim-wasmd
-    image: babylonchain/ibcsim-wasmd
+  ibcsim-bcd:
+    container_name: ibcsim-bcd
+    image: babylonchain/ibcsim-bcd
     ports:
       - "5183:5183"
     volumes:
@@ -199,6 +199,7 @@ services:
         ipv4_address: 192.168.10.16
     depends_on:
       - babylondnode0
+      - babylondnode1
     restart: unless-stopped
 
 networks:

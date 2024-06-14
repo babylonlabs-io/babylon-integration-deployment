@@ -15,9 +15,10 @@ ibcsim-gaia:
 	docker build --tag babylonchain/ibcsim-gaia -f ibcsim-gaia/Dockerfile \
 		$(shell git rev-parse --show-toplevel)/contrib/images/ibcsim-gaia
 
-ibcsim-wasmd:
-	docker build --tag babylonchain/ibcsim-wasmd -f ibcsim-wasmd/Dockerfile \
-		$(shell git rev-parse --show-toplevel)/contrib/images/ibcsim-wasmd
+ibcsim-bcd:
+	docker build --secret id=sshKey,src=${BBN_PRIV_DEPLOY_KEY} \
+		--tag babylonchain/ibcsim-bcd -f ibcsim-bcd/Dockerfile \
+		$(shell git rev-parse --show-toplevel)/contrib/images/ibcsim-bcd
 
 btcdsim-rmi:
 	docker rmi babylonchain/btcdsim 2>/dev/null; true
@@ -28,7 +29,7 @@ bitcoindsim-rmi:
 ibcsim-gaia-rmi:
 	docker rmi babylonchain/ibcsim-gaia 2>/dev/null; true
 
-ibcsim-wasmd-rmi:
-	docker rmi babylonchain/ibcsim-wasmd 2>/dev/null; true
+ibcsim-bcd-rmi:
+	docker rmi babylonchain/ibcsim-bcd 2>/dev/null; true
 
-.PHONY: all btcdsim btcdsim-rmi bitcoindsim bitcoindsim-rmi ibcsim-gaia ibcsim-gaia-rmi ibcsim-wasmd ibcsim-wasmd-rmi
+.PHONY: all btcdsim btcdsim-rmi bitcoindsim bitcoindsim-rmi ibcsim-gaia ibcsim-gaia-rmi ibcsim-bcd ibcsim-bcd-rmi

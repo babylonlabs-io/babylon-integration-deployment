@@ -1,14 +1,14 @@
 #!/bin/bash
 
 BBN_CHAIN_ID="chain-test"
-CZ_CONSUMER_NAME="test-consumer"
-CZ_CONSUMER_DESC="test-consumer-description"
+CONSUMER_NAME="test-consumer"
+CONSUMER_DESC="test-consumer-description"
 
 # Wait until the IBC channels are ready
 echo "Waiting for IBC channels to be ready..."
 while true; do
-    # Fetch the port ID and channel ID from the Consumer/Wasm IBC channel list
-    channelInfoJson=$(docker exec ibcsim-wasmd /bin/sh -c "wasmd query ibc channel channels -o json")
+    # Fetch the port ID and channel ID from the Consumer IBC channel list
+    channelInfoJson=$(docker exec ibcsim-bcd /bin/sh -c "bcd query ibc channel channels -o json")
 
     # Check if there are any channels available
     channelsLength=$(echo $channelInfoJson | jq -r '.channels | length')
@@ -25,7 +25,7 @@ while true; do
 done
 
 # Fetch the client ID from the IBC channel client-state query using the fetched port ID and channel ID
-clientStateJson=$(docker exec ibcsim-wasmd /bin/sh -c "wasmd query ibc channel client-state $portId $channelId -o json")
+clientStateJson=$(docker exec ibcsim-bcd /bin/sh -c "bcd query ibc channel client-state $portId $channelId -o json")
 CZ_CONSUMER_ID=$(echo $clientStateJson | jq -r '.client_id')
 
 # The IBC client ID is the consumer ID
@@ -35,7 +35,7 @@ sleep 10
 
 # register a consumer chain
 echo "Registering a consumer chain"
-docker exec babylondnode0 /bin/sh -c "/bin/babylond --home /babylondhome tx btcstkconsumer register-consumer \"$CZ_CONSUMER_ID\" $CZ_CONSUMER_NAME $CZ_CONSUMER_DESC --from test-spending-key --fees 2ubbn -y --chain-id $BBN_CHAIN_ID --keyring-backend test"
+docker exec babylondnode0 /bin/sh -c "/bin/babylond --home /babylondhome tx btcstkconsumer register-consumer \"$CZ_CONSUMER_ID\" $CONSUMER_NAME $CONSUMER_DESC --from test-spending-key --fees 2ubbn -y --chain-id $BBN_CHAIN_ID --keyring-backend test"
 echo "Registered a consumer chain with consumer ID $CZ_CONSUMER_ID"
 
 # create FP for Babylon
@@ -116,10 +116,10 @@ echo ""
 echo "Check if contract has stored the finality providers..."
 while true; do
     # Get the contract address from the list-contract-by-code query
-    contractAddress=$(docker exec ibcsim-wasmd /bin/sh -c 'wasmd q wasm list-contract-by-code 2 -o json | jq -r ".contracts[0]"')
+    contractAddress=$(docker exec ibcsim-bcd /bin/sh -c 'bcd q wasm list-contract-by-code 2 -o json | jq -r ".contracts[0]"')
 
     # Get the finality providers count from the contract state
-    finalityProvidersCount=$(docker exec ibcsim-wasmd /bin/sh -c "wasmd q wasm contract-state smart $contractAddress '{\"finality_providers\":{}}' -o json | jq '.data.fps | length'")
+    finalityProvidersCount=$(docker exec ibcsim-bcd /bin/sh -c "bcd q wasm contract-state smart $contractAddress '{\"finality_providers\":{}}' -o json | jq '.data.fps | length'")
 
     echo "Finality provider count in contract store: $finalityProvidersCount"
 
@@ -136,7 +136,7 @@ echo ""
 echo "Check if contract has stored the delegations..."
 while true; do
     # Get the delegations count from the contract state
-    delegationsCount=$(docker exec ibcsim-wasmd /bin/sh -c "wasmd q wasm contract-state smart $contractAddress '{\"delegations\":{}}' -o json | jq '.data.delegations | length'")
+    delegationsCount=$(docker exec ibcsim-bcd /bin/sh -c "bcd q wasm contract-state smart $contractAddress '{\"delegations\":{}}' -o json | jq '.data.delegations | length'")
 
     echo "Delegations count in contract store: $delegationsCount"
 

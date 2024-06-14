@@ -31,7 +31,7 @@ that spins up the network:
  ✔ Container bitcoindsim          Started                                                          0.6s 
  ✔ Container babylondnode1        Started                                                          0.5s 
  ✔ Container babylondnode0        Started                                                          0.4s 
- ✔ Container ibcsim-wasmd         Started                                                          0.9s 
+ ✔ Container ibcsim-bcd           Started                                                          0.9s 
  ✔ Container vigilante-monitor    Started                                                          1.1s 
  ✔ Container vigilante-reporter   Started                                                          1.1s 
  ✔ Container vigilante-submitter  Started                                                          1.1s

@@ -1,8 +1,8 @@
 [submodule "faucet"]
 	path = faucet
 	url = git@github.com:babylonchain/faucet
-[submodule "contrib/images/ibcsim-wasmd/babylon-contract"]
-	path = contrib/images/ibcsim-wasmd/babylon-contract
+[submodule "contrib/images/ibcsim-bcd/babylon-contract"]
+	path = contrib/images/ibcsim-bcd/babylon-contract
 	url = git@github.com:babylonchain/babylon-contract.git
 [submodule "btc-staker"]
 	path = btc-staker
@@ -44,7 +44,7 @@
 [submodule "cli-tools"]
 	path = cli-tools
 	url = https://github.com/babylonchain/cli-tools.git
-	branch = tx-gen-commands
+	branch = main
 [submodule "staking-expiry-checker"]
 	path = staking-expiry-checker
 	url = https://github.com/babylonchain/staking-expiry-checker.git
