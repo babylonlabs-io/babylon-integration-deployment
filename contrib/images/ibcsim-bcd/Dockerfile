@@ -33,7 +33,7 @@ RUN mkdir -p /root/.ssh && ssh-keyscan github.com >> /root/.ssh/known_hosts
 RUN git config --global url."git@github.com:".insteadOf "https://github.com/"
 ENV GOPRIVATE=github.com/babylonchain/*
 
-RUN --mount=type=secret,id=sshKey,target=/root/.ssh/id_rsa cd babylon-sdk && git fetch origin && git checkout origin/main && make install && cd -
+RUN --mount=type=secret,id=sshKey,target=/root/.ssh/id_rsa cd babylon-sdk && git fetch origin && git checkout v0.2.0-rc.0 && make install && cd -
 
 FROM debian:bullseye-slim AS run
 

@@ -87,6 +87,19 @@ sed -i 's#"tcp://0.0.0.0:1317"#"tcp://0.0.0.0:1318"#g' $CHAINDIR/$CHAINID/config
 sed -i 's/"bond_denom": "stake"/"bond_denom": "'"$DENOM"'"/g' $CHAINDIR/$CHAINID/config/genesis.json
 # sed -i '' 's#index-events = \[\]#index-events = \["message.action","send_packet.packet_src_channel","send_packet.packet_sequence"\]#g' $CHAINDIR/$CHAINID/config/app.toml
 
+## Script for getting contract addresses
+## TODO(euphrates): pass a gov prop on setting the Babylon / BTC staking contract addresses
+# babylonContractAddr=$(bcd query wasm list-contract-by-code 1 -o json | jq -r '.contracts[0]')
+# btcStakingContractAddr=$(bcd query wasm list-contract-by-code 2 -o json | jq -r '.contracts[0]')
+# echo "babylonContractAddr is $babylonContractAddr"
+# echo "btcStakingContractAddr is $btcStakingContractAddr"
+
+# update contract address in genesis
+babylonContractAddr=bbnc14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9syx25zf
+btcStakingContractAddr=bbnc1nc5tatafv6eyq7llkr2gv50ff9e22mnf70qgjlv737ktmt4eswrqgn0kq0
+sed -i 's/"babylon_contract_address": ""/"babylon_contract_address": "'"$babylonContractAddr"'"/g' $CHAINDIR/$CHAINID/config/genesis.json
+sed -i 's/"btc_staking_contract_address": ""/"btc_staking_contract_address": "'"$btcStakingContractAddr"'"/g' $CHAINDIR/$CHAINID/config/genesis.json
+
 # Start
 echo "Starting $BINARY..."
 $BINARY --home $CHAINDIR/$CHAINID start --pruning=nothing --grpc-web.enable=false --grpc.address="0.0.0.0:$GRPCPORT" >$CHAINDIR/$CHAINID.log 2>&1 &
@@ -106,3 +119,4 @@ sleep 5
 # node that the code id is guaranteed to be 1
 echo "Instantiating contract with code $BABYLON_CONTRACT_CODE_DIR..."
 $BINARY --home $CHAINDIR/$CHAINID tx wasm instantiate 1 "$INSTANTIATING_CFG" --admin=$(bcd --home $CHAINDIR/$CHAINID keys show user --keyring-backend test -a) --label "v0.0.1" $KEYRING --from user --chain-id $CHAINID --gas 20000000000 --gas-prices 0.001ustake --node http://localhost:$RPCPORT -y --amount 100000stake
+
