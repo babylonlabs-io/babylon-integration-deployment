@@ -57,10 +57,10 @@ docker exec babylondnode0 /bin/sh -c "/bin/babylond --home /babylondhome tx btcs
 echo "Registered a consumer chain with consumer ID $CONSUMER_ID"
 
 # create FPs for the consumer chain
-NUM_CZ_FPs=3
+NUM_COMSUMER_FPS=3
 echo ""
-echo "Creating $NUM_CZ_FPs consumer chain finality providers"
-for idx in $(seq 1 $((NUM_CZ_FPs))); do
+echo "Creating $NUM_COMSUMER_FPS consumer chain finality providers"
+for idx in $(seq 1 $((NUM_COMSUMER_FPS))); do
     docker exec consumer-fp /bin/sh -c "
         BTC_PK=\$(/bin/fpcli create-finality-provider --key-name finality-provider$idx \
            --chain-id \"$CONSUMER_ID\" \
@@ -68,12 +68,50 @@ for idx in $(seq 1 $((NUM_CZ_FPs))); do
         /bin/fpcli rfp --btc-pk \$BTC_PK
     "
 done
-echo "Created $NUM_CZ_FPs consumer chain finality providers"
+echo "Created $NUM_COMSUMER_FPS consumer chain finality providers"
 
 # Get the public keys of the consumer chain finality providers
 cz_btc_pks=$(docker exec babylondnode0 /bin/sh -c "/bin/babylond query btcstkconsumer finality-providers \"$CONSUMER_ID\" --output json" | jq -r ".finality_providers[].btc_pk")
 echo ""
 echo "BTC PK of consumer chain finality providers: $cz_btc_pks"
+
+# Query contract state and check the count of finality providers
+echo ""
+echo "Check if contract has stored the finality providers..."
+while true; do
+    # Get the finality providers count from the contract state
+    finalityProvidersCount=$(docker exec ibcsim-bcd /bin/sh -c "bcd q wasm contract-state smart $btcStakingContractAddr '{\"finality_providers\":{}}' -o json | jq '.data.fps | length'")
+
+    echo "Finality provider count in contract store: $finalityProvidersCount"
+
+    if [ "$finalityProvidersCount" -eq "$NUM_COMSUMER_FPS" ]; then
+        echo "The number of finality providers in contract matches the expected count."
+        break
+    else
+        sleep 10
+    fi
+done
+
+# ensure finality providers are committing public randomness
+echo ""
+echo "Ensuring all finality providers have committed public randomness..."
+while true; do
+    cnt=0
+    for cz_btc_pk in $cz_btc_pks; do
+        pr_commit_info=$(docker exec ibcsim-bcd /bin/sh -c "bcd query wasm contract-state smart $btcStakingContractAddr '{\"last_pub_rand_commit\":{\"btc_pk_hex\":\"$cz_btc_pk\"}}' -o json")
+        if [ $(echo "$pr_commit_info" | jq '.data | length') -ne "1" ]; then
+            echo "The finality provider $cz_btc_pk hasn't committed any public randomness yet"
+            sleep 10
+        else
+            echo "The finality provider $cz_btc_pk has committed public randomness"
+            cnt=$((cnt + 1))
+        fi
+    done
+    if [ "$cnt" -eq $NUM_COMSUMER_FPS ]; then
+        echo "All of $cz_btc_pk finality providers have committed public randomness!"
+        break
+    fi
+done
 
 # Make BTC delegations to the finality providers
 echo ""
@@ -105,25 +143,8 @@ while true; do
 
     echo "Active delegations count in Babylon: $activeDelegations"
 
-    if [ "$activeDelegations" -eq "$NUM_CZ_FPs" ]; then
+    if [ "$activeDelegations" -eq "$NUM_COMSUMER_FPS" ]; then
         echo "All delegations have become active"
-        break
-    else
-        sleep 10
-    fi
-done
-
-# Query contract state and check the count of finality providers
-echo ""
-echo "Check if contract has stored the finality providers..."
-while true; do
-    # Get the finality providers count from the contract state
-    finalityProvidersCount=$(docker exec ibcsim-bcd /bin/sh -c "bcd q wasm contract-state smart $btcStakingContractAddr '{\"finality_providers\":{}}' -o json | jq '.data.fps | length'")
-
-    echo "Finality provider count in contract store: $finalityProvidersCount"
-
-    if [ "$finalityProvidersCount" -eq "$NUM_CZ_FPs" ]; then
-        echo "The number of finality providers in contract matches the expected count."
         break
     else
         sleep 10
@@ -139,7 +160,7 @@ while true; do
 
     echo "Delegations count in contract store: $delegationsCount"
 
-    if [ "$delegationsCount" -eq "$NUM_CZ_FPs" ]; then
+    if [ "$delegationsCount" -eq "$NUM_COMSUMER_FPS" ]; then
         echo "The number of delegations in contract matches the expected count."
         break
     else
@@ -152,34 +173,14 @@ echo "Ensuring all finality providers have voting power"...
 while true; do
     fp_by_info=$(docker exec ibcsim-bcd /bin/sh -c "bcd query wasm contract-state smart $btcStakingContractAddr '{\"finality_providers_by_power\":{}}' -o json")
 
-    if [ $(echo "$fp_by_info" | jq '.data.fps | length') -ne "$NUM_CZ_FPs" ]; then
-        echo "There are less than $NUM_CZ_FPs finality providers"
+    if [ $(echo "$fp_by_info" | jq '.data.fps | length') -ne "$NUM_COMSUMER_FPS" ]; then
+        echo "There are less than $NUM_COMSUMER_FPS finality providers"
         sleep 10
     elif jq -e '.data.fps[].power | select(. <= 0)' <<<"$fp_by_info" > /dev/null; then
         echo "Some finality providers have zero voting power"
         sleep 10
     else
         echo "All finality providers have positive voting power"
-        break
-    fi
-done
-
-echo ""
-echo "Ensuring all finality providers have committed public randomness..."
-while true; do
-    cnt=0
-    for cz_btc_pk in $cz_btc_pks; do
-        pr_commit_info=$(docker exec ibcsim-bcd /bin/sh -c "bcd query wasm contract-state smart $btcStakingContractAddr '{\"last_pub_rand_commit\":{\"btc_pk_hex\":\"$cz_btc_pk\"}}' -o json")
-        if [ $(echo "$pr_commit_info" | jq '.data | length') -ne "1" ]; then
-            echo "The finality provider $cz_btc_pk hasn't committed any public randomness yet"
-            sleep 10
-        else
-            echo "The finality provider $cz_btc_pk has committed public randomness"
-            cnt=$((cnt + 1))
-        fi
-    done
-    if [ "$cnt" -eq 3 ]; then
-        echo "All of $cz_btc_pk finality providers have committed public randomness!"
         break
     fi
 done
@@ -199,8 +200,21 @@ while true; do
             cnt=$((cnt + 1))
         fi
     done
-    if [ "$cnt" -eq 3 ]; then
+    if [ "$cnt" -eq $NUM_COMSUMER_FPS ]; then
         echo "All of $cz_btc_pk finality providers have submitted finality signatures!"
+        break
+    fi
+done
+
+echo ""
+echo "Ensuring the block on the consumer chain is finalised by BTC staking..."
+while true; do
+    indexed_block=$(docker exec ibcsim-bcd /bin/sh -c "bcd query wasm contract-state smart $btcStakingContractAddr '{\"block\":{\"height\":$last_block_height}}' -o json")
+    if [ $(echo "$indexed_block" | jq '.data.finalized') != "true" ]; then
+        echo "The block at height $last_block_height is not finalised yet"
+        sleep 10
+    else
+        echo "The block at height $last_block_height is finalised!"
         break
     fi
 done

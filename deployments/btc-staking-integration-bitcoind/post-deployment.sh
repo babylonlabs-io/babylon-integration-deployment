@@ -17,7 +17,7 @@ mkdir -p .testnets/btc-staker/keyring-test
 mv .testnets/node0/babylond/.tmpdir/keyring-test/* .testnets/btc-staker/keyring-test
 [[ "$(uname)" == "Linux" ]] && chown -R 1138:1138 .testnets/btc-staker
 
-sleep 5
+sleep 7
 echo "fund finality provider account on Babylon"
 docker exec babylondnode0 /bin/sh -c '
     FP_BABYLON_ADDR=$(/bin/babylond --home /babylondhome/.tmpdir keys add \
@@ -30,7 +30,7 @@ mkdir -p .testnets/finality-provider/keyring-test
 cp -R .testnets/node0/babylond/.tmpdir/keyring-test/* .testnets/finality-provider/keyring-test
 [[ "$(uname)" == "Linux" ]] && chown -R 1138:1138 .testnets/finality-provider
 
-sleep 5
+sleep 7
 echo "fund finality provider account on Babylon consumer daemon"
 docker exec ibcsim-bcd /bin/sh -c '
     FP_CONSUMER_ADDR=$(bcd --home /data/bcd/.tmpdir keys add \
@@ -44,7 +44,7 @@ cp -R .testnets/node0/babylond/.tmpdir/keyring-test/* .testnets/consumer-fp/keyr
 cp -R .testnets/bcd/.tmpdir/keyring-test/* .testnets/consumer-fp/keyring-test
 [[ "$(uname)" == "Linux" ]] && chown -R 1138:1138 .testnets/consumer-fp
 
-sleep 5
+sleep 7
 echo "fund vigilante account on Babylon"
 docker exec babylondnode0 /bin/sh -c '
     VIGILANTE_ADDR=$(/bin/babylond --home /babylondhome/.tmpdir keys add \
@@ -58,7 +58,7 @@ mv .testnets/node0/babylond/.tmpdir/keyring-test/* .testnets/vigilante/keyring-t
 cp .testnets/node0/babylond/config/genesis.json .testnets/vigilante/bbnconfig
 [[ "$(uname)" == "Linux" ]] && chown -R 1138:1138 .testnets/vigilante
 
-sleep 5
+sleep 7
 echo "fund covenant committee account on Babylon"
 mkdir -p .testnets/node0/babylond/.tmpdir/keyring-test
 cp .testnets/covenant-emulator/keyring-test/* .testnets/node0/babylond/.tmpdir/keyring-test/

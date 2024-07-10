@@ -1,5 +1,3 @@
-version: "3"
-
 services:
   babylondnode0:
     container_name: babylondnode0
