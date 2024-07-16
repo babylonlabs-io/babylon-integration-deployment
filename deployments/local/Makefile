@@ -25,6 +25,11 @@ start-phase-2-full-test: build-all
 start-bbn-with-btc-delegation: build-all
 	./single-node-with-btc-delegation.sh
 
+upgrade-vanilla: build-all
+	./single-node.sh
+	sleep 10
+	./upgrade-single-node.sh
+
 stop-all:
 	./kill-all-process.sh
 	rm -rf $(CURDIR)/data
