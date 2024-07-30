@@ -13,6 +13,7 @@ CHAIN_DIR="${CHAIN_DIR:-$CWD/data}"
 VIGILANTE_HOME="${VIGILANTE_HOME:-$CHAIN_DIR/vigilante}"
 COVD_HOME="${COVD_HOME:-$CHAIN_DIR/covd}"
 CHAIN_ID_PHASE1="${CHAIN_ID_PHASE1:-test-1}"
+NODE_BIN="${1:-$CWD/../../babylon/build/babylond}"
 CLEANUP="${CLEANUP:-1}"
 
 if [[ "$CLEANUP" == 1 || "$CLEANUP" == "1" ]]; then
@@ -22,13 +23,6 @@ if [[ "$CLEANUP" == 1 || "$CLEANUP" == "1" ]]; then
   echo "Removed $CHAIN_DIR"
 fi
 
-if ! command -v babylond &> /dev/null
-then
-  echo "⚠️ babylond command could not be found!"
-  echo "Install it by checking https://github.com/Babylonchain/babylon"
-  exit 1
-fi
-
 # Starts everything with btc delegation
 $CWD/single-node-with-btc-delegation.sh
 
@@ -36,7 +30,7 @@ WAIT_UNTIL=1
 amountActiveDels=0
 while [ $amountActiveDels -lt $WAIT_UNTIL ]
 do
-  amountActiveDels="$(babylond q btcstaking btc-delegations active -o json | jq '.btc_delegations | length')"
+  amountActiveDels="$($NODE_BIN q btcstaking btc-delegations active -o json | jq '.btc_delegations | length')"
   echo "Current active dels: $amountActiveDels, waiting to reach $WAIT_UNTIL"
   sleep 10
 done
@@ -46,10 +40,12 @@ bbnChain1Dir="$CHAIN_DIR/$CHAIN_ID_PHASE1"
 chain1N0Home="$bbnChain1Dir/n0"
 PATH_OF_PIDS=$bbnChain1Dir/*.pid $CWD/kill-process.sh
 
+sleep 5
+
 exportedGenFile=$chain1N0Home/config/genesis.exported.json
 
 # Export the genesis
-babylond --home $chain1N0Home export > $exportedGenFile
+$NODE_BIN --home $chain1N0Home export > $exportedGenFile
 
 # Starts a new babylon chain with a new chain id
 CHAIN_ID_PHASE2=test-2
@@ -60,7 +56,7 @@ WAIT_UNTIL=1
 amountActiveDels=0
 while [ $amountActiveDels -lt $WAIT_UNTIL ]
 do
-  amountActiveDels="$(babylond q btcstaking btc-delegations active -o json | jq '.btc_delegations | length')"
+  amountActiveDels="$($NODE_BIN q btcstaking btc-delegations active -o json | jq '.btc_delegations | length')"
   echo "Current active dels: $amountActiveDels, waiting to reach $WAIT_UNTIL"
   sleep 10
 done
