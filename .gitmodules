@@ -1,9 +1,9 @@
-[submodule "faucet"]
-	path = faucet
-	url = git@github.com:babylonlabs-io/faucet
 [submodule "contrib/images/ibcsim-wasmd/babylon-contract"]
 	path = contrib/images/ibcsim-wasmd/babylon-contract
 	url = git@github.com:babylonlabs-io/babylon-contract.git
+[submodule "faucet"]
+	path = faucet
+	url = git@github.com:babylonlabs-io/faucet
 [submodule "btc-staker"]
 	path = btc-staker
 	url = git@github.com:babylonlabs-io/btc-staker.git
@@ -12,10 +12,10 @@
 	url = git@github.com:babylonlabs-io/finality-provider.git
 [submodule "babylon-api"]
 	path = babylon-api
-	url = git@github.com:babylonchain/babylon-api.git # todo: migrate to babylonlabs-io
+	url = git@github.com:babylonchain/babylon-api.git  # todo: migrate to babylonlabs-io
 [submodule "rpc-poller"]
 	path = rpc-poller
-	url = git@github.com:babylonchain/rpc-poller.git # todo: migrate to babylonlabs-io
+	url = git@github.com:babylonchain/rpc-poller.git  # todo: migrate to babylonlabs-io
 [submodule "covenant-emulator"]
 	path = covenant-emulator
 	url = git@github.com:babylonlabs-io/covenant-emulator.git
@@ -40,7 +40,6 @@
 [submodule "cli-tools"]
 	path = cli-tools
 	url = https://github.com/babylonlabs-io/cli-tools.git
-	branch = tx-gen-commands
 [submodule "staking-expiry-checker"]
 	path = staking-expiry-checker
 	url = https://github.com/babylonlabs-io/staking-expiry-checker.git
