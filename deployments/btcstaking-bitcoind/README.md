@@ -37,19 +37,19 @@ that spins up the network:
 
 ```shell
 [+] Running 13/13
-✔ Network artifacts_localnet      Created                                                               0.2s 
- ✔ Container babylondnode0        Started                                                               0.5s 
- ✔ Container babylondnode1        Started                                                               0.6s 
- ✔ Container bitcoindsim          Started                                                               0.5s 
- ✔ Container vigilante-reporter   Started                                                               1.6s 
- ✔ Container vigilante-submitter  Started                                                               1.2s 
- ✔ Container finality-provider    Started                                                               1.0s 
- ✔ Container vigilante-monitor    Started                                                               2.0s 
- ✔ Container btc-staker           Started                                                               1.2s 
- ✔ Container covenant             Started                                                               1.0s 
- ✔ Container mongodb              Started                                                               1.0s 
- ✔ Container babylon-api          Started                                                               1.0s 
- ✔ Container rpc-poller           Started                                                               1.0s 
+✔ Network artifacts_localnet      Created                                                               0.2s
+ ✔ Container babylondnode0        Started                                                               0.5s
+ ✔ Container babylondnode1        Started                                                               0.6s
+ ✔ Container bitcoindsim          Started                                                               0.5s
+ ✔ Container vigilante-reporter   Started                                                               1.6s
+ ✔ Container vigilante-submitter  Started                                                               1.2s
+ ✔ Container finality-provider    Started                                                               1.0s
+ ✔ Container vigilante-monitor    Started                                                               2.0s
+ ✔ Container btc-staker           Started                                                               1.2s
+ ✔ Container covenant             Started                                                               1.0s
+ ✔ Container mongodb              Started                                                               1.0s
+ ✔ Container babylon-api          Started                                                               1.0s
+ ✔ Container rpc-poller           Started                                                               1.0s
 ```
 
 ## Inspecting the BTC Staking Protocol demo
@@ -255,7 +255,7 @@ BTC Staking operations that the showcasing script performed in a manual manner.
 ### Generating a new Finality Provider manually
 
 To achieve this, we need to take a shell into the Finality Provider Docker container
-and interact with the daemon through its CLI util, `fpcli`.
+and interact with the daemon through its CLI util, `fpd`.
 
 ```shell
 # Take shell into the running Finality Provider daemon
@@ -264,7 +264,7 @@ $ docker exec -it finality-provider sh
 # public key (where the staked tokens will be sent to) and a Babylon account
 # (where the Babylon reward tokens will be sent to). The public keys of both are
 # visible from the command output.
-~ fpcli create-finality-provider --key-name my_finality_provider
+~ fpd create-finality-provider --key-name my_finality_provider
 {
     "babylon_pk": "0251259b5c88d6ac79d86615220a8111ebb238047df0689357274f004fba3e5a89",
     "btc_pk": "f6eae95d0e30e790bead4e4359a0ea596f2179a10f96dcedd953f07331918ca7"
@@ -272,7 +272,7 @@ $ docker exec -it finality-provider sh
 # Register the Finality Provider with Babylon. Now, the Finality Provider is ready to receive
 # delegations. The output contains the hash of the finality provider registration
 # Babylon transaction.
-~ fpcli register-finality-provider --key-name my_finality_provider
+~ fpd register-finality-provider --key-name my_finality_provider
 {
     "tx_hash": "800AE5BBDADE974C5FA5BD44336C7F1A952FAB9F5F9B43F7D4850BA449319BAA"
 }
@@ -284,7 +284,7 @@ $ docker exec -it finality-provider sh
 #   not anymore OR has been slashed)
 # The `last_committed_height` field is the Babylon height up to which the
 # Finality Provider has committed sufficient EOTS randomness
-~ fpcli list-finality-providers
+~ fpd list-finality-providers
 {
     "finality-providers": [
         ...
@@ -340,19 +340,19 @@ public key hex
 Now, we will submit a conflicting finality signature for this Finality Provider, for the
 latest Babylon height that they have submitted a finality signature. To achieve
 this, we need to take shell into the Finality Provider container and interact with
-the daemon through its CLI utility, `fpcli`.
+the daemon through its CLI utility, `fpd`.
 
 ```shell
 # Take shell into the running Finality Provider daemon
 $ docker exec -it finality-provider sh
 # Find the latest height for which the Finality Providers have submitted finality
 # signatures
-~ attackHeight=$(fpcli ls | jq -r ".finality_providers[].last_voted_height" | sort -nr | head -n 1)
+~ attackHeight=$(fpd ls | jq -r ".finality_providers[].last_voted_height" | sort -nr | head -n 1)
 # Add a signature for a conflicting block using the Finality Provider's Babylon public
 # key; the command will by default vote for a predefined conflicting block.
 # To override the predefined conflicting block, the flag `--last-commit-hash`
 # can be utilized.
-~ fpcli add-finality-sig --height $attackHeight \
+~ fpd add-finality-sig --height $attackHeight \
 --babylon-pk 0251259b5c88d6ac79d86615220a8111ebb238047df0689357274f004fba3e5a89
 {
     "tx_hash": "A7D69335C19C3E7F312A5C4BD71FBFC1DD27B863A13C8AD3CABBCCFDCA218461",

@@ -10,7 +10,6 @@ BBN_DEPLOYMENTS="${BBN_DEPLOYMENTS:-$CWD/../..}"
 
 FPD_BUILD="${FPD_BUILD:-$BBN_DEPLOYMENTS/finality-provider/build}"
 FPD_BIN="${FPD_BIN:-$FPD_BUILD/fpd}"
-FPDCLI_BIN="${FPDCLI_BIN:-$FPD_BUILD/fpcli}"
 
 BABYLOND_DIR="${BABYLOND_DIR:-$BBN_DEPLOYMENTS/babylon}"
 BBN_BIN="${BBN_BIN:-$BABYLOND_DIR/build/babylond}"
@@ -48,8 +47,8 @@ if [ ! -f $FPD_BIN ]; then
   exit 1
 fi
 
-if [ ! -f $FPDCLI_BIN ]; then
-  echo "$FPDCLI_BIN does not exists. build it first with $~ make"
+if [ ! -f $FPD_BIN ]; then
+  echo "$FPD_BIN does not exists. build it first with $~ make"
   exit 1
 fi
 
@@ -76,7 +75,7 @@ sleep 2
 
 # Creates the finality provider and stores it into the database and eots
 createFPFile=$outdir/create-finality-provider.json
-$FPDCLI_BIN create-finality-provider --key-name $fpKeyName $cid $homeF $dAddr --moniker val-fp > $createFPFile
+$FPD_BIN create-finality-provider --key-name $fpKeyName $cid $homeF $dAddr --moniker val-fp > $createFPFile
 btcPKHex=$(cat $createFPFile | jq '.btc_pk_hex' -r)
 
 # Transfer funds to the fp acc created
@@ -85,4 +84,4 @@ $BBN_BIN tx bank send user $fpBbnAddr 100000000ubbn $homeN0 $kbt $cid -y
 
 # Register the finality provider
 registerFPFile=$outdir/register-finality-provider.json
-$FPDCLI_BIN register-finality-provider $dAddr --btc-pk $btcPKHex > $registerFPFile
+$FPD_BIN register-finality-provider $dAddr --eots-pk $btcPKHex > $registerFPFile
