@@ -40,10 +40,10 @@ sleep 10
 echo ""
 echo "Create 1 Babylon finality provider"
 docker exec finality-provider /bin/sh -c "
-    BTC_PK=\$(/bin/fpcli create-finality-provider --key-name finality-provider0 \
+    BTC_PK=\$(/bin/fpd create-finality-provider --key-name finality-provider0 \
         --chain-id $BBN_CHAIN_ID \
         --moniker \"Babylon finality provider 0\" | jq -r .btc_pk_hex ); \
-    /bin/fpcli rfp --btc-pk \$BTC_PK
+    /bin/fpd register-finality-provider \$BTC_PK
 "
 
 # Get the public keys of the Babylon finality providers
@@ -62,10 +62,10 @@ echo ""
 echo "Creating $NUM_COMSUMER_FPS consumer chain finality providers"
 for idx in $(seq 1 $((NUM_COMSUMER_FPS))); do
     docker exec consumer-fp /bin/sh -c "
-        BTC_PK=\$(/bin/fpcli create-finality-provider --key-name finality-provider$idx \
+        BTC_PK=\$(/bin/fpd create-finality-provider --key-name finality-provider$idx \
            --chain-id \"$CONSUMER_ID\" \
             --moniker \"Finality Provider $idx\" | jq -r .btc_pk_hex ); \
-        /bin/fpcli rfp --btc-pk \$BTC_PK
+        /bin/fpd register-finality-provider \$BTC_PK
     "
 done
 echo "Created $NUM_COMSUMER_FPS consumer chain finality providers"
