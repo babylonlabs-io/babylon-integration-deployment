@@ -123,18 +123,16 @@ i=0
 for cz_btc_pk in $cz_btc_pks; do
     stakingTime=50000
 
-    echo "Delegating 1 million Satoshis from BTC address ${delAddrs[i]} to Finality Provider with CZ finality provider $cz_btc_pk and Babylon finality provider $bbn_btc_pk for $stakingTime BTC blocks";
+    echo "Delegating 1 million Satoshis from BTC address ${delAddrs[i]} to Finality Provider with CZ finality provider $cz_btc_pk and Babylon finality provider $bbn_btc_pk for $stakingTime BTC blocks"
 
     btcTxHash=$(docker exec btc-staker /bin/sh -c \
         "/bin/stakercli dn stake --staker-address ${delAddrs[i]} --staking-amount 1000000 --finality-providers-pks $bbn_btc_pk --finality-providers-pks $cz_btc_pk --staking-time $stakingTime | jq -r '.tx_hash'")
     echo "Delegation was successful; staking tx hash is $btcTxHash"
-    i=$((i+1))
+    i=$((i + 1))
 done
 echo "Made a delegation to each of the finality providers"
 
 # Query babylon and check if the delegations are active
-# NOTE: avoid querying finality provider as it might be down
-# https://github.com/babylonchain/finality-provider/issues/327
 echo ""
 echo "Wait a few minutes for the delegations to become active..."
 while true; do
@@ -176,7 +174,7 @@ while true; do
     if [ $(echo "$fp_by_info" | jq '.data.fps | length') -ne "$NUM_COMSUMER_FPS" ]; then
         echo "There are less than $NUM_COMSUMER_FPS finality providers"
         sleep 10
-    elif jq -e '.data.fps[].power | select(. <= 0)' <<<"$fp_by_info" > /dev/null; then
+    elif jq -e '.data.fps[].power | select(. <= 0)' <<<"$fp_by_info" >/dev/null; then
         echo "Some finality providers have zero voting power"
         sleep 10
     else
