@@ -55,7 +55,6 @@ CODE_ID=$(docker exec babylondnode0 /bin/sh -c "
 echo "CODE_ID: $CODE_ID"
 echo
 
-
 ### Instantiate the CW contract
 JSON_VALUE=$(printf '{"admin":"%s","consumer_id":"%s","activated_height":%d,"is_enabled":true}' "$ADMIN" "$CONSUMER_ID" "$ACTIVATED_HEIGHT")
 echo "Instantiating the CW contract with arguments: $JSON_VALUE ..."
@@ -72,7 +71,6 @@ CREATE_CONTRACT_TX_HASH=$(docker exec babylondnode0 /bin/sh -c "
 echo "CREATE_CONTRACT_TX_HASH: $CREATE_CONTRACT_TX_HASH"
 echo
 sleep 5
-
 
 ### Query the CW contract config to verify the CW contract is instantiated correctly
 echo "Query the CW contract config to verify the CW contract is instantiated correctly"

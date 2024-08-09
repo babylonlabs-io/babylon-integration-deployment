@@ -11,12 +11,18 @@ start-babylond:
 deploy-cw-contract:
 	@./deploy-cw-contract.sh $(ARGS)
 
+# Register OP consumer
+.PHONY: register-op-consumer
+register-op-consumer:
+	@./register-op-consumer.sh $(ARGS)
+
 # Start demo
 .PHONY: demo-start
 demo-start: start-babylond
 	sleep 2
 	@$(MAKE) deploy-cw-contract
+	@$(MAKE) register-op-consumer
 
 .PHONY: demo-test
 demo-test:
-	@$(MAKE) deploy-cw-contract
+	@$(MAKE) register-op-consumer
