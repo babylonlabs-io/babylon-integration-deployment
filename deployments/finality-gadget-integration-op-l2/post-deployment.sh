@@ -32,6 +32,15 @@ sleep 5
 mkdir -p .testnets/vigilante/keyring-test .testnets/vigilante/bbnconfig
 mv .testnets/node0/babylond/.tmpdir/keyring-test/* .testnets/vigilante/keyring-test
 cp .testnets/node0/babylond/config/genesis.json .testnets/vigilante/bbnconfig
-[[ "$(uname)" == "Linux" ]] && chown -R 1138:1138 .testnets/vigilante
-echo "setup vigilante"
-sleep 7
+if [[ "$(uname)" == "Linux" ]]; then
+    chown -R 1138:1138 .testnets/vigilante
+    echo "chown done for .testnets/vigilante on $(uname) system"
+elif [[ "$(uname)" == "Darwin" ]]; then # for MacOS
+    docker run --rm -v "$(pwd)/.testnets/vigilante:/data" alpine chown -R 1138:1138 /data
+    echo "chown done for .testnets/vigilante on $(uname) system"
+else
+    echo "unsupported $(uname) system"
+    exit 1
+fi
+echo
+sleep 5
