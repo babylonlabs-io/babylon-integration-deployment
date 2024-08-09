@@ -1,32 +1,44 @@
+include .env
+export
+
+DOCKER := $(shell which docker)
 GIT_TOPLEVEL := $(shell git rev-parse --show-toplevel)
 
-# Start babylon localnet
-.PHONY: start-babylond
-start-babylond:
-	cd $(GIT_TOPLEVEL)/babylon-private/ && \
-	$(MAKE) localnet-start
+build-bitcoindsim:
+	$(MAKE) -C $(GIT_TOPLEVEL)/contrib/images bitcoindsim
 
-# Deploy CW contract (from inside node0 container)
-.PHONY: deploy-cw-contract
-deploy-cw-contract:
-	@./deploy-cw-contract.sh $(ARGS)
+build-babylond:
+	$(MAKE) -C $(GIT_TOPLEVEL)/babylon-private/contrib/images babylond
 
-# Register OP consumer
-.PHONY: register-op-consumer
-register-op-consumer:
-	@./register-op-consumer.sh $(ARGS)
+build-vigilante:
+	$(MAKE) -C $(GIT_TOPLEVEL)/vigilante build-docker
+
+build-btc-staker-phase-3:
+	$(MAKE) -C $(GIT_TOPLEVEL)/btc-staker-phase-3 build-docker
+
+build-finality-provider-phase-3:
+	$(MAKE) -C $(GIT_TOPLEVEL)/finality-provider-phase-3 build-docker
+
+build-covenant-emulator:
+	$(MAKE) -C $(GIT_TOPLEVEL)/covenant-emulator build-docker
+
+build-deployment-finality-gadget-integration-op-l2: build-babylond build-bitcoindsim build-vigilante
+
+start-deployment-finality-gadget-integration-op-l2: stop-deployment-finality-gadget-integration-op-l2 build-deployment-finality-gadget-integration-op-l2
+	./pre-deployment.sh
+	$(DOCKER) compose -f artifacts/docker-compose.yml up -d
+	./post-deployment.sh
+
+stop-deployment-finality-gadget-integration-op-l2:
+	$(DOCKER) compose -f artifacts/docker-compose.yml down
+	rm -rf $(CURDIR)/.testnets
 
 # Start demo
 .PHONY: demo-start
-demo-start: start-babylond
+demo-start: start-deployment-finality-gadget-integration-op-l2
 	sleep 2
-	@$(MAKE) deploy-cw-contract
-	@$(MAKE) register-op-consumer
-	# TODO: start local signet node
-	# TODO: start eots manager
-	# TODO: start OP
-	# TODO: start FP
+	@./deploy-cw-contract.sh
+	@./register-op-consumer.sh
 
 .PHONY: demo-test
-demo-test:
-	@$(MAKE) register-op-consumer
+demo-test: demo-start
