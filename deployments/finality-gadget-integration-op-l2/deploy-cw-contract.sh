@@ -1,13 +1,10 @@
 #!/bin/bash
 set -euo pipefail
 
-# Get the container ID of babylondnode0
-BABYLON_CONTAINER_ID=$(docker ps -qf "name=babylondnode0")
-
 ### Store the CW contract code
 # Copy the wasm file into the container
 echo "wasm file: $WASM_FILE_LOCAL, $WASM_FILE_CONTAINER"
-docker cp $WASM_FILE_LOCAL $BABYLON_CONTAINER_ID:$WASM_FILE_CONTAINER
+docker cp $WASM_FILE_LOCAL babylondnode0:$WASM_FILE_CONTAINER
 echo
 echo "Storing the CW contract code..."
 STORE_CODE_TX_HASH=$(docker exec babylondnode0 /bin/sh -c "
