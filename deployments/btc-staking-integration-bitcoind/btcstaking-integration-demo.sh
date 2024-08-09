@@ -39,8 +39,9 @@ sleep 10
 # create FP for Babylon
 echo ""
 echo "Create 1 Babylon finality provider"
+FP_KEYNAME="finality-provider"
 docker exec finality-provider /bin/sh -c "
-    BTC_PK=\$(/bin/fpd create-finality-provider --key-name finality-provider0 \
+    BTC_PK=\$(/bin/fpd create-finality-provider --key-name $FP_KEYNAME \
         --chain-id $BBN_CHAIN_ID \
         --moniker \"Babylon finality provider 0\" | jq -r .btc_pk_hex ); \
     /bin/fpd register-finality-provider \$BTC_PK
@@ -57,12 +58,13 @@ docker exec babylondnode0 /bin/sh -c "/bin/babylond --home /babylondhome tx btcs
 echo "Registered a consumer chain with consumer ID $CONSUMER_ID"
 
 # create FPs for the consumer chain
-NUM_COMSUMER_FPS=3
+NUM_COMSUMER_FPS=1
+CONSUMER_FP_KEYNAME="finality-provider"
 echo ""
 echo "Creating $NUM_COMSUMER_FPS consumer chain finality providers"
 for idx in $(seq 1 $((NUM_COMSUMER_FPS))); do
     docker exec consumer-fp /bin/sh -c "
-        BTC_PK=\$(/bin/fpd create-finality-provider --key-name finality-provider$idx \
+        BTC_PK=\$(/bin/fpd create-finality-provider --key-name $CONSUMER_FP_KEYNAME \
            --chain-id \"$CONSUMER_ID\" \
             --moniker \"Finality Provider $idx\" | jq -r .btc_pk_hex ); \
         /bin/fpd register-finality-provider \$BTC_PK
@@ -71,9 +73,9 @@ done
 echo "Created $NUM_COMSUMER_FPS consumer chain finality providers"
 
 # Get the public keys of the consumer chain finality providers
-cz_btc_pks=$(docker exec babylondnode0 /bin/sh -c "/bin/babylond query btcstkconsumer finality-providers \"$CONSUMER_ID\" --output json" | jq -r ".finality_providers[].btc_pk")
+CONSUMER_BTC_PKS=$(docker exec babylondnode0 /bin/sh -c "/bin/babylond query btcstkconsumer finality-providers \"$CONSUMER_ID\" --output json" | jq -r ".finality_providers[].btc_pk")
 echo ""
-echo "BTC PK of consumer chain finality providers: $cz_btc_pks"
+echo "BTC PK of consumer chain finality providers: $CONSUMER_BTC_PKS"
 
 # Query contract state and check the count of finality providers
 echo ""
@@ -97,18 +99,18 @@ echo ""
 echo "Ensuring all finality providers have committed public randomness..."
 while true; do
     cnt=0
-    for cz_btc_pk in $cz_btc_pks; do
-        pr_commit_info=$(docker exec ibcsim-bcd /bin/sh -c "bcd query wasm contract-state smart $btcStakingContractAddr '{\"last_pub_rand_commit\":{\"btc_pk_hex\":\"$cz_btc_pk\"}}' -o json")
+    for consumer_btc_pk in $CONSUMER_BTC_PKS; do
+        pr_commit_info=$(docker exec ibcsim-bcd /bin/sh -c "bcd query wasm contract-state smart $btcStakingContractAddr '{\"last_pub_rand_commit\":{\"btc_pk_hex\":\"$consumer_btc_pk\"}}' -o json")
         if [ $(echo "$pr_commit_info" | jq '.data | length') -ne "1" ]; then
-            echo "The finality provider $cz_btc_pk hasn't committed any public randomness yet"
+            echo "The finality provider $consumer_btc_pk hasn't committed any public randomness yet"
             sleep 10
         else
-            echo "The finality provider $cz_btc_pk has committed public randomness"
+            echo "The finality provider $consumer_btc_pk has committed public randomness"
             cnt=$((cnt + 1))
         fi
     done
     if [ "$cnt" -eq $NUM_COMSUMER_FPS ]; then
-        echo "All of $cz_btc_pk finality providers have committed public randomness!"
+        echo "All of $consumer_btc_pk finality providers have committed public randomness!"
         break
     fi
 done
@@ -120,13 +122,13 @@ sleep 10
 # Get the available BTC addresses for delegations
 delAddrs=($(docker exec btc-staker /bin/sh -c '/bin/stakercli dn list-outputs | jq -r ".outputs[].address" | sort | uniq'))
 i=0
-for cz_btc_pk in $cz_btc_pks; do
+for consumer_btc_pk in $CONSUMER_BTC_PKS; do
     stakingTime=50000
 
-    echo "Delegating 1 million Satoshis from BTC address ${delAddrs[i]} to Finality Provider with CZ finality provider $cz_btc_pk and Babylon finality provider $bbn_btc_pk for $stakingTime BTC blocks"
+    echo "Delegating 1 million Satoshis from BTC address ${delAddrs[i]} to Finality Provider with CZ finality provider $consumer_btc_pk and Babylon finality provider $bbn_btc_pk for $stakingTime BTC blocks"
 
     btcTxHash=$(docker exec btc-staker /bin/sh -c \
-        "/bin/stakercli dn stake --staker-address ${delAddrs[i]} --staking-amount 1000000 --finality-providers-pks $bbn_btc_pk --finality-providers-pks $cz_btc_pk --staking-time $stakingTime | jq -r '.tx_hash'")
+        "/bin/stakercli dn stake --staker-address ${delAddrs[i]} --staking-amount 1000000 --finality-providers-pks $bbn_btc_pk --finality-providers-pks $consumer_btc_pk --staking-time $stakingTime | jq -r '.tx_hash'")
     echo "Delegation was successful; staking tx hash is $btcTxHash"
     i=$((i + 1))
 done
@@ -188,18 +190,18 @@ echo "Ensuring all finality providers have submitted finality signatures..."
 last_block_height=$(docker exec ibcsim-bcd /bin/sh -c "bcd query blocks --query \"block.height > 1\" --page 1 --limit 1 --order_by desc -o json | jq -r '.blocks[0].header.height'")
 while true; do
     cnt=0
-    for cz_btc_pk in $cz_btc_pks; do
-        finality_sig_info=$(docker exec ibcsim-bcd /bin/sh -c "bcd query wasm contract-state smart $btcStakingContractAddr '{\"finality_signature\":{\"btc_pk_hex\":\"$cz_btc_pk\",\"height\":$last_block_height}}' -o json")
+    for consumer_btc_pk in $CONSUMER_BTC_PKS; do
+        finality_sig_info=$(docker exec ibcsim-bcd /bin/sh -c "bcd query wasm contract-state smart $btcStakingContractAddr '{\"finality_signature\":{\"btc_pk_hex\":\"$consumer_btc_pk\",\"height\":$last_block_height}}' -o json")
         if [ $(echo "$finality_sig_info" | jq '.data | length') -ne "1" ]; then
-            echo "The finality provider $cz_btc_pk hasn't submitted finality signature to $last_block_height yet"
+            echo "The finality provider $consumer_btc_pk hasn't submitted finality signature to $last_block_height yet"
             sleep 10
         else
-            echo "The finality provider $cz_btc_pk has submitted finality signature to $last_block_height"
+            echo "The finality provider $consumer_btc_pk has submitted finality signature to $last_block_height"
             cnt=$((cnt + 1))
         fi
     done
     if [ "$cnt" -eq $NUM_COMSUMER_FPS ]; then
-        echo "All of $cz_btc_pk finality providers have submitted finality signatures!"
+        echo "All of $consumer_btc_pk finality providers have submitted finality signatures!"
         break
     fi
 done
