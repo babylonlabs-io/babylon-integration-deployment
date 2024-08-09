@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-### Checks if at least three arguments are provided: consumer_id and activated_height
+### Checks if at least three arguments are provided: consumer_id, activated_height and admin
 if [ $# -lt 3 ]; then
     echo "Usage: $0 <consumer_id> <activated_height> <admin>"
     exit 1
@@ -9,9 +9,9 @@ fi
 CONSUMER_ID="$1"
 ACTIVATED_HEIGHT="$2"
 ADMIN="$3"
-echo "CONSUMER_ID: $1"
-echo "ACTIVATED_HEIGHT: $2"
-echo "ADMIN: $3"
+echo "consumer_id: $CONSUMER_ID"
+echo "activated_height: $ACTIVATED_HEIGHT"
+echo "admin: $ADMIN"
 echo
 
 ### Define constants
