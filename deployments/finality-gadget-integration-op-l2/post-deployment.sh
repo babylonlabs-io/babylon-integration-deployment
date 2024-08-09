@@ -29,7 +29,12 @@ echo "FUND_VIGILANTE_TX_HASH: $FUND_VIGILANTE_TX_HASH"
 echo
 sleep 5
 
+echo "1====="
 mkdir -p .testnets/vigilante/keyring-test .testnets/vigilante/bbnconfig
+echo "2====="
 mv .testnets/node0/babylond/.tmpdir/keyring-test/* .testnets/vigilante/keyring-test
+echo "3====="
 cp .testnets/node0/babylond/config/genesis.json .testnets/vigilante/bbnconfig
+echo "4====="
 [[ "$(uname)" == "Linux" ]] && chown -R 1138:1138 .testnets/vigilante
+echo "5====="

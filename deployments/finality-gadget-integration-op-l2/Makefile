@@ -36,7 +36,7 @@ stop-deployment-finality-gadget-integration-op-l2:
 # Start demo
 .PHONY: demo-start
 demo-start: start-deployment-finality-gadget-integration-op-l2
-	sleep 2
+	sleep 7
 	@./deploy-cw-contract.sh
 	@./register-op-consumer.sh
 
