@@ -22,6 +22,10 @@ demo-start: start-babylond
 	sleep 2
 	@$(MAKE) deploy-cw-contract
 	@$(MAKE) register-op-consumer
+	# TODO: start local signet node
+	# TODO: start eots manager
+	# TODO: start OP
+	# TODO: start FP
 
 .PHONY: demo-test
 demo-test:
