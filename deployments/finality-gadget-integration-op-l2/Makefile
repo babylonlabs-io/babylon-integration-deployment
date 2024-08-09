@@ -25,9 +25,9 @@ build-covenant-emulator:
 build-deployment-finality-gadget-integration-op-l2: build-babylond build-bitcoindsim build-vigilante
 
 start-deployment-finality-gadget-integration-op-l2: stop-deployment-finality-gadget-integration-op-l2 build-deployment-finality-gadget-integration-op-l2
-	./pre-deployment.sh
+	@./pre-deployment.sh
 	$(DOCKER) compose -f artifacts/docker-compose.yml up -d
-	./post-deployment.sh
+	@./post-deployment.sh
 
 stop-deployment-finality-gadget-integration-op-l2:
 	$(DOCKER) compose -f artifacts/docker-compose.yml down
@@ -36,7 +36,6 @@ stop-deployment-finality-gadget-integration-op-l2:
 # Start demo
 .PHONY: demo-start
 demo-start: start-deployment-finality-gadget-integration-op-l2
-	sleep 7
 	@./deploy-cw-contract.sh
 	@./register-op-consumer.sh
 
