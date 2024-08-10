@@ -28,6 +28,14 @@ build: build-babylond \
 	build-btc-staker-phase-3 \
 	build-finality-provider-phase-3
 
+start-op-devnet: stop-op-devnet
+	@./prepare-op-devnet.sh $(GIT_TOPLEVEL)/optimism
+	@$(MAKE) -C $(GIT_TOPLEVEL)/optimism devnet-up
+
+stop-op-devnet:
+	@$(MAKE) -C $(GIT_TOPLEVEL)/optimism devnet-down
+	@$(MAKE) -C $(GIT_TOPLEVEL)/optimism devnet-clean
+
 start:stop build
 	@./init-testnets-dir.sh
 	@$(DOCKER) compose -f artifacts/docker-compose.yml up -d
@@ -44,8 +52,5 @@ stop:
 	echo
 
 demo-test:
-	@./init-babylon-accounts.sh
-	@./deploy-cw-contract.sh
-	@./register-op-consumer.sh
 
 # TODO: add .PHONY
