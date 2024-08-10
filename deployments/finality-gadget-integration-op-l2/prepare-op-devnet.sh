@@ -4,7 +4,9 @@ set -euo pipefail
 # Install Node and pnpm
 echo "Installing NVM..."
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-source ~/.bashrc
+export NVM_DIR="$HOME/.nvm"
+# Loads nvm
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 nvm --version
 echo
 
@@ -23,7 +25,7 @@ echo
 # Install Rust
 echo "Installing Rust..."
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-source "$HOME/.cargo/env"
+export PATH="$HOME/.cargo/bin:$PATH"
 rustc --version
 cargo --version
 echo
@@ -53,4 +55,26 @@ mv anvil ~/.cargo/bin
 mv chisel ~/.cargo/bin
 forge --version
 echo "Foundry installed"
+echo
+
+# Modify the Makefile to ensure that the forge binary can be found when running the devnet-up target in the Makefile.
+modify_makefile() {
+    local makefile_path="$OP_DIR/Makefile"
+    local target="devnet-up"
+    local insert_line='export PATH="$$HOME/.cargo/bin:$$PATH" && \\'
+
+    # Check if the line already exists to avoid duplicate insertions
+    if ! grep -q "$insert_line" "$makefile_path"; then
+        # Find the line number of the devnet-up target
+        local line_number=$(grep -n "^$target:" "$makefile_path" | cut -d: -f1)
+
+        # Insert the new line after the target line
+        sed -i "${line_number}a\\       $insert_line" "$makefile_path"
+
+        echo "Modified Makefile to add PATH export for devnet-up target"
+    else
+        echo "PATH export already exists in devnet-up target"
+    fi
+}
+modify_makefile
 echo
