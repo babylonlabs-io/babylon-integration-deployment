@@ -1,23 +1,43 @@
 #!/bin/sh
 set -euo pipefail
 
+# Install Node and pnpm
+echo "Installing NVM..."
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+source ~/.bashrc
+nvm --version
+echo
+
+echo "Installing Node..."
+nvm install 20
+nvm use 20
+node --version
+npm --version
+echo
+
+echo "Installing pnpm..."
+npm install pnpm --global
+pnpm --version
+echo
+
+# Install Rust
+echo "Installing Rust..."
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+source "$HOME/.cargo/env"
+rustc --version
+cargo --version
+echo
+
 OP_DIR=$1
 echo "OP_DIR: $OP_DIR"
 cd $OP_DIR
 
 echo "Installing dependencies..."
 # Install dependencies
-pnpm install 
+pnpm install
 
 # Install Foundry
 # pnpm install:foundry
-
-echo "Installing Rust..."
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-source ~/.cargo/env
-rustc --version
-cargo --version
-echo
 
 echo "Installing Foundry..."
 # Change the Foundry version in versions.json
