@@ -25,3 +25,4 @@ REGISTERED_CONSUMERS=$(docker exec babylondnode0 /bin/sh -c "
     --chain-id $BABYLON_CHAIN_ID \
     -o json")
 echo "REGISTERED_CONSUMERS: $REGISTERED_CONSUMERS"
+echo

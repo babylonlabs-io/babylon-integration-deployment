@@ -35,6 +35,7 @@ start:stop build
 	@./init-babylon-accounts.sh
 	@./deploy-cw-contract.sh
 	@./register-op-consumer.sh
+	@./register-babylon-fp.sh
 #TODO: 1) register babylon FP; 2) register op FP; 3) btc deletation; 4) op system; 5) covenant setup
 
 stop:
