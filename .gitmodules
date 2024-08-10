@@ -19,3 +19,7 @@ branch = base/consumer-chain-support
 path = btc-staker-phase-3
 url = git@github.com:babylonlabs-io/btc-staker.git
 branch = base/consumer-chain-support
+[submodule "optimism"]
+	path = optimism
+	url = git@github.com:babylonlabs-io/optimism.git
+	branch = feat/babylon-rfc
