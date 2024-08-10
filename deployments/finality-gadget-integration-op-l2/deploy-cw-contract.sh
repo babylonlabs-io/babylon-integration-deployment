@@ -65,3 +65,4 @@ CONTRACT_CONFIG=$(docker exec babylondnode0 /bin/sh -c "
     --chain-id $BABYLON_CHAIN_ID \
     -o json")
 echo "Contract config: $CONTRACT_CONFIG"
+echo

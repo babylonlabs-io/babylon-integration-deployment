@@ -127,6 +127,51 @@ services:
       - babylondnode0
     restart: unless-stopped
 
+  btc-staker:
+    container_name: btc-staker
+    image: babylonlabs-io/btc-staker
+    networks:
+      localnet:
+        ipv4_address: 192.168.10.11
+    volumes:
+      - ../.testnets/btc-staker:/home/btcstaker/.stakerd
+    ports:
+      - "15912:15812"
+    depends_on:
+      - bitcoindsim
+      - babylondnode0
+    restart: unless-stopped
+
+  finality-provider:
+    container_name: finality-provider
+    image: babylonlabs-io/finality-provider
+    command: fpd start
+    networks:
+      localnet:
+        ipv4_address: 192.168.10.12
+    ports:
+      - "15822:15812"
+    volumes:
+      - ../.testnets/finality-provider:/home/finality-provider/.fpd
+    depends_on:
+      - babylondnode0
+    restart: unless-stopped
+
+  eotsmanager:
+    container_name: eotsmanager
+    image: babylonlabs-io/finality-provider
+    command: eotsd start
+    networks:
+      localnet:
+        ipv4_address: 192.168.10.14
+    ports:
+      - "15825:15813"
+    volumes:
+      - ../.testnets/eotsmanager:/home/finality-provider/.eotsd
+    depends_on:
+      - babylondnode0
+    restart: unless-stopped
+
 networks:
   localnet:
     driver: bridge

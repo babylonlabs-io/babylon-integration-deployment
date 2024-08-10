@@ -21,8 +21,15 @@ docker run --rm -v $(pwd)/.testnets:/data babylonlabs-io/babylond \
 
 # Create separate subpaths for each component and copy relevant configuration
 mkdir -p .testnets/bitcoin
+mkdir -p .testnets/btc-staker
+mkdir -p .testnets/eotsmanager
+mkdir -p .testnets/finality-provider
 mkdir -p .testnets/vigilante
 
+cp artifacts/stakerd.conf .testnets/btc-staker/stakerd.conf
+cp artifacts/eotsd.conf .testnets/eotsmanager/eotsd.conf
+cp artifacts/fpd.conf .testnets/finality-provider/fpd.conf
 cp artifacts/vigilante.yml .testnets/vigilante/vigilante.yml
 
 chmod -R 777 .testnets
+echo

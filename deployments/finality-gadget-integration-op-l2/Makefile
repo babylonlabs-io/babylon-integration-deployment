@@ -5,39 +5,47 @@ DOCKER := $(shell which docker)
 GIT_TOPLEVEL := $(shell git rev-parse --show-toplevel)
 
 build-bitcoindsim:
-	$(MAKE) -C $(GIT_TOPLEVEL)/contrib/images bitcoindsim
+	@$(MAKE) -C $(GIT_TOPLEVEL)/contrib/images bitcoindsim
 
 build-babylond:
-	$(MAKE) -C $(GIT_TOPLEVEL)/babylon-private/contrib/images babylond
+	@$(MAKE) -C $(GIT_TOPLEVEL)/babylon-private/contrib/images babylond
 
 build-vigilante:
-	$(MAKE) -C $(GIT_TOPLEVEL)/vigilante build-docker
+	@$(MAKE) -C $(GIT_TOPLEVEL)/vigilante build-docker
 
 build-btc-staker-phase-3:
-	$(MAKE) -C $(GIT_TOPLEVEL)/btc-staker-phase-3 build-docker
+	@$(MAKE) -C $(GIT_TOPLEVEL)/btc-staker-phase-3 build-docker
 
 build-finality-provider-phase-3:
-	$(MAKE) -C $(GIT_TOPLEVEL)/finality-provider-phase-3 build-docker
+	@$(MAKE) -C $(GIT_TOPLEVEL)/finality-provider-phase-3 build-docker
 
 build-covenant-emulator:
-	$(MAKE) -C $(GIT_TOPLEVEL)/covenant-emulator build-docker
+	@$(MAKE) -C $(GIT_TOPLEVEL)/covenant-emulator build-docker
 
-build-deployment-finality-gadget-integration-op-l2: build-babylond build-bitcoindsim build-vigilante
+build: build-babylond \
+	build-bitcoindsim \
+	build-vigilante \
+	build-btc-staker-phase-3 \
+	build-finality-provider-phase-3
 
-start-deployment-finality-gadget-integration-op-l2: stop-deployment-finality-gadget-integration-op-l2 build-deployment-finality-gadget-integration-op-l2
-	@./pre-deployment.sh
-	$(DOCKER) compose -f artifacts/docker-compose.yml up -d
-	@./post-deployment.sh
+start:stop build
+	@./init-testnets-dir.sh
+	@$(DOCKER) compose -f artifacts/docker-compose.yml up -d
+	sleep 7
+	echo
+	@./init-babylon-accounts.sh
+	@./deploy-cw-contract.sh
+	@./register-op-consumer.sh
+#TODO: 1) register babylon FP; 2) register op FP; 3) btc deletation; 4) op system; 5) covenant setup
 
-stop-deployment-finality-gadget-integration-op-l2:
-	$(DOCKER) compose -f artifacts/docker-compose.yml down
-	rm -rf $(CURDIR)/.testnets
+stop:
+	@$(DOCKER) compose -f artifacts/docker-compose.yml down
+	@rm -rf $(CURDIR)/.testnets
+	echo
 
-# Start demo
-.PHONY: demo-start
-demo-start: start-deployment-finality-gadget-integration-op-l2
+demo-test:
+	@./init-babylon-accounts.sh
 	@./deploy-cw-contract.sh
 	@./register-op-consumer.sh
 
-.PHONY: demo-test
-demo-test: demo-start
+# TODO: add .PHONY
