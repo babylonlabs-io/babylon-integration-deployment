@@ -32,7 +32,6 @@ start:stop build
 	@./init-testnets-dir.sh
 	@$(DOCKER) compose -f artifacts/docker-compose.yml up -d
 	sleep 7
-	echo
 	@./init-babylon-accounts.sh
 	@./deploy-cw-contract.sh
 	@./register-op-consumer.sh

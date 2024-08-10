@@ -1,9 +1,6 @@
 #!/bin/bash
 set -euo pipefail
 
-# Get the container ID of babylondnode0
-BABYLON_CONTAINER_ID=$(docker ps -qf "name=babylondnode0")
-
 # Register op consumer chain
 echo "Registering OP consumer chain..."
 REGISTER_TX_HASH=$(docker exec babylondnode0 /bin/sh -c "
