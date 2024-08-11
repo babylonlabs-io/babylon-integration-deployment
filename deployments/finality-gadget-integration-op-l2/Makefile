@@ -1,4 +1,8 @@
 include .env
+# Define GOPATH
+export GOPATH := $(HOME)/go
+# Add Foundry the PATH
+export PATH := $(HOME)/.foundry/bin:$(GOPATH)/bin:$(PATH)
 export
 
 DOCKER := $(shell which docker)
@@ -31,10 +35,12 @@ build: build-babylond \
 start-op-devnet: stop-op-devnet
 	@./prepare-op-devnet.sh $(GIT_TOPLEVEL)/optimism
 	@$(MAKE) -C $(GIT_TOPLEVEL)/optimism devnet-up
+.PHONY: start-op-devnet
 
 stop-op-devnet:
 	@$(MAKE) -C $(GIT_TOPLEVEL)/optimism devnet-down
 	@$(MAKE) -C $(GIT_TOPLEVEL)/optimism devnet-clean
+.PHONY: stop-op-devnet
 
 start:stop build
 	@./init-testnets-dir.sh
