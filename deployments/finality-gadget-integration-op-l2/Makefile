@@ -32,9 +32,10 @@ build: build-babylond \
 	build-btc-staker-phase-3 \
 	build-finality-provider-phase-3
 
-start-op-devnet: stop-op-devnet
+start-op-devnet:
 	@./prepare-op-devnet.sh $(GIT_TOPLEVEL)/optimism
 	@$(MAKE) -C $(GIT_TOPLEVEL)/optimism devnet-up
+	sleep 10
 	@./verify-op-devnet.sh
 .PHONY: start-op-devnet
 
@@ -43,19 +44,25 @@ stop-op-devnet:
 	@$(MAKE) -C $(GIT_TOPLEVEL)/optimism devnet-clean
 .PHONY: stop-op-devnet
 
-start:stop build
+start: stop build
 	@./init-testnets-dir.sh
 	@$(DOCKER) compose -f artifacts/docker-compose.yml up -d
-	sleep 7
+	sleep 10
 	@./init-babylon-accounts.sh
+	@$(MAKE) start-op-devnet
 	@./deploy-cw-contract.sh
+	@$(DOCKER) compose -f artifacts/docker-compose-op-fp.yml up -d consumer-eotsmanager consumer-finality-provider
+	sleep 5
 	@./register-op-consumer.sh
 	@./register-babylon-fp.sh
-#TODO: 1) register babylon FP; 2) register op FP; 3) btc deletation; 4) op system; 5) covenant setup
+	@./register-op-consumer-fp.sh
+.PHONY: start
 
-stop:
+stop: stop-op-devnet
+	@$(DOCKER) compose -f artifacts/docker-compose-op-fp.yml down
 	@$(DOCKER) compose -f artifacts/docker-compose.yml down
 	@rm -rf $(CURDIR)/.testnets
+.PHONY: stop
 
 demo-test:
 

@@ -20,3 +20,4 @@ echo "Checking if L2 op-node is running..."
 curl -s -X POST -H "Content-Type: application/json" \
     --data '{"jsonrpc":"2.0","method":"optimism_syncStatus","params":[],"id":1}' \
     http://localhost:7545
+echo

@@ -39,6 +39,9 @@ sleep 7
 init_babylon_account finality-provider
 echo
 sleep 7
+init_babylon_account consumer-finality-provider
+echo
+sleep 7
 
 function setup_account_keyring() {
     local account_name=$1
@@ -72,4 +75,8 @@ echo
 
 setup_account_keyring finality-provider
 chown_testnet_dir finality-provider
+echo
+
+setup_account_keyring consumer-finality-provider
+chown_testnet_dir consumer-finality-provider
 echo

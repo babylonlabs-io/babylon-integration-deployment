@@ -48,7 +48,7 @@ CREATE_CONTRACT_TX_HASH=$(docker exec babylondnode0 /bin/sh -c "
     -o json -y" | jq -r '.txhash')
 echo "CREATE_CONTRACT_TX_HASH: $CREATE_CONTRACT_TX_HASH"
 echo
-sleep 5
+sleep 7
 
 ### Query the CW contract config to verify the CW contract is instantiated correctly
 echo "Query the CW contract config to verify the CW contract is instantiated correctly"
@@ -65,4 +65,16 @@ CONTRACT_CONFIG=$(docker exec babylondnode0 /bin/sh -c "
     --chain-id $BABYLON_CHAIN_ID \
     -o json")
 echo "Contract config: $CONTRACT_CONFIG"
+echo
+
+echo "Updating OP FP config file with the deployed CW contract address..."
+OP_FP_CONF_FILE=".testnets/consumer-finality-provider/fpd.conf"
+if [[ "$(uname)" == "Darwin" ]]; then
+    # macOS version
+    sed -i '' "s|OPFinalityGadgetAddress = .*|OPFinalityGadgetAddress = $CONTRACT_ADDRESS|" $OP_FP_CONF_FILE
+else
+    # Linux version
+    sed -i "s|OPFinalityGadgetAddress = .*|OPFinalityGadgetAddress = $CONTRACT_ADDRESS|" $OP_FP_CONF_FILE
+fi
+echo "Updated $OP_FP_CONF_FILE"
 echo
