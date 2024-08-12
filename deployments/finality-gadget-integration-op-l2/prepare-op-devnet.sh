@@ -1,29 +1,47 @@
 #!/bin/bash
 set -euo pipefail
 
-# Install Node and pnpm
-echo "Installing NVM..."
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-export NVM_DIR="$HOME/.nvm"
-# Loads nvm
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+# Function to check if a command exists
+command_exists() {
+    command -v "$1" >/dev/null 2>&1
+}
+
+# Install NVM if not already installed
+if [ -s "$NVM_DIR/nvm.sh" ]; then
+    echo "NVM is already installed."
+else
+    echo "Installing NVM..."
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+    export NVM_DIR="$HOME/.nvm"
+fi
+. "$NVM_DIR/nvm.sh"  # This loads nvm
 nvm --version
 echo
 
-echo "Installing Node..."
-nvm install 20
-nvm use 20
+# Install Node if not already installed
+if ! command_exists node; then
+    echo "Installing Node..."
+    nvm install 20
+    nvm use 20
+else
+    echo "Node is already installed. Version: $(node --version)"
+fi
 node --version
 npm --version
 echo
 
-echo "Installing pnpm..."
-npm install pnpm --global
+# Install pnpm if not already installed
+if ! command_exists pnpm; then
+    echo "Installing pnpm..."
+    npm install pnpm --global
+else
+    echo "pnpm is already installed. Version: $(pnpm --version)"
+fi
 pnpm --version
 echo
 
 # Check if Go is already installed
-if command -v go &> /dev/null; then
+if command_exists go; then
     echo "Go is already installed. Version: $(go version)"
 else
     # Install Golang
@@ -36,13 +54,22 @@ else
 fi
 echo
 
-# Install Foundry
-echo "Installing Foundry..."
-curl -L https://foundry.paradigm.xyz | bash
-source $HOME/.bashrc
-foundryup
-echo 'export PATH=$HOME/.foundry/bin:$PATH' >> $BASH_ENV
-source $HOME/.bashrc
+# Install Foundry if not already installed
+if ! command_exists forge; then
+    echo "Installing Foundry..."
+    if [[ "$(uname)" == "Linux" ]]; then
+        curl -L https://github.com/foundry-rs/foundry/releases/download/nightly-$FOUNDRY_VERSION/foundry_nightly_linux_amd64.tar.gz | tar xvzf -
+    elif [[ "$(uname)" == "Darwin" ]]; then # for MacOS
+        curl -L https://github.com/foundry-rs/foundry/releases/download/nightly-$FOUNDRY_VERSION/foundry_nightly_darwin_amd64.tar.gz | tar xvzf -
+    else
+        echo "unsupported $(uname) system"
+        exit 1
+    fi
+    mv forge cast anvil chisel $HOME/.foundry/bin
+    export PATH=$HOME/.foundry/bin:$PATH
+else
+    echo "Foundry is already installed. Version: $(forge --version)"
+fi
 forge --version
 echo
 

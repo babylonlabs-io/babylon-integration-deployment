@@ -35,6 +35,7 @@ build: build-babylond \
 start-op-devnet: stop-op-devnet
 	@./prepare-op-devnet.sh $(GIT_TOPLEVEL)/optimism
 	@$(MAKE) -C $(GIT_TOPLEVEL)/optimism devnet-up
+	@./verify-op-devnet.sh
 .PHONY: start-op-devnet
 
 stop-op-devnet:
@@ -55,7 +56,6 @@ start:stop build
 stop:
 	@$(DOCKER) compose -f artifacts/docker-compose.yml down
 	@rm -rf $(CURDIR)/.testnets
-	echo
 
 demo-test:
 
