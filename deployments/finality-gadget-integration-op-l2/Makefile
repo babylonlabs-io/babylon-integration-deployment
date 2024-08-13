@@ -49,12 +49,12 @@ start: stop build
 	@$(DOCKER) compose -f artifacts/docker-compose.yml up -d
 	sleep 10
 	@./init-babylon-accounts.sh
+	@./register-babylon-fp.sh
 	@$(MAKE) start-op-devnet
 	@./deploy-cw-contract.sh
 	@$(DOCKER) compose -f artifacts/docker-compose-op-fp.yml up -d consumer-eotsmanager consumer-finality-provider
 	sleep 5
 	@./register-op-consumer.sh
-	@./register-babylon-fp.sh
 	@./register-op-consumer-fp.sh
 .PHONY: start
 
