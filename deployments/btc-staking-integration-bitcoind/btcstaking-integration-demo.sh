@@ -101,7 +101,7 @@ while true; do
     cnt=0
     for consumer_btc_pk in $CONSUMER_BTC_PKS; do
         pr_commit_info=$(docker exec ibcsim-bcd /bin/sh -c "bcd query wasm contract-state smart $btcStakingContractAddr '{\"last_pub_rand_commit\":{\"btc_pk_hex\":\"$consumer_btc_pk\"}}' -o json")
-        if [ $(echo "$pr_commit_info" | jq '.data | length') -ne "1" ]; then
+        if [[ "$(echo "$pr_commit_info" | jq '.data')" == *"null"* ]]; then
             echo "The finality provider $consumer_btc_pk hasn't committed any public randomness yet"
             sleep 10
         else
