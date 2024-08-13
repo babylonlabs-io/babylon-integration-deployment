@@ -2,7 +2,7 @@ include .env
 # Define GOPATH
 export GOPATH := $(HOME)/go
 # Add Foundry the PATH
-export PATH := $(HOME)/.foundry/bin:$(GOPATH)/bin:$(PATH)
+export PATH := $(HOME)/.just:$(HOME)/.foundry/bin:$(GOPATH)/bin:$(PATH)
 export
 
 DOCKER := $(shell which docker)
