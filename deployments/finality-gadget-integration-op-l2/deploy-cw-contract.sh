@@ -67,6 +67,18 @@ CONTRACT_CONFIG=$(docker exec babylondnode0 /bin/sh -c "
 echo "Contract config: $CONTRACT_CONFIG"
 echo
 
+echo "Updating OP finality gadget config file with the deployed CW contract address..."
+OP_FG_CONF_FILE=".testnets/finality-gadget/opfgd.toml"
+if [[ "$(uname)" == "Darwin" ]]; then
+    # macOS version
+    sed -i '' "s|FGContractAddress = .*|FGContractAddress = $CONTRACT_ADDRESS|" $OP_FG_CONF_FILE
+else
+    # Linux version
+    sed -i "s|FGContractAddress = .*|FGContractAddress = $CONTRACT_ADDRESS|" $OP_FG_CONF_FILE
+fi
+echo "Updated $OP_FG_CONF_FILE"
+echo
+
 echo "Updating OP FP config file with the deployed CW contract address..."
 OP_FP_CONF_FILE=".testnets/consumer-finality-provider/fpd.conf"
 if [[ "$(uname)" == "Darwin" ]]; then

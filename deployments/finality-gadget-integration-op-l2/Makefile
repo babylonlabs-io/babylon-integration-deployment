@@ -26,11 +26,15 @@ build-finality-provider-phase-3:
 build-covenant-emulator:
 	@$(MAKE) -C $(GIT_TOPLEVEL)/covenant-emulator build-docker
 
+build-finality-gadget:
+	@$(MAKE) -C $(GIT_TOPLEVEL)/finality-gadget build-docker
+
 build: build-babylond \
 	build-bitcoindsim \
 	build-vigilante \
 	build-btc-staker-phase-3 \
-	build-finality-provider-phase-3
+	build-finality-provider-phase-3 \
+	build-finality-gadget
 
 start-op-devnet:
 	@./prepare-op-devnet.sh $(GIT_TOPLEVEL)/optimism
