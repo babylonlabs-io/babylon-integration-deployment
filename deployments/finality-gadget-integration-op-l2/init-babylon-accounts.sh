@@ -7,11 +7,21 @@ function init_babylon_account() {
     local account_name=$1
     echo "account_name: $account_name"
 
-    local account_addr=$(docker exec babylondnode0 /bin/sh -c "
-        /bin/babylond keys add $account_name \
-        --home $BABYLON_HOME_DIR/$account_name \
-        --keyring-backend test \
-        --output json" | jq -r .address)
+    if [ "$account_name" == "covenant-emulator" ]; then
+        mkdir -p .testnets/node0/babylond/$account_name/keyring-test
+        cp .testnets/covenant-emulator/keyring-test/* .testnets/node0/babylond/$account_name/keyring-test/
+        local account_addr=$(docker exec babylondnode0 /bin/sh -c "
+            /bin/babylond keys show covenant \
+            --home $BABYLON_HOME_DIR/$account_name \
+            --keyring-backend test \
+            --output json" | jq -r .address)
+    else
+        local account_addr=$(docker exec babylondnode0 /bin/sh -c "
+            /bin/babylond keys add $account_name \
+            --home $BABYLON_HOME_DIR/$account_name \
+            --keyring-backend test \
+            --output json" | jq -r .address)
+    fi
     echo "account_addr: $account_addr"
     sleep 5
 
@@ -40,6 +50,9 @@ init_babylon_account finality-provider
 echo
 sleep 7
 init_babylon_account consumer-finality-provider
+echo
+sleep 7
+init_babylon_account covenant-emulator
 echo
 sleep 7
 
@@ -79,4 +92,7 @@ echo
 
 setup_account_keyring consumer-finality-provider
 chown_testnet_dir consumer-finality-provider
+echo
+
+chown_testnet_dir covenant-emulator
 echo

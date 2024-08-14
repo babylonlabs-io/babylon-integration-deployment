@@ -28,6 +28,7 @@ mkdir -p .testnets/finality-provider
 mkdir -p .testnets/finality-gadget
 mkdir -p .testnets/consumer-eotsmanager
 mkdir -p .testnets/consumer-finality-provider
+mkdir -p .testnets/covenant-emulator
 
 cp artifacts/stakerd.conf .testnets/btc-staker/stakerd.conf
 cp artifacts/vigilante.yml .testnets/vigilante/vigilante.yml
@@ -36,6 +37,8 @@ cp artifacts/fpd.conf .testnets/finality-provider/fpd.conf
 cp artifacts/opfgd.toml .testnets/finality-gadget/opfgd.toml
 cp artifacts/consumer-eotsd.conf .testnets/consumer-eotsmanager/eotsd.conf
 cp artifacts/consumer-fpd.conf .testnets/consumer-finality-provider/fpd.conf
+cp artifacts/covd.conf .testnets/covenant-emulator/covd.conf
+cp -R artifacts/covenant-keyring .testnets/covenant-emulator/keyring-test
 
 chmod -R 777 .testnets
 echo

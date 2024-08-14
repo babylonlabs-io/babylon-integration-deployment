@@ -34,7 +34,8 @@ build: build-babylond \
 	build-vigilante \
 	build-btc-staker-phase-3 \
 	build-finality-provider-phase-3 \
-	build-finality-gadget
+	build-finality-gadget \
+	build-covenant-emulator
 
 start-op-devnet:
 	@./prepare-op-devnet.sh $(GIT_TOPLEVEL)/optimism
@@ -60,6 +61,7 @@ start: stop build
 	sleep 5
 	@./register-op-consumer.sh
 	@./register-op-consumer-fp.sh
+	@./create-btc-delegations.sh
 .PHONY: start
 
 stop: stop-op-devnet

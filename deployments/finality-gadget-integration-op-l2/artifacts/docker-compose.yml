@@ -59,7 +59,7 @@ services:
       - WALLET_PASS=walletpass
       - WALLET_NAME=default
       - BTCSTAKER_WALLET_NAME=btcstaker
-      - BTCSTAKER_WALLET_ADDR_COUNT=3
+      - BTCSTAKER_WALLET_ADDR_COUNT=1
       - GENERATE_INTERVAL_SECS=10
     ports:
       - "18443:18443"
@@ -173,6 +173,18 @@ services:
       - eotsmanager
     restart: unless-stopped
 
+  covenant-emulator:
+    container_name: covenant-emulator
+    image: babylonlabs-io/covenant-emulator
+    command: covd start
+    networks:
+      localnet:
+        ipv4_address: 192.168.10.17
+    volumes:
+      - ../.testnets/covenant-emulator:/home/covenant-emulator/.covd
+    depends_on:
+      - babylondnode0
+    restart: unless-stopped
 
 networks:
   localnet:
