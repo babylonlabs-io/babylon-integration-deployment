@@ -57,8 +57,9 @@ start: stop build
 	@./register-babylon-fp.sh
 	@$(MAKE) start-op-devnet
 	@./deploy-cw-contract.sh
-	@$(DOCKER) compose -f artifacts/docker-compose-op-fp.yml up -d consumer-eotsmanager consumer-finality-provider
-	sleep 5
+	@$(DOCKER) compose -f artifacts/docker-compose-op-fp.yml up -d \
+	finality-gadget consumer-eotsmanager consumer-finality-provider
+	sleep 10
 	@./register-op-consumer.sh
 	@./register-op-consumer-fp.sh
 	@./create-btc-delegations.sh

@@ -71,10 +71,10 @@ echo "Updating OP finality gadget config file with the deployed CW contract addr
 OP_FG_CONF_FILE=".testnets/finality-gadget/opfgd.toml"
 if [[ "$(uname)" == "Darwin" ]]; then
     # macOS version
-    sed -i '' "s|FGContractAddress = .*|FGContractAddress = $CONTRACT_ADDRESS|" $OP_FG_CONF_FILE
+    sed -i '' "s|FGContractAddress = .*|FGContractAddress = \"$CONTRACT_ADDRESS\"|" $OP_FG_CONF_FILE
 else
     # Linux version
-    sed -i "s|FGContractAddress = .*|FGContractAddress = $CONTRACT_ADDRESS|" $OP_FG_CONF_FILE
+    sed -i "s|FGContractAddress = .*|FGContractAddress = \"$CONTRACT_ADDRESS\"|" $OP_FG_CONF_FILE
 fi
 echo "Updated $OP_FG_CONF_FILE"
 echo

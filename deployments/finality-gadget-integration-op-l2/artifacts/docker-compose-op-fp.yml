@@ -6,7 +6,7 @@ services:
     container_name: finality-gadget
     image: babylonlabs-io/finality-gadget
     command: >
-      opfgd start --cfg /home/finality-gadget/config.toml
+      opfgd start --cfg /home/finality-gadget/opfgd.toml
     ports:
       - "50051:50051"
     networks:
