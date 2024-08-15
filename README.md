@@ -19,7 +19,7 @@ This repository contains artifacts and instructions for setting up and running a
 
 4. **Repository Setup**:
    ```shell
-   git clone git@github.com:babylonchain/babylon-deployment.git
+   git clone git@github.com:babylonlabs-io/babylon-integration-deployment.git
    git submodule init && git submodule update
    ```
 

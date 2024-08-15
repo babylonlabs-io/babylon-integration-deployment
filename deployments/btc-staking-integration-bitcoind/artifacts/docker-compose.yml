@@ -1,7 +1,7 @@
 services:
   babylondnode0:
     container_name: babylondnode0
-    image: "babylonchain/babylond"
+    image: "babylonlabs-io/babylond"
     command: >
       babylond --home /babylondhome start --log_format 'plain' 2>&1 | tee /babylondhome/babylond.log
     cap_add:
@@ -21,7 +21,7 @@ services:
 
   babylondnode1:
     container_name: babylondnode1
-    image: "babylonchain/babylond"
+    image: "babylonlabs-io/babylond"
     command: >
       babylond --home /babylondhome start --log_format 'plain' 2>&1 | tee /babylondhome/babylond.log
     cap_add:
@@ -43,7 +43,7 @@ services:
     build:
       context: contrib/images/bitcoindsim/
       dockerfile: ./Dockerfile
-    image: babylonchain/bitcoindsim:latest
+    image: babylonlabs-io/bitcoindsim:latest
     platform: linux/amd64
     container_name: bitcoindsim
     networks:
@@ -69,7 +69,7 @@ services:
 
   vigilante-reporter:
     container_name: vigilante-reporter
-    image: babylonchain/vigilante
+    image: babylonlabs-io/vigilante
     command: >
       vigilante reporter --config /home/vigilante/config/vigilante.yml 2>&1 | tee /home/vigilante/config/reporter.log
     networks:
@@ -84,7 +84,7 @@ services:
 
   vigilante-submitter:
     container_name: vigilante-submitter
-    image: babylonchain/vigilante
+    image: babylonlabs-io/vigilante
     command: >
       vigilante submitter --config /home/vigilante/config/vigilante.yml 2>&1 | tee /home/vigilante/config/submitter.log
     networks:
@@ -99,7 +99,7 @@ services:
 
   vigilante-monitor:
     container_name: vigilante-monitor
-    image: babylonchain/vigilante
+    image: babylonlabs-io/vigilante
     command: >
       vigilante monitor --config /home/vigilante/config/vigilante.yml --genesis /home/vigilante/config/bbnconfig/genesis.json 2>&1 | tee /home/vigilante/config/monitor.log
     networks:
@@ -114,7 +114,7 @@ services:
 
   vigilante-bstracker:
     container_name: vigilante-bstracker
-    image: babylonchain/vigilante
+    image: babylonlabs-io/vigilante
     command: >
       vigilante bstracker --config /home/vigilante/config/vigilante.yml 2>&1 | tee /home/vigilante/config/unbonding-watcher.log
     networks:
@@ -129,7 +129,7 @@ services:
 
   btc-staker:
     container_name: btc-staker
-    image: babylonchain/btc-staker
+    image: babylonlabs-io/btc-staker
     networks:
       localnet:
         ipv4_address: 192.168.10.11
@@ -144,7 +144,7 @@ services:
 
   finality-provider:
     container_name: finality-provider
-    image: babylonchain/finality-provider
+    image: babylonlabs-io/finality-provider
     command: fpd start
     networks:
       localnet:
@@ -159,7 +159,7 @@ services:
 
   consumer-fp:
     container_name: consumer-fp
-    image: babylonchain/finality-provider
+    image: babylonlabs-io/finality-provider
     command: fpd start
     networks:
       localnet:
@@ -174,7 +174,7 @@ services:
 
   eotsmanager:
     container_name: eotsmanager
-    image: babylonchain/finality-provider
+    image: babylonlabs-io/finality-provider
     command: eotsd start
     networks:
       localnet:
@@ -189,7 +189,7 @@ services:
 
   consumer-eotsmanager:
     container_name: consumer-eotsmanager
-    image: babylonchain/finality-provider
+    image: babylonlabs-io/finality-provider
     command: eotsd start
     networks:
       localnet:
@@ -202,7 +202,7 @@ services:
 
   covenant-emulator:
     container_name: covenant-emulator
-    image: babylonchain/covenant-emulator
+    image: babylonlabs-io/covenant-emulator
     command: covd start
     networks:
       localnet:
@@ -215,7 +215,7 @@ services:
 
   ibcsim-bcd:
     container_name: ibcsim-bcd
-    image: babylonchain/ibcsim-bcd
+    image: babylonlabs-io/ibcsim-bcd
     ports:
       - "5183:5183"
     volumes:
