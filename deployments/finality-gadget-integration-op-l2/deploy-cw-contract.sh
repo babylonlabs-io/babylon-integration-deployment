@@ -1,6 +1,17 @@
 #!/bin/bash
 set -euo pipefail
 
+### generate CW contract
+OLD_PWD=$(pwd)
+GIT_TOPLEVEL=$(git rev-parse --show-toplevel)
+cd $GIT_TOPLEVEL/babylon-contract
+cargo install cargo-run-script
+cargo clean
+cargo build
+sleep 1
+cargo run-script optimize 2>/dev/null
+cp ./artifacts/op_finality_gadget.wasm $GIT_TOPLEVEL/deployments/finality-gadget-integration-op-l2/artifacts
+cd $OLD_PWD
 ### Store the CW contract code
 # Copy the wasm file into the container
 echo "wasm file: $WASM_FILE_LOCAL, $WASM_FILE_CONTAINER"

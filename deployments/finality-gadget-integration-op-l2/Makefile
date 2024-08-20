@@ -8,10 +8,6 @@ export
 DOCKER := $(shell which docker)
 GIT_TOPLEVEL := $(shell git rev-parse --show-toplevel)
 
-build-babylon-contract:
-	@$(MAKE) -C $(GIT_TOPLEVEL)/contrib/images ibcsim-wasmd
-	@cp $(GIT_TOPLEVEL)/contrib/images/ibcsim-wasmd/babylon-contract/artifacts/op_finality_gadget.wasm $(GIT_TOPLEVEL)/deployments/finality-gadget-integration-op-l2/artifacts
-
 build-bitcoindsim:
 	@$(MAKE) -C $(GIT_TOPLEVEL)/contrib/images bitcoindsim
 
@@ -34,7 +30,6 @@ build-finality-gadget:
 	@$(MAKE) -C $(GIT_TOPLEVEL)/finality-gadget build-docker
 
 build: build-babylond \
-	build-babylon-contract \
 	build-bitcoindsim \
 	build-vigilante \
 	build-btc-staker-phase-3 \
