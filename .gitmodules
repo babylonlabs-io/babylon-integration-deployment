@@ -26,4 +26,3 @@ branch = base/consumer-chain-support
 [submodule "finality-gadget"]
 	path = finality-gadget
 	url = git@github.com:babylonlabs-io/finality-gadget.git
-
