@@ -76,7 +76,13 @@ else
     # Linux version
     sed -i "s|FGContractAddress = .*|FGContractAddress = \"$CONTRACT_ADDRESS\"|" $OP_FG_CONF_FILE
 fi
-echo "Updated $OP_FG_CONF_FILE"
+FG_CONTRACT_ADDRESS=$(grep FGContractAddress $OP_FG_CONF_FILE | awk '{print $3}' | tr -d '"')
+if [[ "$FG_CONTRACT_ADDRESS" == "$CONTRACT_ADDRESS" ]]; then
+    echo "Updated $OP_FG_CONF_FILE FGContractAddress: $FG_CONTRACT_ADDRESS"
+else
+    echo "Failed to update $OP_FG_CONF_FILE FGContractAddress"
+    exit 1
+fi
 echo
 
 echo "Updating OP FP config file with the deployed CW contract address..."
@@ -88,5 +94,11 @@ else
     # Linux version
     sed -i "s|OPFinalityGadgetAddress = .*|OPFinalityGadgetAddress = $CONTRACT_ADDRESS|" $OP_FP_CONF_FILE
 fi
-echo "Updated $OP_FP_CONF_FILE"
+OP_FINALITY_GADGET_ADDRESS=$(grep OPFinalityGadgetAddress $OP_FP_CONF_FILE | awk '{print $3}')
+if [[ "$OP_FINALITY_GADGET_ADDRESS" == "$CONTRACT_ADDRESS" ]]; then
+    echo "Updated $OP_FP_CONF_FILE OPFinalityGadgetAddress: $OP_FINALITY_GADGET_ADDRESS"
+else
+    echo "Failed to update $OP_FP_CONF_FILE OPFinalityGadgetAddress"
+    exit 1
+fi
 echo
