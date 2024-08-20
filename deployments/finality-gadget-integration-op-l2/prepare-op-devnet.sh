@@ -59,6 +59,18 @@ fi
 forge --version
 echo
 
+# Update OP devnet template file with the finality gadget gRPC address
+echo "Updating OP devnet template file with the finality gadget gRPC address..."
+OP_DEVNET_TEMPLATE_FILE="$OP_DIR/packages/contracts-bedrock/deploy-config/devnetL1-template.json"
+FGD_RPC_ADDRESS="finality-gadget:50051"
+jq --arg rpc "$FGD_RPC_ADDRESS" \
+   '.babylonFinalityGadgetRpc = $rpc' \
+   "$OP_DEVNET_TEMPLATE_FILE" > "${OP_DEVNET_TEMPLATE_FILE}.tmp" && \
+mv "${OP_DEVNET_TEMPLATE_FILE}.tmp" "$OP_DEVNET_TEMPLATE_FILE"
+UPDATED_FGD_RPC_ADDRESS=$(jq -r '.babylonFinalityGadgetRpc' "$OP_DEVNET_TEMPLATE_FILE")
+echo "Updated $OP_DEVNET_TEMPLATE_FILE with the finality gadget gRPC address $UPDATED_FGD_RPC_ADDRESS"
+echo
+
 # Go to the OP contracts directory
 OP_CONTRACTS_DIR=$OP_DIR/packages/contracts-bedrock
 echo "OP_CONTRACTS_DIR: $OP_CONTRACTS_DIR"

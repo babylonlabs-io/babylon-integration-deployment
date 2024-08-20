@@ -55,10 +55,14 @@ start: stop build
 	sleep 10
 	@./init-babylon-accounts.sh
 	@./register-babylon-fp.sh
+	@$(DOCKER) compose -f artifacts/docker-compose-fg.yml up -d \
+		finality-gadget
+	sleep 5
 	@$(MAKE) start-op-devnet
 	@./deploy-cw-contract.sh
 	@$(DOCKER) compose -f artifacts/docker-compose-op-fp.yml up -d \
-	finality-gadget consumer-eotsmanager consumer-finality-provider
+		consumer-eotsmanager \
+		consumer-finality-provider
 	sleep 10
 	@./register-op-consumer.sh
 	@./register-op-consumer-fp.sh
@@ -67,10 +71,11 @@ start: stop build
 
 stop: stop-op-devnet
 	@$(DOCKER) compose -f artifacts/docker-compose-op-fp.yml down
+	@$(DOCKER) compose -f artifacts/docker-compose-fg.yml down
 	@$(DOCKER) compose -f artifacts/docker-compose.yml down
 	@rm -rf $(CURDIR)/.testnets
 .PHONY: stop
 
 demo-test:
-
-# TODO: add .PHONY
+	@./verify-babylon-finality.sh $(GIT_TOPLEVEL)/finality-gadget
+.PHONY: demo-test
