@@ -1,5 +1,5 @@
-[submodule "contrib/images/ibcsim-wasmd/babylon-contract"]
-path = contrib/images/ibcsim-wasmd/babylon-contract
+[submodule "babylon-contract"]
+path = babylon-contract
 url = git@github.com:babylonlabs-io/babylon-contract.git
 [submodule "covenant-emulator"]
 path = covenant-emulator
@@ -19,3 +19,10 @@ branch = base/consumer-chain-support
 path = btc-staker-phase-3
 url = git@github.com:babylonlabs-io/btc-staker.git
 branch = base/consumer-chain-support
+[submodule "optimism"]
+	path = optimism
+	url = git@github.com:babylonlabs-io/optimism.git
+	branch = feat/babylon-rfc
+[submodule "finality-gadget"]
+	path = finality-gadget
+	url = git@github.com:babylonlabs-io/finality-gadget.git

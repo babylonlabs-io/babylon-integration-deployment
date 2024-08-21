@@ -1,0 +1,30 @@
+include:
+  - docker-compose-fg.yml
+
+services:
+  consumer-eotsmanager:
+    container_name: consumer-eotsmanager
+    image: babylonlabs-io/finality-provider
+    command: eotsd start
+    networks:
+      localnet:
+        ipv4_address: 192.168.10.14
+    volumes:
+      - ../.testnets/consumer-eotsmanager:/home/finality-provider/.eotsd
+    depends_on:
+      - babylondnode0
+    restart: unless-stopped
+
+  consumer-finality-provider:
+    container_name: consumer-finality-provider
+    image: babylonlabs-io/finality-provider
+    command: fpd start
+    networks:
+      localnet:
+        ipv4_address: 192.168.10.15
+    volumes:
+      - ../.testnets/consumer-finality-provider:/home/finality-provider/.fpd
+    depends_on:
+      - babylondnode0
+      - consumer-eotsmanager
+    restart: unless-stopped

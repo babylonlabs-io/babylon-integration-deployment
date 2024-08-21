@@ -28,3 +28,4 @@ This repository contains artifacts and instructions for setting up and running a
 Scenarios are located in the [deployments](deployments/) directory:
 
 - [BTC Staking Integration (bitcoind backend)](deployments/btc-staking-integration-bitcoind): Babylon network with BTC Staking and Timestamping, using a bitcoind-based BTC regression testnet.
+- [Finality Gadget Integration with OP chain](deployments/finality-gadget-integration-op-l2): Finality gadget integration with a Babylon testnet, a a bitcoind-based BTC regtest, and a OP devnet.
