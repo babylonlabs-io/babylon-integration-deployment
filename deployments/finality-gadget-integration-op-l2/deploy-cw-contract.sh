@@ -1,22 +1,14 @@
 #!/bin/bash
 set -euo pipefail
 
-### generate CW contract
-OLD_PWD=$(pwd)
-GIT_TOPLEVEL=$(git rev-parse --show-toplevel)
-cd $GIT_TOPLEVEL/babylon-contract
-cargo install cargo-run-script
-cargo clean
-cargo build
-sleep 1
-cargo run-script optimize 2>/dev/null
-cp ./artifacts/op_finality_gadget.wasm $GIT_TOPLEVEL/deployments/finality-gadget-integration-op-l2/artifacts
-cd $OLD_PWD
-### Store the CW contract code
 # Copy the wasm file into the container
+BABYLON_CONTRACT_DIR=$1
+WASM_FILE_LOCAL="$BABYLON_CONTRACT_DIR/artifacts/op_finality_gadget.wasm"
 echo "wasm file: $WASM_FILE_LOCAL, $WASM_FILE_CONTAINER"
 docker cp $WASM_FILE_LOCAL babylondnode0:$WASM_FILE_CONTAINER
 echo
+
+# Store the CW contract code
 echo "Storing the CW contract code..."
 STORE_CODE_TX_HASH=$(docker exec babylondnode0 /bin/sh -c "
     /bin/babylond tx wasm store $WASM_FILE_CONTAINER \
@@ -33,7 +25,7 @@ echo
 # TODO: add a for loop to check if the code is stored
 sleep 7
 
-### Query the code_id using the tx hash
+# Query the code_id using the tx hash
 echo "Querying the code_id using the tx hash..."
 CODE_ID=$(docker exec babylondnode0 /bin/sh -c "
     /bin/babylond query tx $STORE_CODE_TX_HASH \
@@ -44,7 +36,7 @@ CODE_ID=$(docker exec babylondnode0 /bin/sh -c "
 echo "CODE_ID: $CODE_ID"
 echo
 
-### Instantiate the CW contract
+# Instantiate the CW contract
 JSON_VALUE=$(printf '{"admin":"%s","consumer_id":"%s","activated_height":%d,"is_enabled":true}' "$CW_ADMIN" "$CONSUMER_ID" "$ACTIVATED_HEIGHT")
 echo "Instantiating the CW contract with arguments: $JSON_VALUE ..."
 CREATE_CONTRACT_TX_HASH=$(docker exec babylondnode0 /bin/sh -c "
@@ -61,7 +53,7 @@ echo "CREATE_CONTRACT_TX_HASH: $CREATE_CONTRACT_TX_HASH"
 echo
 sleep 7
 
-### Query the CW contract config to verify the CW contract is instantiated correctly
+# Query the CW contract config to verify the CW contract is instantiated correctly
 echo "Query the CW contract config to verify the CW contract is instantiated correctly"
 CONTRACT_ADDRESS=$(docker exec babylondnode0 /bin/sh -c "
     /bin/babylond query wasm list-contract-by-code $CODE_ID \

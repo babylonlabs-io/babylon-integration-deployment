@@ -29,13 +29,17 @@ build-covenant-emulator:
 build-finality-gadget:
 	@$(MAKE) -C $(GIT_TOPLEVEL)/finality-gadget build-docker
 
+build-cw-contract:
+	@./build-cw-contract.sh $(GIT_TOPLEVEL)/babylon-contract
+
 build: build-babylond \
 	build-bitcoindsim \
 	build-vigilante \
 	build-btc-staker-phase-3 \
 	build-finality-provider-phase-3 \
 	build-finality-gadget \
-	build-covenant-emulator
+	build-covenant-emulator \
+	build-cw-contract
 
 start-op-devnet:
 	@./prepare-op-devnet.sh $(GIT_TOPLEVEL)/optimism
@@ -55,7 +59,7 @@ start: stop build
 	sleep 10
 	@./init-babylon-accounts.sh
 	@./register-babylon-fp.sh
-	@./deploy-cw-contract.sh
+	@./deploy-cw-contract.sh $(GIT_TOPLEVEL)/babylon-contract
 	@$(DOCKER) compose -f artifacts/docker-compose-fg.yml up -d \
 		finality-gadget
 	sleep 5
