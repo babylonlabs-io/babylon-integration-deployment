@@ -3,3 +3,6 @@
 tmp/
 deployments/local/data
 *.DS_Store
+.env
+.env*
+!.env.example
