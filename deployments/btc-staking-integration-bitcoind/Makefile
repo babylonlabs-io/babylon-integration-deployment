@@ -8,7 +8,7 @@ build-ibcsim-bcd:
 	$(MAKE) BBN_PRIV_DEPLOY_KEY=${BBN_PRIV_DEPLOY_KEY} -C $(GIT_TOPLEVEL)/contrib/images ibcsim-bcd
 
 build-babylond:
-	$(MAKE) -C $(GIT_TOPLEVEL)/babylon-private/contrib/images babylond
+	$(MAKE) -C $(GIT_TOPLEVEL)/babylon/contrib/images babylond
 
 build-vigilante:
 	$(MAKE) -C $(GIT_TOPLEVEL)/vigilante build-docker
