@@ -11,13 +11,13 @@ branch = base/consumer-chain-support
 [submodule "vigilante"]
 path = vigilante
 url = git@github.com:babylonlabs-io/vigilante.git
-[submodule "finality-provider-phase-3"]
-path = finality-provider-phase-3
-url = git@github.com:babylonlabs-io/finality-provider.git
+[submodule "finality-provider"]
+	path = finality-provider
+	url = git@github.com:babylonlabs-io/finality-provider.git
 branch = base/consumer-chain-support
-[submodule "btc-staker-phase-3"]
-path = btc-staker-phase-3
-url = git@github.com:babylonlabs-io/btc-staker.git
+[submodule "btc-staker"]
+	path = btc-staker
+	url = git@github.com:babylonlabs-io/btc-staker.git
 branch = base/consumer-chain-support
 [submodule "optimism"]
 path = optimism
