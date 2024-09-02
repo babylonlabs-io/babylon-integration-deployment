@@ -1,8 +1,8 @@
 # BTC staking integration deployment
 
 This deployment scenario demonstrates the integration of Babylon network with
-BTC Staking and a consumer chain, using a bitcoind private regtest network.
-It showcases how the consumer chain integrates with Babylon for BTC staking.
+BTC Staking and a Consumer chain, using a bitcoind private regtest network.
+It showcases how the Consumer chain integrates with Babylon for BTC staking.
 
 ## Components
 
@@ -10,23 +10,23 @@ It showcases how the consumer chain integrates with Babylon for BTC staking.
 2. **BTC Regression Testnet**: A local Bitcoin testnet using bitcoind for
    testing and development.
 3. **Babylon Finality Provider**: A finality provider on the Babylon chain.
-4. **BTC Staker**: A BTC staker that restakes to the Babylon and consumer
+4. **BTC Staker**: A BTC staker that re-stakes to the Babylon and Consumer
    finality provider.
 5. **Consumer Chain**: A chain that is integrated with Babylon for BTC staking.
-6. **Babylon Contracts**: Smart contracts on the consumer chain.
-7. **Consumer chain finality provider**: A finality provider on the consumer
+6. **Babylon Contracts**: Smart contracts on the Consumer chain.
+7. **Consumer chain finality provider**: A finality provider on the Consumer
    chain.
 
 ## User stories covered
 
-1. A consumer chain creates an IBC channel with the Babylon chain to start the
+1. A Consumer chain creates an IBC channel with the Babylon chain to start the
    integration.
 2. A Babylon finality provider registers to the Babylon chain.
-3. A consumer finality provider registers to the consumer chain.
-4. A BTC staker restakes BTC to the Babylon and consumer finality providers.
-5. The consumer finality provider commits public randomness and submits finality
-   signatures to the consumer chain.
-6. Blocks of the consumer chain are finalised by BTC staking.
+3. A Consumer finality provider registers to the Consumer chain.
+4. A BTC staker re-stakes BTC to the Babylon and Consumer finality providers.
+5. The Consumer finality provider commits public randomness and submits finality
+   signatures to the Consumer chain.
+6. BTC staking finalises blocks of the Consumer chain.
 
 ## Usage
 
