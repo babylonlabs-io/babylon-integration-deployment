@@ -51,7 +51,7 @@ This command will:
 
 ```shell
 make stop-deployment-btc-staking-integration-bitcoind
-git submodule deinit
+git submodule deinit -f --all
 ```
 
 This will stop and remove the Docker containers, and clean up the test network
