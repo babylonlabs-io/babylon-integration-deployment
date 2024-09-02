@@ -39,20 +39,21 @@ make start-deployment-btc-staking-integration-bitcoind-demo
 
 This command will:
 
-- Stop any existing deployment
+- Stop any existing deployment.
 - Build all necessary components (babylond, bitcoindsim, vigilante, btc-staker,
-    finality-provider, covenant-emulator, and ibcsim-bcd)
-- Run pre-deployment setup
-- Start the Docker containers
-- Run post-deployment setup
-- Run the demo script that showcases all user stories
+    finality-provider, covenant-emulator, and ibcsim-bcd).
+- Run the pre-deployment setup.
+- Start the Docker containers.
+- Run the post-deployment setup.
+- Run the demo script that showcases all the user stories.
 
 ### Stop the deployment
 
 ```shell
 make stop-deployment-btc-staking-integration-bitcoind
-git submodule deinit -f --all
+git submodule deinit
 ```
 
-This will stop and remove the Docker containers and clean up the test network
+This will stop and remove the Docker containers, and clean up the test network
 data.
+It will also de-initialise / remove the submodules.
