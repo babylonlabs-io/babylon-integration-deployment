@@ -29,6 +29,8 @@ mkdir -p .testnets/finality-gadget
 mkdir -p .testnets/consumer-eotsmanager
 mkdir -p .testnets/consumer-finality-provider
 mkdir -p .testnets/covenant-emulator
+mkdir -p .testnets/node0/babylond/covenant-emulator/keyring-test
+echo "Successfully created separate subpaths for each component"
 
 cp artifacts/stakerd.conf .testnets/btc-staker/stakerd.conf
 cp artifacts/vigilante.yml .testnets/vigilante/vigilante.yml
@@ -39,6 +41,8 @@ cp artifacts/consumer-eotsd.conf .testnets/consumer-eotsmanager/eotsd.conf
 cp artifacts/consumer-fpd.conf .testnets/consumer-finality-provider/fpd.conf
 cp artifacts/covd.conf .testnets/covenant-emulator/covd.conf
 cp -R artifacts/covenant-keyring .testnets/covenant-emulator/keyring-test
+cp .testnets/covenant-emulator/keyring-test/* .testnets/node0/babylond/covenant-emulator/keyring-test/
+echo "Successfully copied configuration files for each component"
 
 chmod -R 777 .testnets
 echo

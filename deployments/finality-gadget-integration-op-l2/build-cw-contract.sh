@@ -1,6 +1,17 @@
 #!/bin/bash
 set -euo pipefail
 
+# Check if cargo is installed
+if ! command -v cargo >/dev/null 2>&1; then
+    echo "Installing Rust and Cargo..."
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+    source $HOME/.cargo/env
+else
+    echo "Cargo is already installed."
+fi
+cargo --version
+echo
+
 # Go to the Babylon CW contracts directory
 BABYLON_CONTRACT_DIR=$1
 echo "BABYLON_CONTRACT_DIR: $BABYLON_CONTRACT_DIR"

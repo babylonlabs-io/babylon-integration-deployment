@@ -8,8 +8,6 @@ function init_babylon_account() {
     echo "account_name: $account_name"
 
     if [ "$account_name" == "covenant-emulator" ]; then
-        mkdir -p .testnets/node0/babylond/$account_name/keyring-test
-        cp .testnets/covenant-emulator/keyring-test/* .testnets/node0/babylond/$account_name/keyring-test/
         local account_addr=$(docker exec babylondnode0 /bin/sh -c "
             /bin/babylond keys show covenant \
             --home $BABYLON_HOME_DIR/$account_name \

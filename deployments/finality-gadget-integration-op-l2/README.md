@@ -22,7 +22,7 @@ The whole deployment process for the finality gadget integration with OP chain a
 
 ```bash
 cd deployments/finality-gadget-integration-op-l2
-mv .env.example .env
+cp .env.example .env
 ```
 
 2. Start the deployment and basic test, run the following command from the root of the repository:
