@@ -83,3 +83,11 @@ stop: stop-op-devnet
 demo-test:
 	@./verify-babylon-finality.sh $(GIT_TOPLEVEL)/finality-gadget
 .PHONY: demo-test
+
+test-btc-network: build-bitcoindsim
+	@$(DOCKER) compose -f artifacts/docker-compose.yml down
+	@rm -rf $(CURDIR)/.testnets
+	@$(DOCKER) compose -f artifacts/docker-compose.yml up -d bitcoindsim
+	sleep 5
+	@./verify-btc-network.sh
+.PHONY: test-btc-network

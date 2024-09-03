@@ -20,3 +20,7 @@ start-deployment-finality-gadget-integration-op-l2-demo:
 stop-deployment-finality-gadget-integration-op-l2:
 	@$(MAKE) -C $(CURDIR)/deployments/finality-gadget-integration-op-l2 \
 		stop
+
+test-btc-network:
+	@$(MAKE) -C $(CURDIR)/deployments/finality-gadget-integration-op-l2 \
+		test-btc-network
