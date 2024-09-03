@@ -20,7 +20,7 @@ WORKDIR /work
 
 ENV GO111MODULE on
 ENV RELAYER_TAG v2.5.2
-ENV BABYLON_SDK_TAG v0.3.0-rc.0
+ENV BABYLON_SDK_TAG v0.4.0-rc.0
 
 # Install the relayer
 RUN git clone https://github.com/cosmos/relayer.git
