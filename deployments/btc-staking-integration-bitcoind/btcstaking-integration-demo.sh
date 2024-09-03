@@ -209,6 +209,7 @@ done
 
 echo ""
 echo "Ensuring the block on the consumer chain is finalised by BTC staking..."
+sleep 3
 while true; do
     indexed_block=$(docker exec ibcsim-bcd /bin/sh -c "bcd query wasm contract-state smart $btcStakingContractAddr '{\"block\":{\"height\":$last_block_height}}' -o json")
     if [ $(echo "$indexed_block" | jq '.data.finalized') != "true" ]; then
