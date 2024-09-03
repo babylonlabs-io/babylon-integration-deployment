@@ -195,6 +195,7 @@ done
 echo ""
 echo "Ensuring all finality providers have submitted finality signatures..."
 last_block_height=$(docker exec ibcsim-bcd /bin/sh -c "bcd query blocks --query \"block.height > 1\" --page 1 --limit 1 --order_by desc -o json | jq -r '.blocks[0].header.height'")
+last_block_height=$[last_block_height + 1]
 while true; do
     cnt=0
     for consumer_btc_pk in $CONSUMER_BTC_PKS; do
