@@ -6,18 +6,18 @@ common:
 btc:
   no-client-tls: true   # use true for bitcoind as it does not support tls
   ca-file: ~
-  endpoint: bitcoindsim:18443  # use port 18443 for bitcoind regtest
+  endpoint: bitcoindsim:${BITCOIN_RPC_PORT}
   estimate-mode: CONSERVATIVE # only needed by bitcoind
   tx-fee-max: 10000 # maximum tx fee, 10,000sat/kvb
   tx-fee-min: 1000 # minimum tx fee, 1,000sat/kvb
   default-fee: 1000 # 1,000sat/kvb
   target-block-num: 2
   wallet-endpoint: ~
-  wallet-password: walletpass
+  wallet-password: ${WALLET_PASS}
   wallet-name: default
   wallet-lock-time: 10
   wallet-ca-file: ~
-  net-params: regtest # use regtest for bitcoind as it does not support simnet
+  net-params: ${BITCOIN_NETWORK}
   username: rpcuser
   password: rpcpass
   reconnect-attempts: 3
@@ -53,13 +53,13 @@ metrics:
   host: 0.0.0.0
   server-port: 2112
 submitter:
-  netparams: regtest
+  netparams: ${BITCOIN_NETWORK}
   buffer-size: 100
   polling-interval-seconds: 60
   resend-interval-seconds: 1800
   resubmit-fee-multiplier: 2
 reporter:
-  netparams: regtest
+  netparams: ${BITCOIN_NETWORK}
   btc_cache_size: 1000
   max_headers_in_msg: 100
 monitor:
@@ -71,11 +71,11 @@ monitor:
   max-live-btc-heights: 200
   enable-liveness-checker: true
   enable-slasher: true
-  btcnetparams: regtest
+  btcnetparams: ${BITCOIN_NETWORK}
 btcstaking-tracker:
   check-delegations-interval: 1m
   delegations-batch-size: 100
   check-if-delegation-active-interval: 5m
   retry-submit-unbonding-interval: 1m
   max-jitter-interval: 30s
-  btcnetparams: regtest
+  btcnetparams: ${BITCOIN_NETWORK}

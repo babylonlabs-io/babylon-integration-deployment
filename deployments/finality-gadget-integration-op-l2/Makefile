@@ -70,7 +70,17 @@ start: stop build
 	sleep 10
 	@./register-op-consumer.sh
 	@./register-op-consumer-fp.sh
-	@./create-btc-delegations.sh
+	@if [ -z "$(BITCOIN_NETWORK)" ] || [ "$(BITCOIN_NETWORK)" = "regtest" ]; then \
+		echo "Creating BTC delegations for regtest..."; \
+		./create-btc-delegations.sh; \
+	elif [ "$(BITCOIN_NETWORK)" = "signet" ]; then \
+		echo "Please wait until the local Bitcoin node is fully synced with the signet network."; \
+		echo "Note: syncing can take several hours to complete."; \
+		echo "To check if the Bitcoin node is synced, run the following command:"; \
+		echo ". $(CURDIR)/verify-bitcoin-sync-balance.sh"; \
+		echo "Once synced and has at least 0.01 BTC, to create BTC delegations by running the following command:"; \
+		echo ". $(CURDIR)/create-btc-delegations.sh"; \
+	fi
 .PHONY: start
 
 stop: stop-op-devnet
@@ -83,11 +93,3 @@ stop: stop-op-devnet
 demo-test:
 	@./verify-babylon-finality.sh $(GIT_TOPLEVEL)/finality-gadget
 .PHONY: demo-test
-
-test-btc-network: build-bitcoindsim
-	@$(DOCKER) compose -f artifacts/docker-compose.yml down
-	@rm -rf $(CURDIR)/.testnets
-	@$(DOCKER) compose -f artifacts/docker-compose.yml up -d bitcoindsim
-	sleep 5
-	@./verify-btc-network.sh
-.PHONY: test-btc-network
