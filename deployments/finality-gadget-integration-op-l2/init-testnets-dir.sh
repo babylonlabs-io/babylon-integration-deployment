@@ -42,7 +42,7 @@ docker run --rm -v $(pwd)/.testnets:/data babylonlabs-io/babylond \
     --covenant-pks "2d4ccbe538f846a750d82a77cd742895e51afcf23d86d05004a356b783902748" # should be updated if `covenant-keyring` dir is changed`
 
 # Create separate subpaths for each component and copy relevant configuration
-mkdir -p .testnets/bitcoin
+mkdir -p .bitcoin
 mkdir -p .testnets/vigilante
 mkdir -p .testnets/btc-staker
 mkdir -p .testnets/eotsmanager

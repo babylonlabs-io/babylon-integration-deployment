@@ -1,5 +1,6 @@
 .idea/
 **/.testnets/
+**/.bitcoin/
 tmp/
 deployments/local/data
 *.DS_Store

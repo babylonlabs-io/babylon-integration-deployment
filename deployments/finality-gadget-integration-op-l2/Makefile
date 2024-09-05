@@ -80,6 +80,8 @@ start: stop build
 		echo ". $(CURDIR)/verify-bitcoin-sync-balance.sh"; \
 		echo "Once synced and has at least 0.01 BTC, to create BTC delegations by running the following command:"; \
 		echo ". $(CURDIR)/create-btc-delegations.sh"; \
+	else \
+		echo "Unsupported bitcoin network: $(BITCOIN_NETWORK)"; \
 	fi
 .PHONY: start
 
@@ -88,6 +90,16 @@ stop: stop-op-devnet
 	@$(DOCKER) compose -f artifacts/docker-compose-fg.yml down
 	@$(DOCKER) compose -f artifacts/docker-compose.yml down
 	@rm -rf $(CURDIR)/.testnets
+	@if [ -z "$(BITCOIN_NETWORK)" ] || [ "$(BITCOIN_NETWORK)" = "regtest" ]; then \
+		echo "Removing Bitcoin data for regtest..."; \
+		rm -rf $(CURDIR)/bitcoin; \
+	elif [ "$(BITCOIN_NETWORK)" = "signet" ]; then \
+		echo "Keeping Bitcoin data for signet to preserve sync state..."; \
+		echo "To remove Bitcoin data for signet, if no longer needed, run the following command:"; \
+		echo "rm -rf $(CURDIR)/.bitcoin"; \
+	else \
+		echo "Unsupported bitcoin network: $(BITCOIN_NETWORK)"; \
+	fi
 .PHONY: stop
 
 demo-test:
