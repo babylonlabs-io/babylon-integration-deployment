@@ -55,12 +55,12 @@ bitcoind -${BITCOIN_NETWORK} -datadir="$BITCOIN_DATA" -conf="$BITCOIN_CONF" -dae
 # Allow some time for bitcoind to start
 sleep 3
 
-echo "Creating a wallet for btcstaker..."
-bitcoin-cli -${BITCOIN_NETWORK} -rpcuser="$RPC_USER" -rpcpassword="$RPC_PASS" createwallet "$BTCSTAKER_WALLET_NAME" false false "$WALLET_PASS" false false
-
 if [[ "$BITCOIN_NETWORK" == "regtest" ]]; then
   echo "Creating a wallet..."
   bitcoin-cli -${BITCOIN_NETWORK} -rpcuser="$RPC_USER" -rpcpassword="$RPC_PASS" createwallet "$WALLET_NAME" false false "$WALLET_PASS" false false
+
+  echo "Creating a wallet for btcstaker..."
+  bitcoin-cli -${BITCOIN_NETWORK} -rpcuser="$RPC_USER" -rpcpassword="$RPC_PASS" createwallet "$BTCSTAKER_WALLET_NAME" false false "$WALLET_PASS" false false
 
   echo "Generating 110 blocks for the first coinbases to mature..."
   bitcoin-cli -regtest -rpcuser="$RPC_USER" -rpcpassword="$RPC_PASS" -rpcwallet="$WALLET_NAME" -generate 110
@@ -101,12 +101,19 @@ if [[ "$BITCOIN_NETWORK" == "regtest" ]]; then
     sleep "${GENERATE_INTERVAL_SECS}"
   done
 elif [[ "$BITCOIN_NETWORK" == "signet" ]]; then
-  echo "Unlocking btcstaker wallet..."
-  bitcoin-cli -signet -rpcuser="$RPC_USER" -rpcpassword="$RPC_PASS" -rpcwallet="$BTCSTAKER_WALLET_NAME" walletpassphrase "$WALLET_PASS" 10
-  echo "Importing btcstaker private key..."
-  bitcoin-cli -signet -rpcuser="$RPC_USER" -rpcpassword="$RPC_PASS" -rpcwallet="$BTCSTAKER_WALLET_NAME" importprivkey "$BTCSTAKER_PRIVKEY" "$BTCSTAKER_WALLET_NAME" false
-  sleep 5
   echo "Bitcoind is running. Press CTRL+C to stop..."
+  # Check if the wallet database already exists.
+  if [[ -d "$BITCOIN_DATA"/signet/wallets/"$BTCSTAKER_WALLET_NAME" ]]; then
+    echo "Wallet already exists. Skipping wallet creation."
+  else
+    echo "Creating a wallet for btcstaker..."
+    bitcoin-cli -signet -rpcuser="$RPC_USER" -rpcpassword="$RPC_PASS" createwallet "$BTCSTAKER_WALLET_NAME" false false "$WALLET_PASS" false false
+    echo "Unlocking btcstaker wallet..."
+    bitcoin-cli -signet -rpcuser="$RPC_USER" -rpcpassword="$RPC_PASS" -rpcwallet="$BTCSTAKER_WALLET_NAME" walletpassphrase "$WALLET_PASS" 10
+    echo "Importing btcstaker private key..."
+    bitcoin-cli -signet -rpcuser="$RPC_USER" -rpcpassword="$RPC_PASS" -rpcwallet="$BTCSTAKER_WALLET_NAME" importprivkey "$BTCSTAKER_PRIVKEY" "$BTCSTAKER_WALLET_NAME" false
+    echo "Wallet $BTCSTAKER_WALLET_NAME imported successfully"
+  fi
   # Keep the container running
   tail -f /dev/null
 fi

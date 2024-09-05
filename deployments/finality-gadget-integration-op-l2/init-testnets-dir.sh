@@ -126,4 +126,5 @@ cp .testnets/covenant-emulator/keyring-test/* .testnets/node0/babylond/covenant-
 echo "Successfully copied configuration files for each component"
 
 chmod -R 777 .testnets
+chmod -R 777 .bitcoin
 echo
