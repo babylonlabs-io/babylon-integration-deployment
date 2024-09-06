@@ -77,9 +77,9 @@ start: stop build
 		echo "Please wait until the local Bitcoin node is fully synced with the signet network."; \
 		echo "Note: syncing can take several hours to complete."; \
 		echo "To check if the Bitcoin node is synced, run the following command:"; \
-		echo ". $(CURDIR)/verify-bitcoin-sync-balance.sh"; \
+		echo "cd $(CURDIR) && ./verify-bitcoin-sync-balance.sh"; \
 		echo "Once synced and has at least 0.01 BTC, to create BTC delegations by running the following command:"; \
-		echo ". $(CURDIR)/create-btc-delegations.sh"; \
+		echo "cd $(CURDIR) && ./create-btc-delegations.sh"; \
 	else \
 		echo "Unsupported bitcoin network: $(BITCOIN_NETWORK)"; \
 	fi

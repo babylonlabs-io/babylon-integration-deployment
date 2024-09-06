@@ -7,11 +7,15 @@ mkdir -p .testnets && chmod -R 777 .testnets
 if [[ -z "$BITCOIN_NETWORK" || "$BITCOIN_NETWORK" == "regtest" ]]; then
   FINALIZATION_TIMEOUT=2
   CONFIRMATION_DEPTH=1
-  GENESIS_HEADER=0100000000000000000000000000000000000000000000000000000000000000000000003ba3edfd7a7b12b27ac72c3e67768f617fc81bc3888a51323a9fb8aa4b1e5e4adae5494dffff7f2002000000
+  BASE_HEADER=0100000000000000000000000000000000000000000000000000000000000000000000003ba3edfd7a7b12b27ac72c3e67768f617fc81bc3888a51323a9fb8aa4b1e5e4adae5494dffff7f2002000000
+  BASE_HEADER_HEIGHT=0
 elif [[ "$BITCOIN_NETWORK" == "signet" ]]; then
   FINALIZATION_TIMEOUT=20
   CONFIRMATION_DEPTH=6
-  GENESIS_HEADER=0100000000000000000000000000000000000000000000000000000000000000000000003ba3edfd7a7b12b27ac72c3e67768f617fc81bc3888a51323a9fb8aa4b1e5e4a008f4d5fae77031e8ad22203
+  # genesis block must be a difficulty adjustment block
+  # block 211680 header
+  BASE_HEADER=00000020fb40a0d7967891f6a8bc3f0e785df347e5ace3b858d9201b68d1287376000000aebbd327a7d382e1706ec47b60cca99bdb68e5203c58865b4e93ad4ff97e24c6d6aad7664253011eb3ba1d01
+  BASE_HEADER_HEIGHT=211680
 else
   echo "Unsupported bitcoin network: $BITCOIN_NETWORK"
   exit 1
@@ -32,7 +36,8 @@ docker run --rm -v $(pwd)/.testnets:/data babylonlabs-io/babylond \
     --btc-finalization-timeout $FINALIZATION_TIMEOUT \
     --btc-confirmation-depth $CONFIRMATION_DEPTH \
     --minimum-gas-prices 0.000006ubbn \
-    --btc-base-header $GENESIS_HEADER \
+    --btc-base-header $BASE_HEADER \
+    --btc-base-header-height $BASE_HEADER_HEIGHT \
     --btc-network $BITCOIN_NETWORK \
     --additional-sender-account \
     --slashing-address $SLASHING_ADDRESS \

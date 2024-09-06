@@ -2,9 +2,17 @@
 set -euo pipefail
 
 # Load environment variables from .env file
+echo "Load environment variables from .env file..."
 if [ -f .env ]; then
     export $(cat .env | grep -v '^#' | xargs)
 fi
+
+if [ -z "$(echo ${WALLET_PASS})" ] || [ -z "$(echo ${BTCSTAKER_PRIVKEY})" ]; then
+    echo "Error: WALLET_PASS or BTCSTAKER_PRIVKEY environment variable is not set"
+    exit 1
+fi
+echo "Environment variables loaded successfully"
+echo
 
 echo "Checking if Bitcoin node is synced..."
 SYNCED=$(docker exec bitcoindsim /bin/sh -c "
