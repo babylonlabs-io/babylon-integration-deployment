@@ -101,19 +101,12 @@ if [[ "$BITCOIN_NETWORK" == "regtest" ]]; then
     sleep "${GENERATE_INTERVAL_SECS}"
   done
 elif [[ "$BITCOIN_NETWORK" == "signet" ]]; then
-  echo "Bitcoind is running. Press CTRL+C to stop..."
   # Check if the wallet database already exists.
   if [[ -d "$BITCOIN_DATA"/signet/wallets/"$BTCSTAKER_WALLET_NAME" ]]; then
-    echo "Wallet already exists. Skipping wallet creation."
-  else
-    echo "Creating a wallet for btcstaker..."
-    bitcoin-cli -signet -rpcuser="$RPC_USER" -rpcpassword="$RPC_PASS" createwallet "$BTCSTAKER_WALLET_NAME" false false "$WALLET_PASS" false false
-    echo "Unlocking btcstaker wallet..."
-    bitcoin-cli -signet -rpcuser="$RPC_USER" -rpcpassword="$RPC_PASS" -rpcwallet="$BTCSTAKER_WALLET_NAME" walletpassphrase "$WALLET_PASS" 10
-    echo "Importing btcstaker private key..."
-    bitcoin-cli -signet -rpcuser="$RPC_USER" -rpcpassword="$RPC_PASS" -rpcwallet="$BTCSTAKER_WALLET_NAME" importprivkey "$BTCSTAKER_PRIVKEY" "$BTCSTAKER_WALLET_NAME" false
-    echo "Wallet $BTCSTAKER_WALLET_NAME imported successfully"
+    echo "Wallet already exists and removing it..."
+    rm -rf "$BITCOIN_DATA"/signet/wallets/"$BTCSTAKER_WALLET_NAME"
   fi
   # Keep the container running
+  echo "Bitcoind is running. Press CTRL+C to stop..."
   tail -f /dev/null
 fi

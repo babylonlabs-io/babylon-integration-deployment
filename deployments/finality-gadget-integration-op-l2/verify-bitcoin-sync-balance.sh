@@ -1,6 +1,11 @@
 #!/bin/bash
 set -euo pipefail
 
+# Load environment variables from .env file
+if [ -f .env ]; then
+    export $(cat .env | grep -v '^#' | xargs)
+fi
+
 echo "Checking if Bitcoin node is synced..."
 SYNCED=$(docker exec bitcoindsim /bin/sh -c "
     bitcoin-cli \
@@ -13,6 +18,34 @@ if [ $(echo "$SYNCED < 0.999" | bc -l) -eq 1 ]; then
     exit 1
 fi
 echo "Bitcoin node is synced: ${SYNCED}"
+echo
+
+echo "Creating a wallet for btcstaker..."
+docker exec bitcoindsim /bin/sh -c "
+    bitcoin-cli \
+    -signet \
+    -rpcuser=rpcuser \
+    -rpcpassword=rpcpass \
+    createwallet btcstaker false false $WALLET_PASS false false"
+echo "Unlocking btcstaker wallet..."
+docker exec bitcoindsim /bin/sh -c "
+    bitcoin-cli \
+    -signet \
+    -rpcuser=rpcuser \
+    -rpcpassword=rpcpass \
+    -rpcwallet=btcstaker \
+    walletpassphrase $WALLET_PASS 10"
+echo "Importing btcstaker private key, it would take several minutes to complete rescan..."
+docker exec bitcoindsim /bin/sh -c "
+    bitcoin-cli \
+    -signet \
+    -rpcuser=rpcuser \
+    -rpcpassword=rpcpass \
+    -rpcwallet=btcstaker \
+    importprivkey $BTCSTAKER_PRIVKEY btcstaker"
+echo "Wallet btcstaker imported successfully"
+echo
+sleep 10
 
 # Check btcstaker address
 BTCSTAKER_ADDRESS=$(docker exec bitcoindsim /bin/sh -c "
@@ -35,4 +68,7 @@ BALANCE_BTC=$(docker exec bitcoindsim /bin/sh -c "
     listunspent" | jq -r '[.[] | .amount] | add')
 if [ $(echo "$BALANCE_BTC < 0.01" | bc -l) -eq 1 ]; then
     echo "Warning: BTCStaker balance is less than 0.01 BTC. You may need to fund this address for signet."
+else
+    echo "BTCStaker balance is sufficient: ${BALANCE_BTC} BTC"
 fi
+echo
