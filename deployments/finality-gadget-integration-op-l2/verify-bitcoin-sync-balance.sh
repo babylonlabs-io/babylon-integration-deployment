@@ -28,32 +28,41 @@ fi
 echo "Bitcoin node is synced: ${SYNCED}"
 echo
 
-echo "Creating a wallet for btcstaker..."
-docker exec bitcoindsim /bin/sh -c "
+BTCSTAKER_WALLET_EXISTS=$(docker exec bitcoindsim /bin/sh -c "
     bitcoin-cli \
     -signet \
     -rpcuser=rpcuser \
     -rpcpassword=rpcpass \
-    createwallet btcstaker false false $WALLET_PASS false false"
-echo "Unlocking btcstaker wallet..."
-docker exec bitcoindsim /bin/sh -c "
-    bitcoin-cli \
-    -signet \
-    -rpcuser=rpcuser \
-    -rpcpassword=rpcpass \
-    -rpcwallet=btcstaker \
-    walletpassphrase $WALLET_PASS 10"
-echo "Importing btcstaker private key, it would take several minutes to complete rescan..."
-docker exec bitcoindsim /bin/sh -c "
-    bitcoin-cli \
-    -signet \
-    -rpcuser=rpcuser \
-    -rpcpassword=rpcpass \
-    -rpcwallet=btcstaker \
-    importprivkey $BTCSTAKER_PRIVKEY btcstaker"
-echo "Wallet btcstaker imported successfully"
-echo
-sleep 10
+    listwallets" | jq -r '.[] | select(. == "btcstaker")'
+)
+if [ -z "$BTCSTAKER_WALLET_EXISTS" ]; then
+    echo "Creating a wallet for btcstaker..."
+    docker exec bitcoindsim /bin/sh -c "
+        bitcoin-cli \
+        -signet \
+        -rpcuser=rpcuser \
+        -rpcpassword=rpcpass \
+        createwallet btcstaker false false $WALLET_PASS false false"
+    echo "Unlocking btcstaker wallet..."
+    docker exec bitcoindsim /bin/sh -c "
+        bitcoin-cli \
+        -signet \
+        -rpcuser=rpcuser \
+        -rpcpassword=rpcpass \
+        -rpcwallet=btcstaker \
+        walletpassphrase $WALLET_PASS 10"
+    echo "Importing btcstaker private key, it would take several minutes to complete rescan..."
+    docker exec bitcoindsim /bin/sh -c "
+        bitcoin-cli \
+        -signet \
+        -rpcuser=rpcuser \
+        -rpcpassword=rpcpass \
+        -rpcwallet=btcstaker \
+        importprivkey $BTCSTAKER_PRIVKEY btcstaker"
+    echo "Wallet btcstaker imported successfully"
+    echo
+    sleep 10
+fi
 
 # Check btcstaker address
 BTCSTAKER_ADDRESS=$(docker exec bitcoindsim /bin/sh -c "

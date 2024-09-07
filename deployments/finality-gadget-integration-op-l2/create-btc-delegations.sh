@@ -1,6 +1,19 @@
 #!/bin/bash
 set -euo pipefail
 
+# For signet, load environment variables from .env file
+echo "Load environment variables from .env file..."
+if [ -f .env ]; then
+    export $(cat .env | grep -v '^#' | xargs)
+fi
+
+if [ -z "$(echo ${CONSUMER_ID})" ]; then
+    echo "Error: CONSUMER_ID environment variable is not set"
+    exit 1
+fi
+echo "Environment variables loaded successfully"
+echo
+
 # Create BTC delegation to the finality providers
 echo "Create BTC delegation to Babylon and OP consumer finality providers from a dedicated BTC address"
 DELEGATION_ADDR=$(docker exec btc-staker /bin/sh -c "
