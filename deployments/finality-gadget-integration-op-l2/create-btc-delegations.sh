@@ -47,7 +47,7 @@ while true; do
     echo "Active delegations count in Babylon: $ACTIVE_DELEGATIONS_COUNT"
 
     if [ "$ACTIVE_DELEGATIONS_COUNT" -eq 1 ]; then
-        echo "BTC delegation has become active"
+        echo "BTC delegation has become active at $(date +"%Y-%m-%d %H:%M:%S")"
         break
     else
         sleep 10
