@@ -23,18 +23,33 @@ function init_babylon_account() {
     echo "account_addr: $account_addr"
     sleep 5
 
-    local fund_tx_hash=$(docker exec babylondnode0 /bin/sh -c "
-        /bin/babylond tx bank send \
-        $TEST_SPENDING_KEY_NAME \
-        $account_addr \
-        100000000ubbn \
-        --home $BABYLON_HOME_DIR \
-        --chain-id $BABYLON_CHAIN_ID \
-        --keyring-backend test \
-        --gas-prices 0.2ubbn \
-        --gas auto \
-        --gas-adjustment 1.3 \
-        -o json -y" | jq -r '.txhash')
+    if [ "$account_name" == "consumer-finality-provider" ]; then
+        local fund_tx_hash=$(docker exec babylondnode0 /bin/sh -c "
+            /bin/babylond tx bank send \
+            $TEST_SPENDING_KEY_NAME \
+            $account_addr \
+            60000000000ubbn \
+            --home $BABYLON_HOME_DIR \
+            --chain-id $BABYLON_CHAIN_ID \
+            --keyring-backend test \
+            --gas-prices 0.2ubbn \
+            --gas auto \
+            --gas-adjustment 1.3 \
+            -o json -y" | jq -r '.txhash')
+    else
+        local fund_tx_hash=$(docker exec babylondnode0 /bin/sh -c "
+            /bin/babylond tx bank send \
+            $TEST_SPENDING_KEY_NAME \
+            $account_addr \
+            1000000000ubbn \
+            --home $BABYLON_HOME_DIR \
+            --chain-id $BABYLON_CHAIN_ID \
+            --keyring-backend test \
+            --gas-prices 0.2ubbn \
+            --gas auto \
+            --gas-adjustment 1.3 \
+            -o json -y" | jq -r '.txhash')
+    fi
     echo "fund_tx_hash: $fund_tx_hash"
 }
 

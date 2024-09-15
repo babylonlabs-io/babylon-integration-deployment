@@ -11,15 +11,31 @@ if [[ -z "$BITCOIN_NETWORK" || "$BITCOIN_NETWORK" == "regtest" ]]; then
   BASE_HEADER_HEIGHT=0
 elif [[ "$BITCOIN_NETWORK" == "signet" ]]; then
   FINALIZATION_TIMEOUT=20
-  CONFIRMATION_DEPTH=6
-  # genesis block must be a difficulty adjustment block
-  # block 211680 header
-  BASE_HEADER=00000020fb40a0d7967891f6a8bc3f0e785df347e5ace3b858d9201b68d1287376000000aebbd327a7d382e1706ec47b60cca99bdb68e5203c58865b4e93ad4ff97e24c6d6aad7664253011eb3ba1d01
-  BASE_HEADER_HEIGHT=211680
+  CONFIRMATION_DEPTH=1
+  # Get the next target difficulty adjustment height
+  NEXT_RETARGET_HEIGHT=$(curl -sSL "https://mempool.space/signet/api/v1/difficulty-adjustment" | jq -r '.nextRetargetHeight')
+  echo "Next retarget height: $NEXT_RETARGET_HEIGHT"
+
+  # Calculate the previous difficulty adjustment height
+  # Each 2016-block interval is known as a difficulty epoch
+  BASE_HEADER_HEIGHT=$((NEXT_RETARGET_HEIGHT - 2016))
+  echo "Base header height: $BASE_HEADER_HEIGHT"
+
+  # Get the base header hash and header
+  BASE_HEIGHT_HASH=$(curl -sSL "https://mempool.space/signet/api/block-height/$BASE_HEADER_HEIGHT")
+  BASE_HEADER=$(curl -sSL "https://mempool.space/signet/api/block/$BASE_HEIGHT_HASH/header")
+  
+  if [ -z "$BASE_HEADER" ]; then
+    echo "Error: Failed to retrieve base header"
+    exit 1
+  fi
+  
+  echo "Base header: $BASE_HEADER"
 else
   echo "Unsupported bitcoin network: $BITCOIN_NETWORK"
   exit 1
 fi
+echo
 
 # Set slashing address if not set
 if [[ -z "$SLASHING_ADDRESS" ]]; then
