@@ -1,5 +1,5 @@
 L2RPCHost = "http://l2:8545"
-BitcoinRPCHost = "bitcoindsim:18443"
+BitcoinRPCHost = "bitcoindsim:${BITCOIN_RPC_PORT}"
 BitcoinRPCUser = "rpcuser"
 BitcoinRPCPass = "rpcpass"
 BitcoinDisableTLS = true

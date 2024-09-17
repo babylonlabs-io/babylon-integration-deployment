@@ -1,6 +1,18 @@
 #!/bin/bash
 set -euo pipefail
 
+# Check if grpcurl is installed
+if ! command -v grpcurl &> /dev/null
+then
+    echo "grpcurl could not be found, installing..."
+    # Install grpcurl using go install
+    go install github.com/fullstorydev/grpcurl/cmd/grpcurl@latest
+else
+    echo "grpcurl is already installed."
+fi
+grpcurl --version
+echo
+
 echo "Wait a few minutes to verify Babylon finality gadget integration..."
 echo
 

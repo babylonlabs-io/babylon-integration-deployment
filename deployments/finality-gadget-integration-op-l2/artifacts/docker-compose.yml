@@ -50,22 +50,24 @@ services:
       localnet:
         ipv4_address: 192.168.10.30
     environment:
+      - BITCOIN_NETWORK=${BITCOIN_NETWORK:-regtest}
       - ZMQ_SEQUENCE_PORT=29000
       - ZMQ_RAWBLOCK_PORT=29001
       - ZMQ_RAWTR_PORT=29002
-      - RPC_PORT=18443
+      - BITCOIN_RPC_PORT=${BITCOIN_RPC_PORT:-18443}
       - RPC_USER=rpcuser
       - RPC_PASS=rpcpass
-      - WALLET_PASS=walletpass
+      - WALLET_PASS=${WALLET_PASS:-walletpass}
       - WALLET_NAME=default
       - BTCSTAKER_WALLET_NAME=btcstaker
       - BTCSTAKER_WALLET_ADDR_COUNT=1
+      - BTCSTAKER_PRIVKEY=${BTCSTAKER_PRIVKEY:-}
       - GENERATE_INTERVAL_SECS=10
     ports:
-      - "18443:18443"
+      - "${BITCOIN_RPC_PORT:-18443}:${BITCOIN_RPC_PORT:-18443}"
       - "29000-29002:29000-29002"
     volumes:
-      - ../.testnets/bitcoin:/bitcoindsim/.bitcoin:Z
+      - ../.bitcoin:/bitcoindsim/.bitcoin:Z
 
   vigilante-reporter:
     container_name: vigilante-reporter
