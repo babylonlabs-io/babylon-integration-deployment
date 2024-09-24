@@ -12,11 +12,12 @@
 	path = vigilante
 	url = git@github.com:babylonlabs-io/vigilante.git
 [submodule "finality-provider"]
-	path = finality-provider	
+	path = finality-provider
 	url = git@github.com:babylonlabs-io/finality-provider.git
 	branch = base/consumer-chain-support
 [submodule "btc-staker"]
 	path = btc-staker
+	url = git@github.com:babylonlabs-io/btc-staker.git
 	branch = base/consumer-chain-support
 [submodule "optimism"]
 	path = optimism
