@@ -9,6 +9,7 @@ services:
       opfgd start --cfg /home/finality-gadget/opfgd.toml
     ports:
       - "50051:50051"
+      - "18080:8080"
     networks:
       localnet:
         ipv4_address: 192.168.10.16

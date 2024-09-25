@@ -2,7 +2,7 @@ include .env
 # Define GOPATH
 export GOPATH := $(HOME)/go
 # Add Foundry the PATH
-export PATH := $(HOME)/.just:$(HOME)/.foundry/bin:$(GOPATH)/bin:$(PATH)
+export PATH := $(HOME)/.just:$(HOME)/.foundry/bin:/usr/local/go/bin:$(GOPATH)/bin:$(PATH)
 export
 
 DOCKER := $(shell which docker)
@@ -70,7 +70,19 @@ start: stop build
 	sleep 10
 	@./register-op-consumer.sh
 	@./register-op-consumer-fp.sh
-	@./create-btc-delegations.sh
+	@if [ -z "$(BITCOIN_NETWORK)" ] || [ "$(BITCOIN_NETWORK)" = "regtest" ]; then \
+		echo "Creating BTC delegations for regtest..."; \
+		./create-btc-delegations.sh; \
+	elif [ "$(BITCOIN_NETWORK)" = "signet" ]; then \
+		echo "Please wait until the local Bitcoin node is fully synced with the signet network."; \
+		echo "Note: syncing can take several hours to complete."; \
+		echo "To check if the Bitcoin node is synced, run the following command:"; \
+		echo "cd $(CURDIR) && ./verify-bitcoin-sync-balance.sh"; \
+		echo "Once synced and has at least 0.01 BTC, to create BTC delegations by running the following command:"; \
+		echo "cd $(CURDIR) && ./create-btc-delegations.sh"; \
+	else \
+		echo "Unsupported bitcoin network: $(BITCOIN_NETWORK)"; \
+	fi
 .PHONY: start
 
 stop: stop-op-devnet
@@ -78,6 +90,16 @@ stop: stop-op-devnet
 	@$(DOCKER) compose -f artifacts/docker-compose-fg.yml down
 	@$(DOCKER) compose -f artifacts/docker-compose.yml down
 	@rm -rf $(CURDIR)/.testnets
+	@if [ -z "$(BITCOIN_NETWORK)" ] || [ "$(BITCOIN_NETWORK)" = "regtest" ]; then \
+		echo "Removing Bitcoin data for regtest..."; \
+		rm -rf $(CURDIR)/bitcoin; \
+	elif [ "$(BITCOIN_NETWORK)" = "signet" ]; then \
+		echo "Keeping Bitcoin data for signet to preserve sync state..."; \
+		echo "To remove Bitcoin data for signet, if no longer needed, run the following command:"; \
+		echo "rm -rf $(CURDIR)/.bitcoin"; \
+	else \
+		echo "Unsupported bitcoin network: $(BITCOIN_NETWORK)"; \
+	fi
 .PHONY: stop
 
 demo-test:
