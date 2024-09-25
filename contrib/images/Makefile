@@ -16,7 +16,7 @@ ibcsim-gaia:
 		$(shell git rev-parse --show-toplevel)/contrib/images/ibcsim-gaia
 
 ibcsim-bcd:
-	docker build --secret id=sshKey,src=${BBN_PRIV_DEPLOY_KEY} \
+	docker build --no-cache --secret id=sshKey,src=${BBN_PRIV_DEPLOY_KEY} \
 		--tag babylonlabs-io/ibcsim-bcd -f ibcsim-bcd/Dockerfile \
 		$(shell git rev-parse --show-toplevel)/contrib/images/ibcsim-bcd
 
