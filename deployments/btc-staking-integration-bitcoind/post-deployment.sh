@@ -1,5 +1,15 @@
 #!/bin/bash
 
+echo "Installing dependencies"
+
+docker exec babylondnode0 /bin/sh -c '
+    apt-get install -y make git bash gcc curl jq
+'
+
+docker exec ibcsim-bcd /bin/sh -c '
+    apt-get install -y make git bash gcc curl jq
+'
+
 echo "Creating keyrings and sending funds to Babylon Node Consumers"
 
 [[ "$(uname)" == "Linux" ]] && chown -R 1138:1138 .testnets/eotsmanager
