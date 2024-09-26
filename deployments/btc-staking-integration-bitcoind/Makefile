@@ -5,7 +5,7 @@ build-bitcoindsim:
 	$(MAKE) -C $(GIT_TOPLEVEL)/contrib/images bitcoindsim
 
 build-ibcsim-bcd:
-	$(MAKE) BBN_PRIV_DEPLOY_KEY=${BBN_PRIV_DEPLOY_KEY} -C $(GIT_TOPLEVEL)/contrib/images ibcsim-bcd
+	$(MAKE) -C $(GIT_TOPLEVEL)/contrib/images ibcsim-bcd
 
 build-babylond:
 	$(MAKE) -C $(GIT_TOPLEVEL)/babylon/contrib/images babylond
