@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x
+
 display_usage() {
 	echo "Missing parameters. Please check if all parameters were specified."
 	echo "Usage: setup-bcd.sh [CHAIN_ID] [CHAIN_DIR] [RPC_PORT] [P2P_PORT] [PROFILING_PORT] [GRPC_PORT] [BABYLON_CONTRACT_CODE_DIR] [BTCSTAKING_CONTRACT_CODE_DIR] [INSTANTIATING_CFG]"
@@ -101,25 +103,20 @@ sed -i 's/"babylon_contract_address": ""/"babylon_contract_address": "'"$babylon
 sed -i 's/"btc_staking_contract_address": ""/"btc_staking_contract_address": "'"$btcStakingContractAddr"'"/g' $CHAINDIR/$CHAINID/config/genesis.json
 
 # Start
-echo "SETUP_BCD_LOG: Starting $BINARY..."
-echo "SETUP_BCD_LOG: Starting $BINARY with command: $BINARY --home $CHAINDIR/$CHAINID start --pruning=nothing --grpc-web.enable=false --grpc.address=\"0.0.0.0:$GRPCPORT\" --log_level trace --trace --log_format 'plain'"
+echo "Starting $BINARY..."
 $BINARY --home $CHAINDIR/$CHAINID start --pruning=nothing --grpc-web.enable=false --grpc.address="0.0.0.0:$GRPCPORT" --log_level trace --trace --log_format 'plain' 2>&1 | tee $CHAINDIR/$CHAINID.log &
 sleep 20
 
 # upload contract code
-echo "SETUP_BCD_LOG: Uploading babylon contract code $BABYLON_CONTRACT_CODE_DIR..."
-echo "SETUP_BCD_LOG: Uploading babylon contract code with command: $BINARY --home $CHAINDIR/$CHAINID tx wasm store \"$BABYLON_CONTRACT_CODE_DIR\" $KEYRING --from user --chain-id $CHAINID --gas 20000000000 --gas-prices 0.01ustake --node http://localhost:$RPCPORT -y"
+echo "Uploading babylon contract code $BABYLON_CONTRACT_CODE_DIR..."
 $BINARY --home $CHAINDIR/$CHAINID tx wasm store "$BABYLON_CONTRACT_CODE_DIR" $KEYRING --from user --chain-id $CHAINID --gas 20000000000 --gas-prices 0.01ustake --node http://localhost:$RPCPORT -y
 sleep 10
 
 # upload contract code
-echo "SETUP_BCD_LOG: Uploading btcstaking contract code $BTCSTAKING_CONTRACT_CODE_DIR..."
-echo "SETUP_BCD_LOG: Uploading btcstaking contract code with command: $BINARY --home $CHAINDIR/$CHAINID tx wasm store \"$BTCSTAKING_CONTRACT_CODE_DIR\" $KEYRING --from user --chain-id $CHAINID --gas 20000000000 --gas-prices 0.01ustake --node http://localhost:$RPCPORT -y"
+echo "Uploading btcstaking contract code $BTCSTAKING_CONTRACT_CODE_DIR..."
 $BINARY --home $CHAINDIR/$CHAINID tx wasm store "$BTCSTAKING_CONTRACT_CODE_DIR" $KEYRING --from user --chain-id $CHAINID --gas 20000000000 --gas-prices 0.01ustake --node http://localhost:$RPCPORT -y
 sleep 10
 
 # Echo the command with expanded variables
-set -x
-printf "SETUP_BCD_LOG: New1 Executing command: %s\n" "$BINARY --home $CHAINDIR/$CHAINID tx wasm instantiate 1 '$INSTANTIATING_CFG' --admin=$(bcd --home $CHAINDIR/$CHAINID keys show user --keyring-backend test -a) --label 'v0.0.1' $KEYRING --from user --chain-id $CHAINID --gas 20000000000 --gas-prices 0.001ustake --node http://localhost:$RPCPORT -y --amount 100000stake"
+echo "Instantiating contract with code $BABYLON_CONTRACT_CODE_DIR..."
 $BINARY --home $CHAINDIR/$CHAINID tx wasm instantiate 1 "$INSTANTIATING_CFG" --admin=$(bcd --home $CHAINDIR/$CHAINID keys show user --keyring-backend test -a) --label "v0.0.1" $KEYRING --from user --chain-id $CHAINID --gas 20000000000 --gas-prices 0.001ustake --node http://localhost:$RPCPORT -y --amount 100000stake
-
