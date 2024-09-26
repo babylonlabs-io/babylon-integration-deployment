@@ -16,7 +16,7 @@ ibcsim-gaia:
 		$(shell git rev-parse --show-toplevel)/contrib/images/ibcsim-gaia
 
 ibcsim-bcd:
-	docker build --no-cache --tag babylonlabs-io/ibcsim-bcd -f ibcsim-bcd/Dockerfile \
+	docker build --tag babylonlabs-io/ibcsim-bcd -f ibcsim-bcd/Dockerfile \
 		$(shell git rev-parse --show-toplevel)/contrib/images/ibcsim-bcd
 
 btcdsim-rmi:

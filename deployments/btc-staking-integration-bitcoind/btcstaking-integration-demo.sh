@@ -123,7 +123,7 @@ sleep 10
 delAddrs=($(docker exec btc-staker /bin/sh -c '/bin/stakercli dn list-outputs | jq -r ".outputs[].address" | sort | uniq'))
 i=0
 for consumer_btc_pk in $CONSUMER_BTC_PKS; do
-    stakingTime=50000
+    stakingTime=10000
 
     echo "Delegating 1 million Satoshis from BTC address ${delAddrs[i]} to Finality Provider with CZ finality provider $consumer_btc_pk and Babylon finality provider $bbn_btc_pk for $stakingTime BTC blocks"
 
