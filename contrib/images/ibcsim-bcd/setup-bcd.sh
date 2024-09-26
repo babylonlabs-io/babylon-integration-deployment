@@ -110,13 +110,13 @@ sleep 20
 echo "SETUP_BCD_LOG: Uploading babylon contract code $BABYLON_CONTRACT_CODE_DIR..."
 echo "SETUP_BCD_LOG: Uploading babylon contract code with command: $BINARY --home $CHAINDIR/$CHAINID tx wasm store \"$BABYLON_CONTRACT_CODE_DIR\" $KEYRING --from user --chain-id $CHAINID --gas 20000000000 --gas-prices 0.01ustake --node http://localhost:$RPCPORT -y"
 $BINARY --home $CHAINDIR/$CHAINID tx wasm store "$BABYLON_CONTRACT_CODE_DIR" $KEYRING --from user --chain-id $CHAINID --gas 20000000000 --gas-prices 0.01ustake --node http://localhost:$RPCPORT -y
-sleep 5
+sleep 10
 
 # upload contract code
 echo "SETUP_BCD_LOG: Uploading btcstaking contract code $BTCSTAKING_CONTRACT_CODE_DIR..."
 echo "SETUP_BCD_LOG: Uploading btcstaking contract code with command: $BINARY --home $CHAINDIR/$CHAINID tx wasm store \"$BTCSTAKING_CONTRACT_CODE_DIR\" $KEYRING --from user --chain-id $CHAINID --gas 20000000000 --gas-prices 0.01ustake --node http://localhost:$RPCPORT -y"
 $BINARY --home $CHAINDIR/$CHAINID tx wasm store "$BTCSTAKING_CONTRACT_CODE_DIR" $KEYRING --from user --chain-id $CHAINID --gas 20000000000 --gas-prices 0.01ustake --node http://localhost:$RPCPORT -y
-sleep 5
+sleep 10
 
 # Echo the command with expanded variables
 set -x
