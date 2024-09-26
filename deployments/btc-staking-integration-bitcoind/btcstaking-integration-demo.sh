@@ -1,8 +1,8 @@
 #!/bin/bash
 
 BBN_CHAIN_ID="chain-test"
-CONSUMER_NAME="test-consumer"
-CONSUMER_DESC="test-consumer-description"
+# CONSUMER_NAME="test-consumer"
+# CONSUMER_DESC="test-consumer-description"
 
 # Wait until the IBC channels are ready
 echo "Waiting for IBC channels to be ready..."
@@ -53,9 +53,9 @@ bbn_btc_pk=$(docker exec btc-staker /bin/sh -c '/bin/stakercli dn bfp | jq -r ".
 echo "BTC PK of Babylon finality provider: $bbn_btc_pk"
 
 # register a consumer chain
-echo "Registering a consumer chain"
-docker exec babylondnode0 /bin/sh -c "/bin/babylond --home /babylondhome tx btcstkconsumer register-consumer \"$CONSUMER_ID\" $CONSUMER_NAME $CONSUMER_DESC --from test-spending-key --fees 2ubbn -y --chain-id $BBN_CHAIN_ID --keyring-backend test"
-echo "Registered a consumer chain with consumer ID $CONSUMER_ID"
+# echo "Registering a consumer chain"
+# docker exec babylondnode0 /bin/sh -c "/bin/babylond --home /babylondhome tx btcstkconsumer register-consumer \"$CONSUMER_ID\" $CONSUMER_NAME $CONSUMER_DESC --from test-spending-key --fees 2ubbn -y --chain-id $BBN_CHAIN_ID --keyring-backend test"
+# echo "Registered a consumer chain with consumer ID $CONSUMER_ID"
 
 # create FPs for the consumer chain
 NUM_COMSUMER_FPS=1
