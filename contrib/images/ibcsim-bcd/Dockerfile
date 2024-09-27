@@ -20,8 +20,8 @@ WORKDIR /work
 
 ENV GO111MODULE on
 ENV RELAYER_TAG v2.5.2
-#ENV BABYLON_SDK_TAG v0.4.0-rc.0
-ENV BABYLON_SDK_BRANCH gusin13/bump-contracts
+# TODO: fix
+ENV BABYLON_SDK_TAG bump-euphrates-and-contract
 
 # Install the relayer
 RUN git clone https://github.com/cosmos/relayer.git
@@ -31,7 +31,7 @@ RUN cd relayer && git fetch origin && git checkout ${RELAYER_TAG} && make instal
 RUN git clone https://github.com/babylonlabs-io/babylon-sdk.git && \
     cd babylon-sdk && \
     git fetch origin && \
-    git checkout ${BABYLON_SDK_BRANCH} && \
+    git checkout ${BABYLON_SDK_TAG} && \
     make install && \
     cd -
 
