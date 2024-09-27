@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -x
-
 display_usage() {
 	echo "Missing parameters. Please check if all parameters were specified."
 	echo "Usage: setup-bcd.sh [CHAIN_ID] [CHAIN_DIR] [RPC_PORT] [P2P_PORT] [PROFILING_PORT] [GRPC_PORT] [BABYLON_CONTRACT_CODE_DIR] [BTCSTAKING_CONTRACT_CODE_DIR] [INSTANTIATING_CFG]"

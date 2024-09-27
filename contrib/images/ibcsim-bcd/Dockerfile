@@ -20,7 +20,6 @@ WORKDIR /work
 
 ENV GO111MODULE on
 ENV RELAYER_TAG v2.5.2
-# TODO: fix
 ENV BABYLON_SDK_TAG v0.5.0-rc.0
 
 # Install the relayer
