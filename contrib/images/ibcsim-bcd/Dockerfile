@@ -21,7 +21,7 @@ WORKDIR /work
 ENV GO111MODULE on
 ENV RELAYER_TAG v2.5.2
 # TODO: fix
-ENV BABYLON_SDK_TAG bump-euphrates-and-contract
+ENV BABYLON_SDK_TAG v0.5.0-rc.0
 
 # Install the relayer
 RUN git clone https://github.com/cosmos/relayer.git
