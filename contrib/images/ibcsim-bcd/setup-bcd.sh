@@ -102,21 +102,19 @@ sed -i 's/"btc_staking_contract_address": ""/"btc_staking_contract_address": "'"
 
 # Start
 echo "Starting $BINARY..."
-$BINARY --home $CHAINDIR/$CHAINID start --pruning=nothing --grpc-web.enable=false --grpc.address="0.0.0.0:$GRPCPORT" >$CHAINDIR/$CHAINID.log 2>&1 &
+$BINARY --home $CHAINDIR/$CHAINID start --pruning=nothing --grpc-web.enable=false --grpc.address="0.0.0.0:$GRPCPORT" --log_level trace --trace --log_format 'plain' 2>&1 | tee $CHAINDIR/$CHAINID.log &
 sleep 20
 
 # upload contract code
 echo "Uploading babylon contract code $BABYLON_CONTRACT_CODE_DIR..."
 $BINARY --home $CHAINDIR/$CHAINID tx wasm store "$BABYLON_CONTRACT_CODE_DIR" $KEYRING --from user --chain-id $CHAINID --gas 20000000000 --gas-prices 0.01ustake --node http://localhost:$RPCPORT -y
-sleep 5
+sleep 10
 
 # upload contract code
 echo "Uploading btcstaking contract code $BTCSTAKING_CONTRACT_CODE_DIR..."
 $BINARY --home $CHAINDIR/$CHAINID tx wasm store "$BTCSTAKING_CONTRACT_CODE_DIR" $KEYRING --from user --chain-id $CHAINID --gas 20000000000 --gas-prices 0.01ustake --node http://localhost:$RPCPORT -y
-sleep 5
+sleep 10
 
-# instantiate contract
-# node that the code id is guaranteed to be 1
+# Echo the command with expanded variables
 echo "Instantiating contract with code $BABYLON_CONTRACT_CODE_DIR..."
 $BINARY --home $CHAINDIR/$CHAINID tx wasm instantiate 1 "$INSTANTIATING_CFG" --admin=$(bcd --home $CHAINDIR/$CHAINID keys show user --keyring-backend test -a) --label "v0.0.1" $KEYRING --from user --chain-id $CHAINID --gas 20000000000 --gas-prices 0.001ustake --node http://localhost:$RPCPORT -y --amount 100000stake
-

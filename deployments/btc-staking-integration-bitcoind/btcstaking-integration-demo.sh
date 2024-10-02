@@ -1,8 +1,6 @@
 #!/bin/bash
 
 BBN_CHAIN_ID="chain-test"
-CONSUMER_NAME="test-consumer"
-CONSUMER_DESC="test-consumer-description"
 
 # Wait until the IBC channels are ready
 echo "Waiting for IBC channels to be ready..."
@@ -32,9 +30,23 @@ clientStateJson=$(docker exec ibcsim-bcd /bin/sh -c "bcd query ibc channel clien
 CONSUMER_ID=$(echo $clientStateJson | jq -r '.client_id')
 
 # The IBC client ID is the consumer ID
-echo "Fetched IBC client ID, this will be used as consumer ID to register consumer on Babylon: $CONSUMER_ID"
+echo "Fetched IBC client ID, this will be used as consumer ID and automatically register in Babylon: $CONSUMER_ID"
+while true; do
+    # Consumer should be automatically registered in Babylon via IBC, query registered consumers
+    REGISTERED_CONSUMER_IDS=$(docker exec babylondnode0 /bin/sh -c "/bin/babylond query btcstkconsumer registered-consumers -o json | jq -r '.consumer_ids'")
 
-sleep 10
+    # Check if there's exactly one consumer ID and it matches the expected CONSUMER_ID
+    if [ $(echo $REGISTERED_CONSUMER_IDS | jq 'length') -eq 1 ] && [ $(echo $REGISTERED_CONSUMER_IDS | jq -r '.[0]') = "$CONSUMER_ID" ]; then
+        echo "Verification successful: Exactly one consumer registered in Babylon with the expected ID."
+        break
+    else
+        echo "Verification failed: Consumer ID not found in Babylon"
+        echo "Expected consumer with ID: $CONSUMER_ID"
+        echo "Found: $REGISTERED_CONSUMER_IDS"
+        echo "Retrying in 10 seconds..."
+        sleep 10
+    fi
+done
 
 # create FP for Babylon
 echo ""
@@ -51,11 +63,6 @@ docker exec finality-provider /bin/sh -c "
 echo "Created 1 Babylon finality provider"
 bbn_btc_pk=$(docker exec btc-staker /bin/sh -c '/bin/stakercli dn bfp | jq -r ".finality_providers[].bitcoin_public_Key"')
 echo "BTC PK of Babylon finality provider: $bbn_btc_pk"
-
-# register a consumer chain
-echo "Registering a consumer chain"
-docker exec babylondnode0 /bin/sh -c "/bin/babylond --home /babylondhome tx btcstkconsumer register-consumer \"$CONSUMER_ID\" $CONSUMER_NAME $CONSUMER_DESC --from test-spending-key --fees 2ubbn -y --chain-id $BBN_CHAIN_ID --keyring-backend test"
-echo "Registered a consumer chain with consumer ID $CONSUMER_ID"
 
 # create FPs for the consumer chain
 NUM_COMSUMER_FPS=1
@@ -123,7 +130,7 @@ sleep 10
 delAddrs=($(docker exec btc-staker /bin/sh -c '/bin/stakercli dn list-outputs | jq -r ".outputs[].address" | sort | uniq'))
 i=0
 for consumer_btc_pk in $CONSUMER_BTC_PKS; do
-    stakingTime=50000
+    stakingTime=10000
 
     echo "Delegating 1 million Satoshis from BTC address ${delAddrs[i]} to Finality Provider with CZ finality provider $consumer_btc_pk and Babylon finality provider $bbn_btc_pk for $stakingTime BTC blocks"
 

@@ -1,5 +1,14 @@
 #!/bin/bash
 
+echo "Installing dependencies"
+
+# Install jq in both containers
+for container in babylondnode0 ibcsim-bcd; do
+    docker exec $container /bin/sh -c '
+        apt-get update && apt-get install -y jq
+    '
+done
+
 echo "Creating keyrings and sending funds to Babylon Node Consumers"
 
 [[ "$(uname)" == "Linux" ]] && chown -R 1138:1138 .testnets/eotsmanager

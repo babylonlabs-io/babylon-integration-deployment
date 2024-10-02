@@ -12,7 +12,7 @@ build-bitcoindsim:
 	@$(MAKE) -C $(GIT_TOPLEVEL)/contrib/images bitcoindsim
 
 build-babylond:
-	@$(MAKE) -C $(GIT_TOPLEVEL)/babylon-private/contrib/images babylond
+	@$(MAKE) -C $(GIT_TOPLEVEL)/babylon/contrib/images babylond
 
 build-vigilante:
 	@$(MAKE) -C $(GIT_TOPLEVEL)/vigilante build-docker

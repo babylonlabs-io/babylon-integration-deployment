@@ -8,16 +8,7 @@ This repository contains artifacts and instructions for setting up and running a
 
 2. **Make**: Required for building service binaries. Installation guide available [here](https://sp21.datastructur.es/materials/guides/make-install.html).
 
-3. **GitHub SSH Key**:
-   - Create a non-passphrase-protected SSH key.
-   - Add it to GitHub ([instructions](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account)).
-   - Export the key path:
-     ```shell
-     export BBN_PRIV_DEPLOY_KEY=FULL_PATH_TO_PRIVATE_KEY/.ssh/id_ed25519
-     ```
-   - For more details, see [babylon-api/README.md#installation](babylon-api/README.md#installation).
-
-4. **Repository Setup**:
+3. **Repository Setup**:
    ```shell
    git clone git@github.com:babylonlabs-io/babylon-integration-deployment.git
    git submodule init && git submodule update
