@@ -5,10 +5,18 @@ OP_DIR=$1
 echo "OP_DIR: $OP_DIR"
 echo
 
-# Read foundry and just version from versions.json
-FOUNDRY_VERSION=$(jq -r .foundry < "$OP_DIR"/versions.json)
-JUST_VERSION=$(jq -r .just < "$OP_DIR"/versions.json)
-GO_VERSION=$(jq -r .go < "$OP_DIR"/versions.json)
+echo "Installing dependencies for OP L2..."
+VERSIONS_FILE="$OP_DIR"/versions.json
+if [ -f "$VERSIONS_FILE" ]; then
+    # Read foundry and just version from versions.json
+    FOUNDRY_VERSION=$(jq -r .foundry < "$VERSIONS_FILE")
+    JUST_VERSION=$(jq -r .just < "$VERSIONS_FILE")
+    GO_VERSION=$(jq -r .go < "$VERSIONS_FILE")
+else
+    echo "versions.json file $VERSIONS_FILE not found"
+    exit 1
+fi
+echo
 
 # Function to check if a command exists
 command_exists() {
@@ -28,13 +36,13 @@ just --version
 echo
 
 # Check if Go is already installed
-if command_exists go || [[ "$(go version 2>/dev/null | awk '{print $3}' | sed 's/^go//' || echo "")" != "${GO_VERSION}" ]]; then
-    echo "Go is already installed."
-else
+if ! command_exists go || [[ "$(go version 2>/dev/null | awk '{print $3}' | sed 's/^go//' || echo "")" != "${GO_VERSION}" ]]; then
     # Install Golang
     echo "Installing Go..."
     rm -rf /usr/local/go
     wget "https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz" -O - | tar -C /usr/local -xz
+else
+    echo "Go is already installed."
 fi
 go version
 echo

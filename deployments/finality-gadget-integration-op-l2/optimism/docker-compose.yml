@@ -9,6 +9,7 @@ services:
       - "l2_data:/db"
       - "${PWD}/.deploy/genesis.json:/genesis.json"
       - "${PWD}/.deploy/test-jwt-secret.txt:/config/jwt-secret.txt"
+      - "${PWD}/l2-op-geth-entrypoint.sh:/entrypoint.sh"
     entrypoint:
       - "/bin/sh"
       - "/entrypoint.sh"

@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
 # This script is used to generate the deployment configuration JSON file.
+OP_DIR=$1
+DEPLOY_CONFIG_PATH=${OP_DIR}/packages/contracts-bedrock/deploy-config/sepolia-devnet-${L2_CHAIN_ID}.json
+echo "Generating deployment configuration for OP L2..."
 
 reqenv() {
     if [ -z "${!1}" ]; then
@@ -109,4 +112,6 @@ EOL
 )
 
 # Write the config file
-echo "$config" > ./.deploy/sepolia-devnet.json
+echo "$config" > ${DEPLOY_CONFIG_PATH}
+echo "Deployment configuration generated at ${DEPLOY_CONFIG_PATH}"
+echo
