@@ -109,6 +109,10 @@ demo-test:
 ## Prepares for running a local OP chain
 pre-op-chain:
 	$(eval include $(CURDIR)/optimism/.env)
+	@$(CURDIR)/optimism/install-deps.sh $(GIT_TOPLEVEL)/optimism
+	@$(CURDIR)/optimism/generate-deploy-config.sh $(GIT_TOPLEVEL)/optimism
+	@$(CURDIR)/optimism/deploy-l1-contracts.sh $(GIT_TOPLEVEL)/optimism
+	@$(CURDIR)/optimism/generate-l2-config.sh $(GIT_TOPLEVEL)/optimism $(CURDIR)/optimism
 .PHONY: pre-op-chain
 
 ## Starts the local OP chain	
@@ -119,4 +123,5 @@ start-op-chain: pre-op-chain
 ## Stops the local OP chain
 stop-op-chain:
 	@$(DOCKER) compose -f $(CURDIR)/optimism/docker-compose.yml down
+	@$(DOCKER) volume ls --filter name=optimism --format='{{.Name}}' | xargs -r docker volume rm
 .PHONY: stop-op-chain

@@ -15,14 +15,14 @@ services:
     environment:
       GETH_MINER_RECOMMIT: 100ms
     networks:
-      - default
+      - ops-bedrock_default
       - artifacts_localnet
 
   op-node:
     container_name: op-node
     depends_on:
       - l2
-    image: us-docker.pkg.dev/oplabs-tools-artifacts/images/op-node:v1.9.1
+    image: snapchain/op-node:v1.9.1
     command: >
       op-node
       --l1=${L1_RPC_URL}
@@ -50,7 +50,7 @@ services:
       - "${PWD}/.deploy/rollup.json:/rollup.json"
       - op_log:/op_log
     networks:
-      - default
+      - ops-bedrock_default
       - artifacts_localnet
 
   op-proposer:
@@ -72,6 +72,8 @@ services:
       OP_PROPOSER_GAME_TYPE: "${DG_TYPE}"
       OP_PROPOSER_PROPOSAL_INTERVAL: "${PROPOSAL_INTERVAL}"
       OP_PROPOSER_RPC_ENABLE_ADMIN: "true"
+    networks:
+      - ops-bedrock_default
 
   op-batcher:
     container_name: op-batcher
@@ -99,7 +101,9 @@ services:
       OP_BATCHER_ALTDA_DA_SERVICE: "${ALTDA_SERVICE}"
       OP_BATCHER_ALTDA_DA_SERVER: "http://da-server:3100"
       OP_BATCHER_DATA_AVAILABILITY_TYPE: "${DA_TYPE}"
-      
+    networks:
+      - ops-bedrock_default
+
 volumes:
   l2_data:
   safedb_data:
@@ -107,4 +111,6 @@ volumes:
 
 networks:
   artifacts_localnet:
+    external: true
+  ops-bedrock_default:
     external: true
