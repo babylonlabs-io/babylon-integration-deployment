@@ -17,7 +17,7 @@ echo
 echo "Deploying the L1 contracts..."
 DEPLOYMENT_OUTFILE=${OP_DIR}/packages/contracts-bedrock/deployments/sepolia-devnet-${L2_CHAIN_ID}.json \
 DEPLOY_CONFIG_PATH=${OP_DIR}/packages/contracts-bedrock/deploy-config/sepolia-devnet-${L2_CHAIN_ID}.json \
-forge script $OP_CONTRACTS_DIR/scripts/deploy/Deploy.s.sol:Deploy \
---private-key "$GS_ADMIN_PRIVATE_KEY" \
---broadcast --rpc-url "$L1_RPC_URL" --slow
+  forge script $OP_CONTRACTS_DIR/scripts/deploy/Deploy.s.sol:Deploy \
+  --private-key "$GS_ADMIN_PRIVATE_KEY" \
+  --broadcast --rpc-url "$L1_RPC_URL" --slow
 echo

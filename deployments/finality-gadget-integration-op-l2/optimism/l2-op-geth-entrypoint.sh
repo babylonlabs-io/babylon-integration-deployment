@@ -1,6 +1,11 @@
 #!/bin/sh
 set -exu
 
+# Install jq if not already installed
+if ! command -v jq &> /dev/null; then
+    apk add --no-cache jq
+fi
+
 VERBOSITY=${GETH_VERBOSITY:-3}
 GETH_DATA_DIR=/db
 GETH_CHAINDATA_DIR="$GETH_DATA_DIR/geth/chaindata"
@@ -41,14 +46,11 @@ exec geth \
 	--nodiscover \
 	--maxpeers=0 \
 	--networkid="$CHAIN_ID" \
-	--rpc.allow-unprotected-txs \
 	--authrpc.addr="0.0.0.0" \
 	--authrpc.port="8551" \
 	--authrpc.vhosts="*" \
 	--authrpc.jwtsecret=/config/jwt-secret.txt \
 	--gcmode=archive \
-    --state.scheme=hash \
-	--metrics \
-	--metrics.addr=0.0.0.0 \
-	--metrics.port=6060 \
+	--state.scheme=hash \
+	--rollup.disabletxpoolgossip \
 	"$@"

@@ -28,6 +28,16 @@ block=$(cast block finalized --rpc-url "$L1_RPC_URL")
 timestamp=$(echo "$block" | awk '/timestamp/ { print $2 }')
 blockhash=$(echo "$block" | awk '/hash/ { print $2 }')
 
+# Check optional environment variables
+DEVNET_L2OO=${DEVNET_L2OO:-true}
+DEVNET_ALTDA=${DEVNET_ALTDA:-false}
+GENERIC_ALTDA=${GENERIC_ALTDA:-false}
+if [ "$DEVNET_L2OO" = true ]; then
+  USE_FAULT_PROOFS=false
+else
+  USE_FAULT_PROOFS=true
+fi
+
 # Generate the config file
 config=$(cat << EOL
 {
@@ -104,9 +114,11 @@ config=$(cat << EOL
   "faultGameWithdrawalDelay": 604800,
 
   "preimageOracleMinProposalSize": 1800000,
-  "preimageOracleChallengePeriod": 86400,
+  "preimageOracleChallengePeriod": 120,
 
-  "babylonFinalityGadgetRpc": "$BBN_FINALITY_GADGET_RPC"
+  "babylonFinalityGadgetRpc": "$BBN_FINALITY_GADGET_RPC",
+
+  "useFaultProofs": $USE_FAULT_PROOFS
 }
 EOL
 )

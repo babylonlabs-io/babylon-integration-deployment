@@ -105,3 +105,18 @@ stop: stop-op-devnet
 demo-test:
 	@./verify-babylon-finality.sh $(GIT_TOPLEVEL)/finality-gadget
 .PHONY: demo-test
+
+## Prepares for running a local OP chain
+pre-op-chain:
+	$(eval include $(CURDIR)/optimism/.env)
+.PHONY: pre-op-chain
+
+## Starts the local OP chain	
+start-op-chain: pre-op-chain
+	@$(CURDIR)/optimism/launch-l2.sh $(GIT_TOPLEVEL)/optimism $(CURDIR)/optimism
+.PHONY: start-op-chain
+
+## Stops the local OP chain
+stop-op-chain:
+	@$(DOCKER) compose -f $(CURDIR)/optimism/docker-compose.yml down
+.PHONY: stop-op-chain
