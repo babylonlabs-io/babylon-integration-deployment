@@ -1,0 +1,88 @@
+## Creating the OP chain testnet
+
+This deployment is used to create the OP chain testnet on the local L1 chain or the Sepolia testnet.
+
+TODO: update the make commands to the new structure.
+
+Deploy the OP chain testnet on the local L1 chain:
+
+```bash
+make prepare-op-chain
+make start-op-chain
+```
+
+Deploy the OP chain testnet on the Sepolia testnet:
+
+```bash
+make prepare-op-chain-sepolia
+make start-op-chain-sepolia
+```
+
+### Detailed description for the deployment steps on the Sepolia testnet
+
+1. Some dependencies need to be installed before starting the deployment, and `go`, `foundry`, and `just` are needed. 
+
+    Run the `install-deps.sh` script to install theses dependencies.
+
+    ```bash
+    install-deps.sh <OP_MONOREPO_DIR>
+    ```
+
+2. Four addresses and their private keys are needed when setting up the OP chain. 
+
+    Run the Optimism Monorepo's `wallet.sh` script to generate the addresses. 
+
+    ```bash
+    cd <OP_MONOREPO_DIR>
+    ./packages/contracts-bedrock/scripts/getting-started/wallet.sh
+    ```
+
+    Also, please send Sepolia ETH to the Admin, Proposer, and Batcher addresses.
+
+3. Copy the `env.example` file to `.env` and set the environment variables.
+
+    ```bash
+    cp env.example .env
+    ```
+
+    Also, copy the output from the previous step and paste it into the `.env` file. **Note**: Remove the `export` from the output.
+
+4. Generate the deployment configuration. 
+
+    Run the `generate-deploy-config.sh` script to generate it.
+
+    ```bash
+    generate-deploy-config.sh <OP_MONOREPO_DIR>
+    ```
+
+5. Deploy the L1 contracts for the functionality of the OP chain. 
+
+    Run the `deploy-l1-contracts.sh` script to deploy them.
+
+    ```bash
+    deploy-l1-contracts.sh <OP_MONOREPO_DIR>
+    ```
+
+6. Generate the L2 configuration file. 
+
+    Run the `generate-l2-config.sh` script to generate it.
+
+    ```bash
+    generate-l2-config.sh <OP_MONOREPO_DIR> <OP_DEPLOYMENT_DIR>
+    ```
+
+7. Launch the OP chain. 
+
+    Run the `launch-l2.sh` script to start the OP chain.
+
+    ```bash
+    launch-l2.sh <OP_MONOREPO_DIR> <OP_DEPLOYMENT_DIR>
+    ```
+
+### Launch the local L1 chain
+
+This is only used to test the deployment of the OP chain before deploying it on the Sepolia testnet.
+
+```bash
+make start-l1-chain
+```
