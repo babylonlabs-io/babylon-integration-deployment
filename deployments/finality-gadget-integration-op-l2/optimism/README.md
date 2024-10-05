@@ -82,3 +82,9 @@ This is only used to test the deployment of the OP chain before deploying it on 
 ```bash
 make start-local-l1-chain
 ```
+
+**NOTE**: If you want to test the OP deployment with the local L1 chain, you MUST reload this variable to ensure the salt is regenerated and the contracts are deployed to new addresses (otherwise deployment will fail).
+
+```bash
+export IMPL_SALT=$(openssl rand -hex 32)
+```
