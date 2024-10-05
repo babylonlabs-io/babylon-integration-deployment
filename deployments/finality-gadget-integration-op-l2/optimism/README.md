@@ -7,22 +7,18 @@ TODO: update the make commands to the new structure.
 Deploy the OP chain testnet on the local L1 chain:
 
 ```bash
-make prepare-op-chain
-make start-op-chain
+make start-op-devnet
 ```
 
 Deploy the OP chain testnet on the Sepolia testnet:
 
 ```bash
-make prepare-op-chain-sepolia
 make start-op-chain-sepolia
 ```
 
 ### Detailed description for the deployment steps on the Sepolia testnet
 
-1. Some dependencies need to be installed before starting the deployment, and `go`, `foundry`, and `just` are needed. 
-
-    Run the `install-deps.sh` script to install theses dependencies.
+1. The dependencies(`go`, `foundry`, and `just`) would be checked and installed with the `install-deps.sh` script. This script can be used for the deployment on both the L1 chain and the Sepolia testnet.
 
     ```bash
     install-deps.sh <OP_MONOREPO_DIR>
@@ -84,5 +80,5 @@ make start-op-chain-sepolia
 This is only used to test the deployment of the OP chain before deploying it on the Sepolia testnet.
 
 ```bash
-make start-l1-chain
+make start-local-l1-chain
 ```

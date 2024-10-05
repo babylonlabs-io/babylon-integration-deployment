@@ -109,6 +109,22 @@ demo-test:
 	@./verify-babylon-finality.sh $(GIT_TOPLEVEL)/finality-gadget
 .PHONY: demo-test
 
+
+## Start the local L1 chain
+start-local-l1-chain:
+	@$(MAKE) -C $(GIT_TOPLEVEL)/optimism pre-devnet
+	$(eval include $(CURDIR)/optimism/.env)
+	@$(CURDIR)/optimism/start-local-l1-chain.sh $(GIT_TOPLEVEL)/optimism $(CURDIR)/optimism
+.PHONY: start-local-l1-chain
+
+## Stop the local L1 chain
+stop-local-l1-chain:
+	@rm -rf $(GIT_TOPLEVEL)/optimism/packages/contracts-bedrock/deployments/devnetL1
+	@rm -rf $(GIT_TOPLEVEL)/optimism/.devnet
+	@$(DOCKER) compose -f $(GIT_TOPLEVEL)/optimism/ops-bedrock/docker-compose.yml down l1 l1-bn l1-vc
+	@$(DOCKER) image ls 'ops-bedrock*' --format='{{.Repository}}' | xargs -r docker rmi
+	@$(DOCKER) volume ls --filter name=ops-bedrock --format='{{.Name}}' | xargs -r docker volume rm
+.PHONY: stop-local-l1-chain
 ## Prepare for running the OP chain on the Sepolia testnet
 prepare-op-chain:
 	@$(CURDIR)/optimism/install-deps.sh $(GIT_TOPLEVEL)/optimism
