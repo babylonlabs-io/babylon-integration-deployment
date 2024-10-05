@@ -41,13 +41,16 @@ build: build-babylond \
 	build-covenant-emulator \
 	build-cw-contract
 
+## Start the OP chain on the local L1 chain
 start-op-devnet:
-	@./prepare-op-devnet.sh $(GIT_TOPLEVEL)/optimism
+	@$(CURDIR)/optimism/install-deps.sh $(GIT_TOPLEVEL)/optimism
 	@$(MAKE) -C $(GIT_TOPLEVEL)/optimism devnet-up
 	sleep 10
-	@./verify-op-devnet.sh
+    ## true represent the OP chain is deployed on the local L1 chain
+	@$(CURDIR)/optimism/verify-op-devnet.sh true
 .PHONY: start-op-devnet
 
+## Stop the OP chain on the local L1 chain
 stop-op-devnet:
 	@$(MAKE) -C $(GIT_TOPLEVEL)/optimism devnet-down
 	@$(MAKE) -C $(GIT_TOPLEVEL)/optimism devnet-clean
@@ -105,3 +108,46 @@ stop: stop-op-devnet
 demo-test:
 	@./verify-babylon-finality.sh $(GIT_TOPLEVEL)/finality-gadget
 .PHONY: demo-test
+
+
+## Start the local L1 chain
+start-local-l1-chain:
+	@$(MAKE) -C $(GIT_TOPLEVEL)/optimism pre-devnet
+	$(eval include $(CURDIR)/optimism/.env)
+	@$(CURDIR)/optimism/start-local-l1-chain.sh $(GIT_TOPLEVEL)/optimism $(CURDIR)/optimism
+.PHONY: start-local-l1-chain
+
+## Stop the local L1 chain
+stop-local-l1-chain:
+	@rm -rf $(GIT_TOPLEVEL)/optimism/packages/contracts-bedrock/deployments/devnetL1
+	@rm -rf $(GIT_TOPLEVEL)/optimism/.devnet
+	@$(DOCKER) compose -f $(GIT_TOPLEVEL)/optimism/ops-bedrock/docker-compose.yml down l1 l1-bn l1-vc
+	@$(DOCKER) image ls 'ops-bedrock*' --format='{{.Repository}}' | xargs -r docker rmi
+	@$(DOCKER) volume ls --filter name=ops-bedrock --format='{{.Name}}' | xargs -r docker volume rm
+.PHONY: stop-local-l1-chain
+## Prepare for running the OP chain on the Sepolia testnet
+prepare-op-chain:
+	@$(CURDIR)/optimism/install-deps.sh $(GIT_TOPLEVEL)/optimism
+	$(eval include $(CURDIR)/optimism/.env)
+	@$(CURDIR)/optimism/generate-deploy-config.sh $(GIT_TOPLEVEL)/optimism
+	@$(CURDIR)/optimism/deploy-l1-contracts.sh $(GIT_TOPLEVEL)/optimism
+	@$(CURDIR)/optimism/generate-l2-config.sh $(GIT_TOPLEVEL)/optimism $(CURDIR)/optimism
+.PHONY: prepare-op-chain
+
+## Start the OP chain on the Sepolia testnet
+start-op-chain-sepolia: prepare-op-chain
+	@$(CURDIR)/optimism/launch-l2.sh $(GIT_TOPLEVEL)/optimism $(CURDIR)/optimism
+	sleep 10
+    ## false represent the OP chain is deployed on the local L1 chain
+	@$(CURDIR)/optimism/verify-op-devnet.sh false
+.PHONY: start-op-chain-sepolia
+
+## Stop the OP chain on the Sepolia testnet
+stop-op-chain-sepolia:
+	@$(DOCKER) compose -f $(CURDIR)/optimism/docker-compose.yml down
+	@rm -rf $(CURDIR)/optimism/.deploy
+	$(eval include $(CURDIR)/optimism/.env)
+	@rm -f $(GIT_TOPLEVEL)/optimism/packages/contracts-bedrock/deploy-config/sepolia-devnet-$(L2_CHAIN_ID).json
+	@rm -f $(GIT_TOPLEVEL)/optimism/packages/contracts-bedrock/deployments/sepolia-devnet-$(L2_CHAIN_ID).json
+	@$(DOCKER) volume ls --filter name=optimism --format='{{.Name}}' | xargs -r docker volume rm
+.PHONY: stop-op-chain-sepolia

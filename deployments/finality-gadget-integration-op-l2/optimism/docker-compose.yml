@@ -1,0 +1,116 @@
+services:
+  l2:
+    container_name: l2
+    image: us-docker.pkg.dev/oplabs-tools-artifacts/images/op-geth:v1.101408.0
+    ports:
+      - "9545:8545"
+    volumes:
+      - "l2_data:/db"
+      - "${PWD}/.deploy/genesis.json:/genesis.json"
+      - "${PWD}/.deploy/test-jwt-secret.txt:/config/jwt-secret.txt"
+      - "${PWD}/l2-op-geth-entrypoint.sh:/entrypoint.sh"
+    entrypoint:
+      - "/bin/sh"
+      - "/entrypoint.sh"
+    environment:
+      GETH_MINER_RECOMMIT: 100ms
+    networks:
+      - ops-bedrock_default
+      - artifacts_localnet
+
+  op-node:
+    container_name: op-node
+    depends_on:
+      - l2
+    image: snapchain/op-node:v1.9.1
+    command: >
+      op-node
+      --l1=${L1_RPC_URL}
+      --l1.beacon=${L1_BEACON_URL}
+      --l2=http://l2:8551
+      --l2.jwt-secret=/config/jwt-secret.txt
+      --sequencer.enabled
+      --sequencer.l1-confs=5
+      --verifier.l1-confs=4
+      --rollup.config=/rollup.json
+      --rpc.addr=0.0.0.0
+      --rpc.port=8545
+      --rpc.enable-admin
+      --p2p.disable
+      --p2p.sequencer.key=${GS_SEQUENCER_PRIVATE_KEY}
+      --safedb.path=/db
+      --altda.enabled=${ALTDA_ENABLED}
+      --altda.da-service=${ALTDA_SERVICE}
+      --altda.da-server=http://da-server:3100
+    ports:
+      - "7545:8545"
+    volumes:
+      - "safedb_data:/db"
+      - "${PWD}/.deploy/test-jwt-secret.txt:/config/jwt-secret.txt"
+      - "${PWD}/.deploy/rollup.json:/rollup.json"
+      - op_log:/op_log
+    networks:
+      - ops-bedrock_default
+      - artifacts_localnet
+
+  op-proposer:
+    container_name: op-proposer
+    depends_on:
+      - l2
+      - op-node
+    image: us-docker.pkg.dev/oplabs-tools-artifacts/images/op-proposer:v1.9.1
+    ports:
+      - "7546:8545"
+    environment:
+      OP_PROPOSER_L1_ETH_RPC: "${L1_RPC_URL}"
+      OP_PROPOSER_ROLLUP_RPC: http://op-node:8545
+      OP_PROPOSER_PRIVATE_KEY: "${GS_PROPOSER_PRIVATE_KEY}"
+      OP_PROPOSER_POLL_INTERVAL: 1s
+      OP_PROPOSER_NUM_CONFIRMATIONS: 1
+      OP_PROPOSER_L2OO_ADDRESS: "${L2OO_ADDRESS}"
+      OP_PROPOSER_GAME_FACTORY_ADDRESS: "${DGF_ADDRESS}"
+      OP_PROPOSER_GAME_TYPE: "${DG_TYPE}"
+      OP_PROPOSER_PROPOSAL_INTERVAL: "${PROPOSAL_INTERVAL}"
+      OP_PROPOSER_RPC_ENABLE_ADMIN: "true"
+    networks:
+      - ops-bedrock_default
+
+  op-batcher:
+    container_name: op-batcher
+    depends_on:
+      - l2
+      - op-node
+    image: us-docker.pkg.dev/oplabs-tools-artifacts/images/op-batcher:v1.9.1
+    ports:
+      - "7547:8545"
+    environment:
+      OP_BATCHER_L1_ETH_RPC: "${L1_RPC_URL}"
+      OP_BATCHER_L2_ETH_RPC: http://l2:8545
+      OP_BATCHER_ROLLUP_RPC: http://op-node:8545
+      OP_BATCHER_PRIVATE_KEY: "${GS_BATCHER_PRIVATE_KEY}"
+      OP_BATCHER_MAX_CHANNEL_DURATION: 1500
+      OP_BATCHER_POLL_INTERVAL: 1s
+      OP_BATCHER_NUM_CONFIRMATIONS: 1
+      OP_BATCHER_RPC_ENABLE_ADMIN: "true"
+      OP_BATCHER_BATCH_TYPE: 1
+      OP_BATCHER_TARGET_NUM_FRAMES: 6 # 6 blobs per tx
+      OP_BATCHER_TXMGR_MIN_BASEFEE: 2.0 # 2 gwei, might need to tweak, depending on gas market
+      OP_BATCHER_TXMGR_MIN_TIP_CAP: 2.0 # 2 gwei, might need to tweak, depending on gas market
+      OP_BATCHER_RESUBMISSION_TIMEOUT: 240s # wait 4 min before bumping fees
+      OP_BATCHER_ALTDA_ENABLED: "${ALTDA_ENABLED}"
+      OP_BATCHER_ALTDA_DA_SERVICE: "${ALTDA_SERVICE}"
+      OP_BATCHER_ALTDA_DA_SERVER: "http://da-server:3100"
+      OP_BATCHER_DATA_AVAILABILITY_TYPE: "${DA_TYPE}"
+    networks:
+      - ops-bedrock_default
+
+volumes:
+  l2_data:
+  safedb_data:
+  op_log:
+
+networks:
+  artifacts_localnet:
+    external: true
+  ops-bedrock_default:
+    external: true
