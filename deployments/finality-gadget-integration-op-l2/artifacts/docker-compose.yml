@@ -130,7 +130,7 @@ services:
 
   btc-staker:
     container_name: btc-staker
-    image: babylonlabs/btc-staker
+    image: babylonlabs/btc-staker:v0.6.1
     networks:
       localnet:
         ipv4_address: 192.168.10.11
