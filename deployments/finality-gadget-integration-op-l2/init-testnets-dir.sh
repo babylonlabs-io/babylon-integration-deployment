@@ -1,6 +1,12 @@
 #!/bin/bash
 set -euo pipefail
 
+# Exit script if .testnets directory already exists
+if [[ -d .testnets ]]; then
+  echo ".testnets directory already exists, skipping initialization"
+  exit 0
+fi
+
 # Create new directory that will hold node and services' configuration
 mkdir -p .testnets && chmod -R 777 .testnets
 
