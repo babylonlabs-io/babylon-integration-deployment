@@ -43,11 +43,6 @@ else
 fi
 echo
 
-# Set slashing address if not set
-if [[ -z "$SLASHING_ADDRESS" ]]; then
-  SLASHING_ADDRESS="mfcGAzvis9JQAb6avB6WBGiGrgWzLxuGaC"
-fi
-
 # Initialize files for a babylon testnet
 docker run --rm -v $(pwd)/.testnets:/data babylonlabs/babylond \
     babylond testnet init-files --v 2 -o /data \
