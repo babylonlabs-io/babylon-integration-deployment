@@ -1,7 +1,7 @@
 services:
   babylondnode0:
     container_name: babylondnode0
-    image: "babylonlabs/babylond"
+    image: "babylonlabs/babylond@sha256:07e4437f993d32a2f24d33531cf7de7ac87fd0d9"
     command: >
       babylond --home /babylondhome start --log_format 'plain' 2>&1 | tee /babylondhome/babylond.log
     cap_add:
@@ -21,7 +21,7 @@ services:
 
   babylondnode1:
     container_name: babylondnode1
-    image: "babylonlabs/babylond"
+    image: "babylonlabs/babylond@sha256:07e4437f993d32a2f24d33531cf7de7ac87fd0d9"
     command: >
       babylond --home /babylondhome start --log_format 'plain' 2>&1 | tee /babylondhome/babylond.log
     cap_add:
@@ -145,7 +145,7 @@ services:
 
   eotsmanager:
     container_name: eotsmanager
-    image: babylonlabs/finality-provider
+    image: babylonlabs/finality-provider@sha256:dfa7e25a7edcd4ee65df3e1ac838481fe4c8e432
     command: eotsd start
     networks:
       localnet:
@@ -160,7 +160,7 @@ services:
 
   finality-provider:
     container_name: finality-provider
-    image: babylonlabs/finality-provider
+    image: babylonlabs/finality-provider@sha256:dfa7e25a7edcd4ee65df3e1ac838481fe4c8e432
     command: fpd start
     networks:
       localnet:
@@ -176,7 +176,7 @@ services:
 
   covenant-emulator:
     container_name: covenant-emulator
-    image: babylonlabs/covenant-emulator
+    image: babylonlabs/covenant-emulator@sha256:02ca7fdcea7512720a21360413315be41b6d17de
     command: covd start
     networks:
       localnet:
