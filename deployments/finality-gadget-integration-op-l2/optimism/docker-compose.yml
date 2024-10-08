@@ -21,7 +21,7 @@ services:
     container_name: op-node
     depends_on:
       - l2
-    image: snapchain/op-node:v1.9.1
+    image: babylonlabs/op-node-babylon-finality-gadget:v0.100901.1
     command: >
       op-node
       --l1=${L1_RPC_URL}
