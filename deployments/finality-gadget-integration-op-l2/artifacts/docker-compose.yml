@@ -161,7 +161,7 @@ services:
   eotsmanager:
     container_name: eotsmanager
     build:
-      context: ../../../finality-gadget/
+      context: ../../../finality-provider/
       dockerfile: ./Dockerfile
     command: eotsd start
     networks:
