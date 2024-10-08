@@ -74,6 +74,8 @@ mkdir -p .testnets/consumer-eotsmanager
 mkdir -p .testnets/consumer-finality-provider
 mkdir -p .testnets/covenant-emulator
 mkdir -p .testnets/node0
+sudo chown -R $(whoami):$(whoami) .testnets/node0
+sudo chmod -R 777 .testnets/node0
 mkdir -p .testnets/node0/babylond/covenant-emulator/keyring-test
 echo "Successfully created separate subpaths for each component"
 
