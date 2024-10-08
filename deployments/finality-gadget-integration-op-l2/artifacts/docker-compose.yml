@@ -41,7 +41,7 @@ services:
 
   bitcoindsim:
     build:
-      context: contrib/images/bitcoindsim/
+      context: ../../../contrib/images/bitcoindsim/
       dockerfile: ./Dockerfile
     platform: linux/amd64
     container_name: bitcoindsim
