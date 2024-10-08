@@ -43,7 +43,6 @@ services:
     build:
       context: contrib/images/bitcoindsim/
       dockerfile: ./Dockerfile
-    image: babylonlabs/bitcoindsim:latest
     platform: linux/amd64
     container_name: bitcoindsim
     networks:
