@@ -71,7 +71,7 @@ services:
 
   vigilante-reporter:
     container_name: vigilante-reporter
-    image: babylonlabs/vigilante
+    image: babylonlabs/vigilante@v0.11.2
     command: >
       vigilante reporter --config /home/vigilante/config/vigilante.yml 2>&1 | tee /home/vigilante/config/reporter.log
     networks:
@@ -86,7 +86,7 @@ services:
 
   vigilante-submitter:
     container_name: vigilante-submitter
-    image: babylonlabs/vigilante
+    image: babylonlabs/vigilante@v0.11.2
     command: >
       vigilante submitter --config /home/vigilante/config/vigilante.yml 2>&1 | tee /home/vigilante/config/submitter.log
     networks:
@@ -101,7 +101,7 @@ services:
 
   vigilante-monitor:
     container_name: vigilante-monitor
-    image: babylonlabs/vigilante
+    image: babylonlabs/vigilante@v0.11.2
     command: >
       vigilante monitor --config /home/vigilante/config/vigilante.yml --genesis /home/vigilante/config/bbnconfig/genesis.json 2>&1 | tee /home/vigilante/config/monitor.log
     networks:
@@ -116,7 +116,7 @@ services:
 
   vigilante-bstracker:
     container_name: vigilante-bstracker
-    image: babylonlabs/vigilante
+    image: babylonlabs/vigilante@v0.11.2
     command: >
       vigilante bstracker --config /home/vigilante/config/vigilante.yml 2>&1 | tee /home/vigilante/config/unbonding-watcher.log
     networks:
