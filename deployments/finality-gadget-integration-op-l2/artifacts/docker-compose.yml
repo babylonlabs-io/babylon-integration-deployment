@@ -4,6 +4,8 @@ services:
     build:
       context: ../../../babylon/
       dockerfile: ./contrib/images/babylond/Dockerfile
+      args:
+        MAKEFLAGS: "-d"
     command: >
       babylond --home /babylondhome start --log_format 'plain' 2>&1 | tee /babylondhome/babylond.log
     cap_add:
@@ -26,6 +28,8 @@ services:
     build:
       context: ../../../babylon/
       dockerfile: ./contrib/images/babylond/Dockerfile
+      args:
+        MAKEFLAGS: "-d"
     command: >
       babylond --home /babylondhome start --log_format 'plain' 2>&1 | tee /babylondhome/babylond.log
     cap_add:
@@ -47,6 +51,8 @@ services:
     build:
       context: ../../../contrib/images/bitcoindsim/
       dockerfile: ./Dockerfile
+      args:
+        MAKEFLAGS: "-d"
     platform: linux/amd64
     container_name: bitcoindsim
     networks:
@@ -77,6 +83,8 @@ services:
     build:
       context: ../../../vigilante/
       dockerfile: ./Dockerfile
+      args:
+        MAKEFLAGS: "-d"
     platform: linux/amd64
     command: >
       vigilante reporter --config /home/vigilante/config/vigilante.yml 2>&1 | tee /home/vigilante/config/reporter.log
@@ -95,6 +103,8 @@ services:
     build:
       context: ../../../vigilante/
       dockerfile: ./Dockerfile
+      args:
+        MAKEFLAGS: "-d"
     command: >
       vigilante submitter --config /home/vigilante/config/vigilante.yml 2>&1 | tee /home/vigilante/config/submitter.log
     networks:
@@ -112,6 +122,8 @@ services:
     build:
       context: ../../../vigilante/
       dockerfile: ./Dockerfile
+      args:
+        MAKEFLAGS: "-d"
     command: >
       vigilante monitor --config /home/vigilante/config/vigilante.yml --genesis /home/vigilante/config/bbnconfig/genesis.json 2>&1 | tee /home/vigilante/config/monitor.log
     networks:
@@ -129,6 +141,8 @@ services:
     build:
       context: ../../../vigilante/
       dockerfile: ./Dockerfile
+      args:
+        MAKEFLAGS: "-d"
     command: >
       vigilante bstracker --config /home/vigilante/config/vigilante.yml 2>&1 | tee /home/vigilante/config/unbonding-watcher.log
     networks:
@@ -146,6 +160,8 @@ services:
     build:
       context: ../../../btc-staker/
       dockerfile: ./Dockerfile
+      args:
+        MAKEFLAGS: "-d"
     networks:
       localnet:
         ipv4_address: 192.168.10.11
@@ -163,6 +179,8 @@ services:
     build:
       context: ../../../finality-provider/
       dockerfile: ./Dockerfile
+      args:
+        MAKEFLAGS: "-d"
     command: eotsd start
     networks:
       localnet:
@@ -180,6 +198,8 @@ services:
     build:
       context: ../../../finality-provider/
       dockerfile: ./Dockerfile
+      args:
+        MAKEFLAGS: "-d"
     command: fpd start
     networks:
       localnet:
@@ -198,6 +218,8 @@ services:
     build:
       context: ../../../covenant-emulator/
       dockerfile: ./Dockerfile
+      args:
+        MAKEFLAGS: "-d"
     command: covd start
     networks:
       localnet:
