@@ -62,7 +62,7 @@ docker run --rm -v $(pwd)/.testnets:/data babylonlabs/babylond \
     --btc-base-header-height $BASE_HEADER_HEIGHT \
     --btc-network $BITCOIN_NETWORK \
     --additional-sender-account \
-    --slashing-address $SLASHING_ADDRESS \
+    --slashing-pk-script $SLASHING_PK_SCRIPT \
     --slashing-rate 0.1 \
     --min-commission-rate 0.05 \
     --covenant-quorum 1 \
