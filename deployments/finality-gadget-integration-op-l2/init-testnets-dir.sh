@@ -148,6 +148,8 @@ cp -R artifacts/covenant-keyring .testnets/covenant-emulator/keyring-test
 cp .testnets/covenant-emulator/keyring-test/* .testnets/node0/babylond/covenant-emulator/keyring-test/
 echo "Successfully copied configuration files for each component"
 
+sudo chown -R $(whoami):$(whoami) .testnets/node0
+sudo chmod -R 777 .testnets/node0
 chmod -R 777 .testnets
 chmod -R 777 .bitcoin
 echo
