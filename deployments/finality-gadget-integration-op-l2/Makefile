@@ -127,6 +127,7 @@ stop-local-l1-chain:
 .PHONY: stop-local-l1-chain
 ## Prepare for running the OP chain on the Sepolia testnet
 prepare-op-chain:
+	@$(eval export IMPL_SALT := $(shell openssl rand -hex 32))
 	@$(CURDIR)/optimism/install-deps.sh $(GIT_TOPLEVEL)/optimism
 	$(eval include $(CURDIR)/optimism/.env)
 	@$(CURDIR)/optimism/generate-deploy-config.sh $(GIT_TOPLEVEL)/optimism
