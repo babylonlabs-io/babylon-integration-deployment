@@ -1,6 +1,12 @@
 #!/bin/bash
 set -euo pipefail
 
+# Load environment variables from .env
+if [ -f .env ]; then
+    echo "Loading environment variables from .env file"
+    export $(grep -v '^#' .env | xargs)
+fi
+
 # Create new directory that will hold node and services' configuration
 mkdir -p .testnets && chmod -R 777 .testnets
 
@@ -43,7 +49,7 @@ if [[ -z "$SLASHING_ADDRESS" ]]; then
 fi
 
 # Initialize files for a babylon testnet
-docker run --rm -v $(pwd)/.testnets:/data babylonlabs-io/babylond \
+docker run --rm -v $(pwd)/.testnets:/data babylonlabs/babylond \
     babylond testnet init-files --v 2 -o /data \
     --starting-ip-address 192.168.10.2 \
     --keyring-backend=test \
