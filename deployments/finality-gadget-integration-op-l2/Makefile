@@ -135,13 +135,22 @@ prepare-op-chain:
 	@$(CURDIR)/optimism/generate-l2-config.sh $(GIT_TOPLEVEL)/optimism $(CURDIR)/optimism
 .PHONY: prepare-op-chain
 
-## Start the OP chain on the Sepolia testnet
-start-op-chain-sepolia: prepare-op-chain
+## Common logic for starting/restarting OP chain on Sepolia
+_launch-op-chain-sepolia:
 	@$(CURDIR)/optimism/launch-l2.sh $(GIT_TOPLEVEL)/optimism $(CURDIR)/optimism
 	sleep 10
-    ## false represent the OP chain is deployed on the local L1 chain
+	## false represents the OP chain is deployed on the Sepolia testnet, not local L1
 	@$(CURDIR)/optimism/verify-op-devnet.sh false
+
+## Start the OP chain on the Sepolia testnet
+start-op-chain-sepolia: prepare-op-chain _launch-op-chain-sepolia
 .PHONY: start-op-chain-sepolia
+
+## Restart the OP chain on the Sepolia testnet
+restart-op-chain-sepolia:
+	@$(eval include $(CURDIR)/optimism/.env)
+	@$(MAKE) _launch-op-chain-sepolia
+.PHONY: restart-op-chain-sepolia
 
 ## Stop the OP chain on the Sepolia testnet
 stop-op-chain-sepolia:
