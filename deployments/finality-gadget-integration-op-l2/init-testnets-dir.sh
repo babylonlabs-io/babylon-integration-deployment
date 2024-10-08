@@ -76,6 +76,9 @@ mkdir -p .testnets/covenant-emulator
 mkdir -p .testnets/node0/babylond/covenant-emulator/keyring-test
 echo "Successfully created separate subpaths for each component"
 
+chown -R $(whoami):$(whoami) .testnets/node0
+chmod -R 777 .testnets/node0
+
 # for btc-staker, replace placeholders with env variables
 cp artifacts/stakerd.conf .testnets/btc-staker/stakerd.conf
 if [[ "$(uname)" == "Darwin" ]]; then
