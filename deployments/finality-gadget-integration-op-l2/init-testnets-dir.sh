@@ -73,14 +73,9 @@ mkdir -p .testnets/finality-gadget
 mkdir -p .testnets/consumer-eotsmanager
 mkdir -p .testnets/consumer-finality-provider
 mkdir -p .testnets/covenant-emulator
-
 mkdir -p .testnets/node0
-chown -R $(whoami):$(whoami) .testnets/node0
 chmod -R 777 .testnets/node0
 mkdir -p .testnets/node0/babylond/covenant-emulator/keyring-test
-chown -R $(whoami):$(whoami) .testnets/node0/babylond
-chmod -R 777 .testnets/node0/babylond
-
 echo "Successfully created separate subpaths for each component"
 
 # for btc-staker, replace placeholders with env variables
