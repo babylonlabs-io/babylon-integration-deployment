@@ -16,7 +16,6 @@ services:
       GETH_MINER_RECOMMIT: 100ms
     networks:
       - ops-bedrock_default
-      - artifacts_localnet
 
   op-node:
     container_name: op-node
@@ -51,7 +50,6 @@ services:
       - op_log:/op_log
     networks:
       - ops-bedrock_default
-      - artifacts_localnet
 
   op-proposer:
     container_name: op-proposer
@@ -110,7 +108,5 @@ volumes:
   op_log:
 
 networks:
-  artifacts_localnet:
-    external: true
   ops-bedrock_default:
     external: true
