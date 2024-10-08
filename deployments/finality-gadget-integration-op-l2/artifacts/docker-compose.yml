@@ -2,8 +2,8 @@ services:
   babylondnode0:
     container_name: babylondnode0
     build:
-      context: ../../../babylon/contrib/images/babylond/
-      dockerfile: ./Dockerfile
+      context: ../../../babylon/
+      dockerfile: ./contrib/images/babylond/Dockerfile
     command: >
       babylond --home /babylondhome start --log_format 'plain' 2>&1 | tee /babylondhome/babylond.log
     cap_add:
@@ -24,8 +24,8 @@ services:
   babylondnode1:
     container_name: babylondnode1
     build:
-      context: ../../../babylon/contrib/images/babylond/
-      dockerfile: ./Dockerfile
+      context: ../../../babylon/
+      dockerfile: ./contrib/images/babylond/Dockerfile
     command: >
       babylond --home /babylondhome start --log_format 'plain' 2>&1 | tee /babylondhome/babylond.log
     cap_add:
