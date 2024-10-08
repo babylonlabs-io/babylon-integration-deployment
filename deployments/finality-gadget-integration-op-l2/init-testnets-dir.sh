@@ -63,6 +63,9 @@ docker run --rm -v $(pwd)/.testnets:/data babylonlabs/babylond \
     --covenant-quorum 1 \
     --covenant-pks "2d4ccbe538f846a750d82a77cd742895e51afcf23d86d05004a356b783902748" # should be updated if `covenant-keyring` dir is changed`
 
+sudo chown -R $(whoami):$(whoami) .testnets
+sudo chmod -R 777 .testnets
+
 # Create separate subpaths for each component and copy relevant configuration
 mkdir -p .bitcoin
 mkdir -p .testnets/vigilante
@@ -73,9 +76,6 @@ mkdir -p .testnets/finality-gadget
 mkdir -p .testnets/consumer-eotsmanager
 mkdir -p .testnets/consumer-finality-provider
 mkdir -p .testnets/covenant-emulator
-mkdir -p .testnets/node0
-sudo chown -R $(whoami):$(whoami) .testnets/node0
-sudo chmod -R 777 .testnets/node0
 mkdir -p .testnets/node0/babylond/covenant-emulator/keyring-test
 echo "Successfully created separate subpaths for each component"
 
@@ -150,8 +150,6 @@ cp -R artifacts/covenant-keyring .testnets/covenant-emulator/keyring-test
 cp .testnets/covenant-emulator/keyring-test/* .testnets/node0/babylond/covenant-emulator/keyring-test/
 echo "Successfully copied configuration files for each component"
 
-sudo chown -R $(whoami):$(whoami) .testnets/node0
-sudo chmod -R 777 .testnets/node0
 chmod -R 777 .testnets
 chmod -R 777 .bitcoin
 echo
