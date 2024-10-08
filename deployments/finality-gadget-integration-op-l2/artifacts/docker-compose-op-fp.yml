@@ -4,7 +4,9 @@ include:
 services:
   consumer-eotsmanager:
     container_name: consumer-eotsmanager
-    image: babylonlabs-io/finality-provider
+    build:
+      context: ../../../finality-provider/
+      dockerfile: ./Dockerfile
     command: eotsd start
     networks:
       localnet:
