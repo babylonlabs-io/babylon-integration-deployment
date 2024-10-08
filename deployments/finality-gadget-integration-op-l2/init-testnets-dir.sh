@@ -1,12 +1,6 @@
 #!/bin/bash
 set -euo pipefail
 
-# Load environment variables from .env
-if [ -f .env ]; then
-    echo "Loading environment variables from .env file"
-    export $(grep -v '^#' .env | xargs)
-fi
-
 # Create new directory that will hold node and services' configuration
 mkdir -p .testnets && chmod -R 777 .testnets
 
