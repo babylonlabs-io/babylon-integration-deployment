@@ -24,15 +24,15 @@ function init_babylon_account() {
     sleep 5
 
     if [ "$account_name" == "consumer-finality-provider" ]; then
-        local account_balance=$(docker exec babylondnode0 /bin/sh -c "
-            /bin/babylond query bank balances $account_addr \
-            --home $BABYLON_HOME_DIR \
-            --chain-id $BABYLON_CHAIN_ID \
-            --output json" | jq -r .amount)
-        echo "account_balance: $account_balance"
+        # local account_balance=$(docker exec babylondnode0 /bin/sh -c "
+        #     /bin/babylond query bank balances $account_addr \
+        #     --home $BABYLON_HOME_DIR \
+        #     --chain-id $BABYLON_CHAIN_ID \
+        #     --output json" | jq -r .amount)
+        # echo "account_balance: $account_balance"
         # If account not yet funded, fund it
-        if [ "$account_balance" == "0" ]; then
-            echo "account not yet funded, funding it"
+        # if [ "$account_balance" == "0" ]; then
+            # echo "account not yet funded, funding it"
             local fund_tx_hash=$(docker exec babylondnode0 /bin/sh -c "
                 /bin/babylond tx bank send \
                 $TEST_SPENDING_KEY_NAME \
@@ -46,16 +46,16 @@ function init_babylon_account() {
                 --gas-adjustment 1.3 \
                 -o json -y" | jq -r '.txhash')
             echo "fund_tx_hash: $fund_tx_hash"
-        fi
+        # fi
     else
-        local account_balance=$(docker exec babylondnode0 /bin/sh -c "
-            /bin/babylond query bank balances $account_addr \
-            --home $BABYLON_HOME_DIR \
-            --chain-id $BABYLON_CHAIN_ID \
-            --output json" | jq -r .amount)
-        echo "account_balance: $account_balance"
+        # local account_balance=$(docker exec babylondnode0 /bin/sh -c "
+        #     /bin/babylond query bank balances $account_addr \
+        #     --home $BABYLON_HOME_DIR \
+        #     --chain-id $BABYLON_CHAIN_ID \
+        #     --output json" | jq -r .amount)
+        # echo "account_balance: $account_balance"
         # If account not yet funded, fund it
-        if [ "$account_balance" == "0" ]; then
+        # if [ "$account_balance" == "0" ]; then
             echo "account not yet funded, funding it"
             local fund_tx_hash=$(docker exec babylondnode0 /bin/sh -c "
                 /bin/babylond tx bank send \
@@ -70,7 +70,7 @@ function init_babylon_account() {
                 --gas-adjustment 1.3 \
                 -o json -y" | jq -r '.txhash')
             echo "fund_tx_hash: $fund_tx_hash"
-        fi
+        # fi
     fi
 }
 
