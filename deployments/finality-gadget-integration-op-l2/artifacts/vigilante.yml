@@ -4,7 +4,7 @@ common:
   log-format: "auto"
   log-level: "debug"
 btc:
-  no-client-tls: true   # use true for bitcoind as it does not support tls
+  no-client-tls: true # use true for bitcoind as it does not support tls
   ca-file: ~
   endpoint: bitcoindsim:${BITCOIN_RPC_PORT}
   estimate-mode: CONSERVATIVE # only needed by bitcoind
@@ -79,3 +79,4 @@ btcstaking-tracker:
   retry-submit-unbonding-interval: 1m
   max-jitter-interval: 30s
   btcnetparams: ${BITCOIN_NETWORK}
+  max-slashing-concurrency: 20
