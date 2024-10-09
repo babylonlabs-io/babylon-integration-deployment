@@ -123,7 +123,7 @@ function setup_account_keyring() {
 function chown_testnet_dir() {
     local account_name=$1
     if [[ "$(uname)" == "Linux" ]]; then
-        chown -R 1138:1138 .testnets/$account_name
+        sudo chown -R 1138:1138 .testnets/$account_name
         echo "chown done for .testnets/$account_name on $(uname) system"
     elif [[ "$(uname)" == "Darwin" ]]; then # for MacOS
         docker run --rm -v "$(pwd)/.testnets/$account_name:/data" alpine chown -R 1138:1138 /data
