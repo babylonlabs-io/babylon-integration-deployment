@@ -1,28 +1,32 @@
 [submodule "babylon-contract"]
   path = babylon-contract
   url = git@github.com:babylonlabs-io/babylon-contract.git
+  branch = 5037171f4e929c216ffbbdba3c3b90ef08f9ad84
 [submodule "covenant-emulator"]
   path = covenant-emulator
   url = git@github.com:babylonlabs-io/covenant-emulator.git
+  branch = 5fd91be4fe38e293d2fb46ad615badb2dfa922ad
 [submodule "vigilante"]
   path = vigilante
   url = git@github.com:babylonlabs-io/vigilante.git
+  branch = b660517fadebb1ad0b6c3224c8f3c16121b02d29
 [submodule "finality-provider"]
-	path = finality-provider
-	url = git@github.com:babylonlabs-io/finality-provider.git
-branch = base/consumer-chain-support
+  path = finality-provider
+  url = git@github.com:babylonlabs-io/finality-provider.git
+  branch = 2382cd33a299c4651a51348df83bd9aebaaef988
 [submodule "btc-staker"]
-	path = btc-staker
-	url = git@github.com:babylonlabs-io/btc-staker.git
-branch = base/consumer-chain-support
+  path = btc-staker
+  url = git@github.com:babylonlabs-io/btc-staker.git
+  branch = 171011dba780c8fe422d5ee682830aad39f6909d
 [submodule "optimism"]
   path = optimism
   url = git@github.com:babylonlabs-io/optimism.git
-  branch = feat/babylon-rfc
+  branch = a79b2e5fb62645a3eb56ef31ea95739ddf13dcd1
 [submodule "finality-gadget"]
   path = finality-gadget
   url = git@github.com:babylonlabs-io/finality-gadget.git
+  branch = 8d38bf769d2054dc647f96ea5f55d4dd68b8a72a
 [submodule "babylon"]
   path = babylon
   url = git@github.com:babylonlabs-io/babylon.git
-  branch = base/consumer-chain-support
+  branch = a98269d178879f22b136760701950d8929cc2093
