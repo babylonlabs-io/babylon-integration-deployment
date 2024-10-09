@@ -63,7 +63,7 @@ if [ ! -d ".testnets" ]; then
   sudo chmod -R 777 .testnets
 
   # Create separate subpaths for each component and copy relevant configuration
-  mkdir -p .testnets/vigilante
+  mkdir -p .testnets/vigilante/config/bbnconfig
   mkdir -p .testnets/btc-staker
   mkdir -p .testnets/eotsmanager
   mkdir -p .testnets/finality-provider
@@ -101,7 +101,8 @@ if [ ! -d ".testnets" ]; then
       sed -i "s|\${BITCOIN_RPC_PORT}|$BITCOIN_RPC_PORT|g" .testnets/vigilante/vigilante.yml
       sed -i "s|\${WALLET_PASS}|$WALLET_PASS|g" .testnets/vigilante/vigilante.yml
   fi
-
+  # copy genesis file to vigilante config directory
+  cp .testnets/node0/babylond/config/genesis.json .testnets/vigilante/config/bbnconfig/genesis.json
 
   cp artifacts/eotsd.conf .testnets/eotsmanager/eotsd.conf
   cp artifacts/fpd.conf .testnets/finality-provider/fpd.conf
