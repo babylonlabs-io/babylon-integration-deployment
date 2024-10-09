@@ -151,4 +151,13 @@ fi
 
 if [ ! -d ".bitcoin" ]; then
   mkdir -p .bitcoin && chmod -R 777 .bitcoin
+
+  cp artifacts/bitcoin.conf .bitcoin/bitcoin.conf
+  if [[ "$(uname)" == "Darwin" ]]; then
+      # macOS version
+      sed -i '' "s|\${BITCOIN_RPC_PORT}|$BITCOIN_RPC_PORT|g" .bitcoin/bitcoin.conf
+  else
+      # Linux version
+      sed -i "s|\${BITCOIN_RPC_PORT}|$BITCOIN_RPC_PORT|g" .bitcoin/bitcoin.conf
+  fi
 fi
