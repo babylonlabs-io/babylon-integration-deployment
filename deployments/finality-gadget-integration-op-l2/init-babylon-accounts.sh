@@ -112,10 +112,6 @@ function chown_testnet_dir() {
     fi
 }
 
-if [ ! -d ".testnets/vigilante/bbnconfig" ]; then
-    mkdir -p .testnets/vigilante/bbnconfig
-    cp .testnets/node0/babylond/config/genesis.json .testnets/vigilante/bbnconfig
-fi
 setup_account_keyring vigilante
 chown_testnet_dir vigilante
 echo
