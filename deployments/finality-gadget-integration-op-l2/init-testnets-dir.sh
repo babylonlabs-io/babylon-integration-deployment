@@ -102,7 +102,7 @@ if [ ! -d ".testnets" ]; then
       sed -i "s|\${WALLET_PASS}|$WALLET_PASS|g" .testnets/vigilante/vigilante.yml
   fi
   # copy genesis file to vigilante config directory
-  cp .testnets/node0/babylond/config/genesis.json .testnets/vigilante/config/bbnconfig/genesis.json
+  cp .testnets/node0/babylond/config/genesis.json .testnets/vigilante/bbnconfig/genesis.json
 
   cp artifacts/eotsd.conf .testnets/eotsmanager/eotsd.conf
   cp artifacts/fpd.conf .testnets/finality-provider/fpd.conf
