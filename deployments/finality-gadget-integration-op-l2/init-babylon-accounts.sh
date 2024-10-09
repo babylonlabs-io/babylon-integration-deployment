@@ -28,7 +28,7 @@ function init_babylon_account() {
             /bin/babylond query bank balances $account_addr \
             --home $BABYLON_HOME_DIR \
             --chain-id $BABYLON_CHAIN_ID \
-            --output json" | jq -r .amount)
+            --output json" | jq -r .balances[0].amount)
         echo "account_balance: $account_balance"
         # If account not yet funded, fund it
         # if [ "$account_balance" == "0" ]; then
@@ -52,7 +52,7 @@ function init_babylon_account() {
             /bin/babylond query bank balances $account_addr \
             --home $BABYLON_HOME_DIR \
             --chain-id $BABYLON_CHAIN_ID \
-            --output json" | jq -r .amount)
+            --output json" | jq -r .balances[0].amount)
         echo "account_balance: $account_balance"
         # If account not yet funded, fund it
         # if [ "$account_balance" == "0" ]; then
