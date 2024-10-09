@@ -24,12 +24,12 @@ function init_babylon_account() {
     sleep 5
 
     if [ "$account_name" == "consumer-finality-provider" ]; then
-        # local account_balance=$(docker exec babylondnode0 /bin/sh -c "
-        #     /bin/babylond query bank balances $account_addr \
-        #     --home $BABYLON_HOME_DIR \
-        #     --chain-id $BABYLON_CHAIN_ID \
-        #     --output json" | jq -r .amount)
-        # echo "account_balance: $account_balance"
+        local account_balance=$(docker exec babylondnode0 /bin/sh -c "
+            /bin/babylond query bank balances $account_addr \
+            --home $BABYLON_HOME_DIR \
+            --chain-id $BABYLON_CHAIN_ID \
+            --output json" | jq -r .amount)
+        echo "account_balance: $account_balance"
         # If account not yet funded, fund it
         # if [ "$account_balance" == "0" ]; then
             # echo "account not yet funded, funding it"
@@ -48,12 +48,12 @@ function init_babylon_account() {
             echo "fund_tx_hash: $fund_tx_hash"
         # fi
     else
-        # local account_balance=$(docker exec babylondnode0 /bin/sh -c "
-        #     /bin/babylond query bank balances $account_addr \
-        #     --home $BABYLON_HOME_DIR \
-        #     --chain-id $BABYLON_CHAIN_ID \
-        #     --output json" | jq -r .amount)
-        # echo "account_balance: $account_balance"
+        local account_balance=$(docker exec babylondnode0 /bin/sh -c "
+            /bin/babylond query bank balances $account_addr \
+            --home $BABYLON_HOME_DIR \
+            --chain-id $BABYLON_CHAIN_ID \
+            --output json" | jq -r .amount)
+        echo "account_balance: $account_balance"
         # If account not yet funded, fund it
         # if [ "$account_balance" == "0" ]; then
             # echo "account not yet funded, funding it"
@@ -94,7 +94,7 @@ function setup_account_keyring() {
     local account_name=$1
     if [ ! -d ".testnets/$account_name/keyring-test" ]; then
         mkdir -p .testnets/$account_name/keyring-test
-        sudo cp .testnets/node0/babylond/$account_name/keyring-test/* .testnets/$account_name/keyring-test
+        sudo cp -r .testnets/node0/babylond/$account_name/keyring-test/* .testnets/$account_name/keyring-test/
     fi
 }
 
