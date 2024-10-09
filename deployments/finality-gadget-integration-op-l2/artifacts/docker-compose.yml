@@ -187,7 +187,7 @@ services:
     build:
       context: ../../../finality-provider/
       dockerfile: ./Dockerfile
-    command: /bin/sh -c "fpd keys add finality-provider && fpd start"
+    command: fpd start
     networks:
       localnet:
         ipv4_address: 192.168.10.13
