@@ -71,8 +71,6 @@ services:
     ports:
       - "${BITCOIN_RPC_PORT:-18443}:${BITCOIN_RPC_PORT:-18443}"
       - "29000-29002:29000-29002"
-    volumes:
-      - ../.bitcoin:/bitcoindsim/.bitcoin:Z
 
   vigilante-reporter:
     container_name: vigilante-reporter
