@@ -195,13 +195,14 @@ start-babylon:
 .PHONY: start
 
 stop-babylon:
-	@$(DOCKER) compose -f artifacts/docker-compose-op-fp.yml down
-	@$(DOCKER) compose -f artifacts/docker-compose-fg.yml down
 	@$(DOCKER) compose -f artifacts/docker-compose.yml down
-	@rm -rf $(CURDIR)/.testnets
-	@if [ -z "$(BITCOIN_NETWORK)" ] || [ "$(BITCOIN_NETWORK)" = "regtest" ]; then \
+#	@$(DOCKER) compose -f artifacts/docker-compose-op-fp.yml down
+#	@$(DOCKER) compose -f artifacts/docker-compose-fg.yml down
+	@sudo rm -rf $(CURDIR)/.testnets
+	@sudo rm -rf $(CURDIR)/.bitcoin
+# 	@if [ -z "$(BITCOIN_NETWORK)" ] || [ "$(BITCOIN_NETWORK)" = "regtest" ]; then \
 		echo "Removing Bitcoin data for regtest..."; \
-		rm -rf $(CURDIR)/bitcoin; \
+		sudo rm -rf $(CURDIR)/bitcoin; \
 	elif [ "$(BITCOIN_NETWORK)" = "signet" ]; then \
 		echo "Keeping Bitcoin data for signet to preserve sync state..."; \
 		echo "To remove Bitcoin data for signet, if no longer needed, run the following command:"; \
