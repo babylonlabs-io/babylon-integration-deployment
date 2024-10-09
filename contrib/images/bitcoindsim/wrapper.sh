@@ -19,6 +19,7 @@ fi
 
 # Create bitcoin data directory and initialize bitcoin configuration file.
 mkdir -p "$BITCOIN_DATA"
+echo "Generating bitcoin.conf file at $BITCOIN_CONF"
 cat <<EOF > "$BITCOIN_CONF"
 # Enable ${BITCOIN_NETWORK} mode.
 ${BITCOIN_NETWORK}=1

@@ -195,7 +195,7 @@ start-babylon:
 .PHONY: start
 
 stop-babylon:
-	@$(DOCKER) compose -f artifacts/docker-compose.yml down
+	@$(DOCKER) compose -f artifacts/docker-compose.yml down -v
 #	@$(DOCKER) compose -f artifacts/docker-compose-op-fp.yml down
 #	@$(DOCKER) compose -f artifacts/docker-compose-fg.yml down
 	@sudo rm -rf $(CURDIR)/.testnets
