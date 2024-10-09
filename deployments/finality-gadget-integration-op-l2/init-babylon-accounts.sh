@@ -56,7 +56,7 @@ function init_babylon_account() {
         # echo "account_balance: $account_balance"
         # If account not yet funded, fund it
         # if [ "$account_balance" == "0" ]; then
-            echo "account not yet funded, funding it"
+            # echo "account not yet funded, funding it"
             local fund_tx_hash=$(docker exec babylondnode0 /bin/sh -c "
                 /bin/babylond tx bank send \
                 $TEST_SPENDING_KEY_NAME \
