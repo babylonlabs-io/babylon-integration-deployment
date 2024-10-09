@@ -188,7 +188,7 @@ services:
       context: ../../../finality-provider/
       dockerfile: ./Dockerfile
     command: >
-      /bin/sh -c "fpd keys add finality-provider && sleep 5 && fpd start"
+      /bin/sh -c "fpd keys add finality-provider --keyring-backend test --home /home/finality-provider/.fpd && ls -a /home/finality-provider/.fpd/keyring-test && sleep 10 && fpd start"
     networks:
       localnet:
         ipv4_address: 192.168.10.13
