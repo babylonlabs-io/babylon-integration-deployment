@@ -48,11 +48,14 @@ fallbackfee=0.00001
 [${BITCOIN_NETWORK}]
 rpcbind=0.0.0.0
 rpcallowip=0.0.0.0/0
+
+[test]
 rpcport=$BITCOIN_RPC_PORT
 EOF
 
 echo "Starting bitcoind..."
-bitcoind -${BITCOIN_NETWORK} -datadir="$BITCOIN_DATA" -conf="$BITCOIN_CONF" -daemon
+bitcoind -${BITCOIN_NETWORK} -datadir="$BITCOIN_DATA" -conf="$BITCOIN_CONF" -rpcport="$BITCOIN_RPC_PORT" -daemon
+
 # Allow some time for bitcoind to start
 sleep 3
 
