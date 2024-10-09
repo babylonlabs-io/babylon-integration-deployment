@@ -210,3 +210,26 @@ stop-babylon: stop-op-devnet
 		echo "Unsupported bitcoin network: $(BITCOIN_NETWORK)"; \
 	fi
 .PHONY: stop
+
+# Run independent steps 
+# TODO: remove these after testing
+
+init-babylon-accounts:
+	@./init-babylon-accounts.sh
+.PHONY: init-babylon-accounts
+
+register-babylon-fp:
+	@./register-babylon-fp.sh
+.PHONY: register-babylon-fp
+
+deploy-cw-contract:
+	@./deploy-cw-contract.sh $(GIT_TOPLEVEL)/babylon-contract
+.PHONY: deploy-cw-contract
+
+register-op-consumer:
+	@./register-op-consumer.sh
+.PHONY: register-op-consumer
+
+register-op-consumer-fp:
+	@./register-op-consumer-fp.sh
+.PHONY: register-op-consumer-fp
