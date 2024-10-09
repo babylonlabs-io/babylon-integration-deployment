@@ -4,9 +4,10 @@ include:
 services:
   consumer-eotsmanager:
     container_name: consumer-eotsmanager
-    build:
-      context: ../../../finality-provider/
-      dockerfile: ./Dockerfile
+    image: babylonlabs/finality-provider:v0.6.0
+    # build:
+    #   context: ../../../finality-provider/
+    #   dockerfile: ./Dockerfile
     command: eotsd start
     networks:
       localnet:
@@ -19,7 +20,10 @@ services:
 
   consumer-finality-provider:
     container_name: consumer-finality-provider
-    image: babylonlabs-io/finality-provider
+    image: babylonlabs/finality-provider:v0.6.0
+    # build:
+    #   context: ../../../finality-provider/
+    #   dockerfile: ./Dockerfile
     command: fpd start
     networks:
       localnet:

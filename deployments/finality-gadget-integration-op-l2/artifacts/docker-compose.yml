@@ -76,9 +76,10 @@ services:
 
   vigilante-reporter:
     container_name: vigilante-reporter
-    build:
-      context: ../../../vigilante/
-      dockerfile: ./Dockerfile
+    image: babylonlabs/vigilante:v0.11.2
+    # build:
+    #   context: ../../../vigilante/
+    #   dockerfile: ./Dockerfile
     platform: linux/amd64
     command: >
       vigilante reporter --config /home/vigilante/config/vigilante.yml 2>&1 | tee /home/vigilante/config/reporter.log
@@ -94,9 +95,10 @@ services:
 
   vigilante-submitter:
     container_name: vigilante-submitter
-    build:
-      context: ../../../vigilante/
-      dockerfile: ./Dockerfile
+    image: babylonlabs/vigilante:v0.11.2
+    # build:
+    #   context: ../../../vigilante/
+    #   dockerfile: ./Dockerfile
     command: >
       vigilante submitter --config /home/vigilante/config/vigilante.yml 2>&1 | tee /home/vigilante/config/submitter.log
     networks:
@@ -111,9 +113,10 @@ services:
 
   vigilante-monitor:
     container_name: vigilante-monitor
-    build:
-      context: ../../../vigilante/
-      dockerfile: ./Dockerfile
+    image: babylonlabs/vigilante:v0.11.2
+    # build:
+    #   context: ../../../vigilante/
+    #   dockerfile: ./Dockerfile
     command: >
       vigilante monitor --config /home/vigilante/config/vigilante.yml --genesis /home/vigilante/config/bbnconfig/genesis.json 2>&1 | tee /home/vigilante/config/monitor.log
     networks:
@@ -128,9 +131,10 @@ services:
 
   vigilante-bstracker:
     container_name: vigilante-bstracker
-    build:
-      context: ../../../vigilante/
-      dockerfile: ./Dockerfile
+    image: babylonlabs/vigilante:v0.11.2
+    # build:
+    #   context: ../../../vigilante/
+    #   dockerfile: ./Dockerfile
     command: >
       vigilante bstracker --config /home/vigilante/config/vigilante.yml 2>&1 | tee /home/vigilante/config/unbonding-watcher.log
     networks:
@@ -145,9 +149,10 @@ services:
 
   btc-staker:
     container_name: btc-staker
-    build:
-      context: ../../../btc-staker/
-      dockerfile: ./Dockerfile
+    image: babylonlabs/btc-staker:484bcb8fd9b7b0b525234d704dd049b1ef18e29f
+    # build:
+    #   context: ../../../btc-staker/
+    #   dockerfile: ./Dockerfile
     networks:
       localnet:
         ipv4_address: 192.168.10.11
@@ -162,9 +167,10 @@ services:
 
   eotsmanager:
     container_name: eotsmanager
-    build:
-      context: ../../../finality-provider/
-      dockerfile: ./Dockerfile
+    image: babylonlabs/finality-provider:v0.6.0
+    # build:
+    #   context: ../../../finality-provider/
+    #   dockerfile: ./Dockerfile
     command: eotsd start
     networks:
       localnet:
@@ -179,9 +185,10 @@ services:
 
   finality-provider:
     container_name: finality-provider
-    build:
-      context: ../../../finality-provider/
-      dockerfile: ./Dockerfile
+    image: babylonlabs/finality-provider:v0.6.0
+    # build:
+    #   context: ../../../finality-provider/
+    #   dockerfile: ./Dockerfile
     command: fpd start
     networks:
       localnet:
@@ -197,9 +204,10 @@ services:
 
   covenant-emulator:
     container_name: covenant-emulator
-    build:
-      context: ../../../covenant-emulator/
-      dockerfile: ./Dockerfile
+    image: babylonlabs/covenant-emulator:02ca7fdcea7512720a21360413315be41b6d17de
+    # build:
+    #   context: ../../../covenant-emulator/
+    #   dockerfile: ./Dockerfile
     command: covd start
     networks:
       localnet:
