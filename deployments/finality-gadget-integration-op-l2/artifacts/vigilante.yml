@@ -58,6 +58,13 @@ submitter:
   polling-interval-seconds: 60
   resend-interval-seconds: 1800
   resubmit-fee-multiplier: 2
+  dbconfig:
+    dbpath: /home/vigilante/data
+    dbfilename: vigilante.db
+    nofreelistsync: true
+    autocompact: false
+    autocompactminage: 168h0m0s
+    dbtimeout: 1m0s
 reporter:
   netparams: ${BITCOIN_NETWORK}
   btc_cache_size: 2018 # difficulty epoch 2016
@@ -72,6 +79,13 @@ monitor:
   enable-liveness-checker: true
   enable-slasher: true
   btcnetparams: ${BITCOIN_NETWORK}
+  dbconfig:
+    dbpath: /home/vigilante/data
+    dbfilename: vigilante.db
+    nofreelistsync: true
+    autocompact: false
+    autocompactminage: 168h0m0s
+    dbtimeout: 1m0s
 btcstaking-tracker:
   check-delegations-interval: 1m
   delegations-batch-size: 100
