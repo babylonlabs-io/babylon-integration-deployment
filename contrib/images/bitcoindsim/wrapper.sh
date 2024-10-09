@@ -48,6 +48,7 @@ fallbackfee=0.00001
 [${BITCOIN_NETWORK}]
 rpcbind=0.0.0.0
 rpcallowip=0.0.0.0/0
+rpcport=$BITCOIN_RPC_PORT
 EOF
 
 echo "Starting bitcoind..."
