@@ -63,7 +63,7 @@ if [ ! -d ".testnets" ]; then
   sudo chmod -R 777 .testnets
 
   # Create separate subpaths for each component and copy relevant configuration
-  mkdir -p .testnets/vigilante/config/bbnconfig
+  mkdir -p .testnets/vigilante/bbnconfig
   mkdir -p .testnets/btc-staker
   mkdir -p .testnets/eotsmanager
   mkdir -p .testnets/finality-provider
