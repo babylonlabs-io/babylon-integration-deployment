@@ -167,10 +167,10 @@ services:
 
   eotsmanager:
     container_name: eotsmanager
-    image: babylonlabs/finality-provider:v0.6.0
-    # build:
-    #   context: ../../../finality-provider/
-    #   dockerfile: ./Dockerfile
+    # image: babylonlabs/finality-provider:v0.6.0
+    build:
+      context: ../../../finality-provider/
+      dockerfile: ./Dockerfile
     command: eotsd start
     networks:
       localnet:
@@ -185,10 +185,10 @@ services:
 
   finality-provider:
     container_name: finality-provider
-    image: babylonlabs/finality-provider:v0.6.0
-    # build:
-    #   context: ../../../finality-provider/
-    #   dockerfile: ./Dockerfile
+    # image: babylonlabs/finality-provider:v0.6.0
+    build:
+      context: ../../../finality-provider/
+      dockerfile: ./Dockerfile
     command: fpd start
     networks:
       localnet:
