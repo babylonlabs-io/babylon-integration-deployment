@@ -214,6 +214,10 @@ stop-babylon: stop-op-devnet
 # Run independent steps 
 # TODO: remove these after testing
 
+init-testnets-dir:
+	@./init-testnets-dir.sh
+.PHONY: init-testnets-dir
+
 init-babylon-accounts:
 	@./init-babylon-accounts.sh
 .PHONY: init-babylon-accounts
