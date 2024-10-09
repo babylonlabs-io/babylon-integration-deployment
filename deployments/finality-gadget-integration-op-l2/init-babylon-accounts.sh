@@ -14,11 +14,29 @@ function init_babylon_account() {
             --keyring-backend test \
             --output json" | jq -r .address)
     else
-        local account_addr=$(docker exec babylondnode0 /bin/sh -c "
-            /bin/babylond keys add $account_name \
+        keys_list=$(docker exec babylondnode0 /bin/sh -c "
+            /bin/babylond keys list \
             --home $BABYLON_HOME_DIR/$account_name \
             --keyring-backend test \
-            --output json" | jq -r .address)
+            --output json")
+
+        # Check if the key already exists in the keyring
+        key_exists=$(echo "$keys_list" | jq -r --arg account_name "$account_name" '.[] | select(.name == $account_name)')
+
+        # If the key does not exist, add it
+        if [ -z "$key_exists" ]; then
+            echo "Key not found, adding new key..."
+            local account_addr=$(docker exec babylondnode0 /bin/sh -c "
+                /bin/babylond keys add $account_name \
+                --home $BABYLON_HOME_DIR/$account_name \
+                --keyring-backend test \
+                --output json" | jq -r .address)
+            echo "New key added with address: $account_addr"
+        else
+            # Extract the existing address from the already fetched keys list
+            local account_addr=$(echo "$keys_list" | jq -r --arg account_name "$account_name" '.[] | select(.name == $account_name) | .address')
+            echo "Key already exists with address: $account_addr"
+        fi
     fi
     echo "account_addr: $account_addr"
     sleep 5
