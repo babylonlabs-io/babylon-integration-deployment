@@ -152,3 +152,6 @@ echo
 
 chown_testnet_dir covenant-emulator
 echo
+
+# Run fpd start here after keys are set up
+docker exec finality-provider /bin/sh -c "/bin/fpd start"
