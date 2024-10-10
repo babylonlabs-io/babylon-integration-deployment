@@ -161,3 +161,80 @@ stop-op-chain-sepolia:
 	@rm -f $(GIT_TOPLEVEL)/optimism/packages/contracts-bedrock/deployments/sepolia-devnet-$(L2_CHAIN_ID).json
 	@$(DOCKER) volume ls --filter name=optimism --format='{{.Name}}' | xargs -r docker volume rm
 .PHONY: stop-op-chain-sepolia
+
+start-babylon:
+	@./init-testnets-dir.sh
+	@$(DOCKER) compose -f artifacts/docker-compose.yml up -d
+	sleep 10
+	@./init-babylon-accounts.sh
+	@./register-babylon-fp.sh
+	@./deploy-cw-contract.sh $(GIT_TOPLEVEL)/babylon-contract
+	@$(DOCKER) compose -f artifacts/docker-compose-fg.yml up -d \
+		finality-gadget
+	sleep 5
+	@$(MAKE) start-op-devnet
+	@$(DOCKER) compose -f artifacts/docker-compose-op-fp.yml up -d \
+		consumer-eotsmanager \
+		consumer-finality-provider
+	sleep 10
+	@./register-op-consumer.sh
+	@./register-op-consumer-fp.sh
+	@if [ -z "$(BITCOIN_NETWORK)" ] || [ "$(BITCOIN_NETWORK)" = "regtest" ]; then \
+		echo "Creating BTC delegations for regtest..."; \
+		./create-btc-delegations.sh; \
+	elif [ "$(BITCOIN_NETWORK)" = "signet" ]; then \
+		echo "Please wait until the local Bitcoin node is fully synced with the signet network."; \
+		echo "Note: syncing can take several hours to complete."; \
+		echo "To check if the Bitcoin node is synced, run the following command:"; \
+		echo "cd $(CURDIR) && ./verify-bitcoin-sync-balance.sh"; \
+		echo "Once synced and has at least 0.01 BTC, to create BTC delegations by running the following command:"; \
+		echo "cd $(CURDIR) && ./create-btc-delegations.sh"; \
+	else \
+		echo "Unsupported bitcoin network: $(BITCOIN_NETWORK)"; \
+	fi
+.PHONY: start
+
+stop-babylon:
+	@$(DOCKER) compose -f artifacts/docker-compose.yml down -v
+#	@$(DOCKER) compose -f artifacts/docker-compose-op-fp.yml down
+#	@$(DOCKER) compose -f artifacts/docker-compose-fg.yml down
+	@sudo rm -rf $(CURDIR)/.testnets
+	@sudo rm -rf $(CURDIR)/.bitcoin
+# 	@if [ -z "$(BITCOIN_NETWORK)" ] || [ "$(BITCOIN_NETWORK)" = "regtest" ]; then \
+		echo "Removing Bitcoin data for regtest..."; \
+		sudo rm -rf $(CURDIR)/bitcoin; \
+	elif [ "$(BITCOIN_NETWORK)" = "signet" ]; then \
+		echo "Keeping Bitcoin data for signet to preserve sync state..."; \
+		echo "To remove Bitcoin data for signet, if no longer needed, run the following command:"; \
+		echo "rm -rf $(CURDIR)/.bitcoin"; \
+	else \
+		echo "Unsupported bitcoin network: $(BITCOIN_NETWORK)"; \
+	fi
+.PHONY: stop
+
+# Run independent steps 
+# TODO: remove these after testing
+
+init-testnets-dir:
+	@./init-testnets-dir.sh
+.PHONY: init-testnets-dir
+
+init-babylon-accounts:
+	@./init-babylon-accounts.sh
+.PHONY: init-babylon-accounts
+
+register-babylon-fp:
+	@./register-babylon-fp.sh
+.PHONY: register-babylon-fp
+
+deploy-cw-contract:
+	@./deploy-cw-contract.sh $(GIT_TOPLEVEL)/babylon-contract
+.PHONY: deploy-cw-contract
+
+register-op-consumer:
+	@./register-op-consumer.sh
+.PHONY: register-op-consumer
+
+register-op-consumer-fp:
+	@./register-op-consumer-fp.sh
+.PHONY: register-op-consumer-fp

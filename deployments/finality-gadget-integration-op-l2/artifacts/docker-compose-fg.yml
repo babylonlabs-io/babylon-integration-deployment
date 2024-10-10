@@ -4,7 +4,9 @@ include:
 services:
   finality-gadget:
     container_name: finality-gadget
-    image: babylonlabs-io/finality-gadget
+    build:
+      context: ../../../finality-gadget/
+      dockerfile: ./Dockerfile
     command: >
       opfgd start --cfg /home/finality-gadget/opfgd.toml
     ports:
