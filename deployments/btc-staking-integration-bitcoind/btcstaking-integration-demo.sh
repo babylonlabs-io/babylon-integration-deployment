@@ -24,6 +24,10 @@ done
 
 # Get the BTC staking contract address from the list-contract-by-code query
 btcStakingContractAddr=$(docker exec ibcsim-bcd /bin/sh -c 'bcd q wasm list-contract-by-code 2 -o json | jq -r ".contracts[0]"')
+echo "BTC staking contract address: $btcStakingContractAddr"
+# Get the BTC finality contract address from the list-contract-by-code query
+btcFinalityContractAddr=$(docker exec ibcsim-bcd /bin/sh -c 'bcd q wasm list-contract-by-code 3 -o json | jq -r ".contracts[0]"')
+echo "BTC finality contract address: $btcFinalityContractAddr"
 
 # Fetch the client ID from the IBC channel client-state query using the fetched port ID and channel ID
 clientStateJson=$(docker exec ibcsim-bcd /bin/sh -c "bcd query ibc channel client-state $portId $channelId -o json")

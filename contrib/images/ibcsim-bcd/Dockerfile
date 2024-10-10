@@ -26,6 +26,7 @@ RUN git clone https://github.com/cosmos/relayer.git
 RUN cd relayer && git fetch origin && git checkout ${RELAYER_TAG} && make install && cd -
 
 # Install bcd
+ADD babylon-sdk /work/babylon-sdk
 RUN cd babylon-sdk && make install && cd -
 
 FROM debian:bullseye-slim AS run
@@ -52,7 +53,7 @@ COPY wrapper.sh /ibcsim-bcd/wrapper.sh
 COPY setup-bcd.sh /ibcsim-bcd/setup-bcd.sh
 COPY --from=build-env /work/babylon-sdk/tests/testdata/babylon_contract.wasm /ibcsim-bcd/babylon_contract.wasm
 COPY --from=build-env /work/babylon-sdk/tests/testdata/btc_staking.wasm /ibcsim-bcd/btc_staking.wasm
-COPY --from=build-env /work/babylon-sdk/tests/testdata/btc_finality.wasm /ibcsim-bcd/btc_staking.wasm
+COPY --from=build-env /work/babylon-sdk/tests/testdata/btc_finality.wasm /ibcsim-bcd/btc_finality.wasm
 
 ENV BABYLON_HOME=/data/node1/babylond
 ENV BABYLON_NODE_RPC="http://babylondnode1:26657"
