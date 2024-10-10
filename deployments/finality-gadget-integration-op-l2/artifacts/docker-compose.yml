@@ -187,7 +187,9 @@ services:
     build:
       context: ../../../finality-provider/
       dockerfile: ./Dockerfile
-    # command: fpd start
+    # fpd crashes if starting up with no keys, so we add a key and delete it immediately after starting
+    command: >
+      /bin/sh -c "fpd keys add finality-provider --keyring-backend test --home /home/finality-provider/.fpd && sleep 10 && fpd start && fpd keys delete finality-provider --force --home /home/finality-provider/.fpd"
     networks:
       localnet:
         ipv4_address: 192.168.10.13
