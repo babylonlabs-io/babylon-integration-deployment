@@ -111,7 +111,7 @@ echo "Ensuring all finality providers have committed public randomness..."
 while true; do
     cnt=0
     for consumer_btc_pk in $CONSUMER_BTC_PKS; do
-        pr_commit_info=$(docker exec ibcsim-bcd /bin/sh -c "bcd query wasm contract-state smart $btcStakingContractAddr '{\"last_pub_rand_commit\":{\"btc_pk_hex\":\"$consumer_btc_pk\"}}' -o json")
+        pr_commit_info=$(docker exec ibcsim-bcd /bin/sh -c "bcd query wasm contract-state smart $btcFinalityContractAddr '{\"last_pub_rand_commit\":{\"btc_pk_hex\":\"$consumer_btc_pk\"}}' -o json")
         if [[ "$(echo "$pr_commit_info" | jq '.data')" == *"null"* ]]; then
             echo "The finality provider $consumer_btc_pk hasn't committed any public randomness yet"
             sleep 10
@@ -203,7 +203,7 @@ last_block_height=$[last_block_height + 1]
 while true; do
     cnt=0
     for consumer_btc_pk in $CONSUMER_BTC_PKS; do
-        finality_sig_info=$(docker exec ibcsim-bcd /bin/sh -c "bcd query wasm contract-state smart $btcStakingContractAddr '{\"finality_signature\":{\"btc_pk_hex\":\"$consumer_btc_pk\",\"height\":$last_block_height}}' -o json")
+        finality_sig_info=$(docker exec ibcsim-bcd /bin/sh -c "bcd query wasm contract-state smart $btcFinalityContractAddr '{\"finality_signature\":{\"btc_pk_hex\":\"$consumer_btc_pk\",\"height\":$last_block_height}}' -o json")
         if [ $(echo "$finality_sig_info" | jq '.data | length') -ne "1" ]; then
             echo "The finality provider $consumer_btc_pk hasn't submitted finality signature to $last_block_height yet"
             sleep 10
@@ -222,7 +222,7 @@ echo ""
 echo "Ensuring the block on the consumer chain is finalised by BTC staking..."
 sleep 3
 while true; do
-    indexed_block=$(docker exec ibcsim-bcd /bin/sh -c "bcd query wasm contract-state smart $btcStakingContractAddr '{\"block\":{\"height\":$last_block_height}}' -o json")
+    indexed_block=$(docker exec ibcsim-bcd /bin/sh -c "bcd query wasm contract-state smart $btcFinalityContractAddr '{\"block\":{\"height\":$last_block_height}}' -o json")
     if [ $(echo "$indexed_block" | jq '.data.finalized') != "true" ]; then
         echo "The block at height $last_block_height is not finalised yet"
         sleep 10
