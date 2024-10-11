@@ -115,7 +115,7 @@ sleep 7
 function clear_fp_keyring() {
   docker exec finality-provider /bin/sh -c "
     /bin/fpd keys delete finality-provider \
-    --home $BABYLON_HOME_DIR/finality-provider \
+    --home /home/finality-provider/.fpd \
     --keyring-backend test \
     -y"
 }
