@@ -113,11 +113,18 @@ echo
 sleep 7
 
 function clear_fp_keyring() {
-  docker exec finality-provider /bin/sh -c "
+  local fp_key_exists=$(docker exec finality-provider /bin/sh -c "
+    /bin/fpd keys list \
+    --home /home/finality-provider/.fpd \
+    --keyring-backend test \
+    --output json" | jq -r '.[] | select(.name == "finality-provider")')
+  if [ -n "$fp_key_exists" ]; then
+    docker exec finality-provider /bin/sh -c "
     /bin/fpd keys delete finality-provider \
     --home /home/finality-provider/.fpd \
     --keyring-backend test \
     -y"
+  fi
 }
 
 function setup_account_keyring() {
