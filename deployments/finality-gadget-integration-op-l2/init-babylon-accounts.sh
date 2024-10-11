@@ -158,7 +158,7 @@ setup_account_keyring btc-staker
 chown_testnet_dir btc-staker
 echo
 
-clear_fp_keyring
+# clear_fp_keyring
 setup_account_keyring finality-provider
 chown_testnet_dir finality-provider
 echo
