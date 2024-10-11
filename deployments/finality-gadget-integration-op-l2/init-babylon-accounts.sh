@@ -132,8 +132,8 @@ function setup_account_keyring() {
     local account_name=$1
     if [ ! -d ".testnets/$account_name/keyring-test" ]; then
         mkdir -p .testnets/$account_name/keyring-test
-        sudo find .testnets/node0/babylond/$account_name/keyring-test/ -type f -exec cp {} .testnets/$account_name/keyring-test/ \;
     fi
+    sudo find .testnets/node0/babylond/$account_name/keyring-test/ -type f -exec cp {} .testnets/$account_name/keyring-test/ \;
 }
 
 function chown_testnet_dir() {
