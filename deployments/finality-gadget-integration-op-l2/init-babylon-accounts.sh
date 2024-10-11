@@ -119,6 +119,7 @@ function clear_fp_keyring() {
     --keyring-backend test \
     --output json" | jq -r '.[] | select(.name == "finality-provider")')
   if [ -n "$fp_key_exists" ]; then
+    echo "deleting fp key from keyring"
     docker exec finality-provider /bin/sh -c "
     /bin/fpd keys delete finality-provider \
     --home /home/finality-provider/.fpd \
