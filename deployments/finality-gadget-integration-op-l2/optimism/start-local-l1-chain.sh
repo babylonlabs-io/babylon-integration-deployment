@@ -29,7 +29,7 @@ devnet_l1_allocs() {
     DEPLOY_CONFIG_PATH=$DEVNET_CONFIG_PATH \
       forge script $CONTRACTS_BEDROCK_DIR/scripts/deploy/Deploy.s.sol:Deploy \
       --sig 'runWithStateDump()' \
-      --sender 0x90F79bf6EB2c4f870365E785982E1f101E93b906
+      --sender $GS_SEQUENCER_ADDRESS
     
     mv $FORGE_L1_DUMP_PATH $ALLOCS_L1_PATH
     cp $L1_DEPLOYMENT_PATH $ADDRESSES_JSON_PATH
