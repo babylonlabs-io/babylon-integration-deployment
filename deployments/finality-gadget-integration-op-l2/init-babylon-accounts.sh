@@ -112,6 +112,14 @@ init_babylon_account covenant-emulator
 echo
 sleep 7
 
+function clear_fp_keyring() {
+  docker exec finality-provider /bin/sh -c "
+    /bin/fpd keys delete finality-provider \
+    --home $BABYLON_HOME_DIR/finality-provider \
+    --keyring-backend test \
+    -y"
+}
+
 function setup_account_keyring() {
     local account_name=$1
     if [ ! -d ".testnets/$account_name/keyring-test" ]; then
@@ -142,6 +150,7 @@ setup_account_keyring btc-staker
 chown_testnet_dir btc-staker
 echo
 
+clear_fp_keyring
 setup_account_keyring finality-provider
 chown_testnet_dir finality-provider
 echo
