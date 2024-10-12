@@ -24,7 +24,8 @@ services:
     build:
       context: ../../../finality-provider/
       dockerfile: ./Dockerfile
-    command: fpd start
+    command: >
+      /bin/sh -c "fpd keys add consumer-finality-provider --keyring-backend test --home /home/finality-provider/.fpd && sleep 10 && fpd start"
     networks:
       localnet:
         ipv4_address: 192.168.10.15
