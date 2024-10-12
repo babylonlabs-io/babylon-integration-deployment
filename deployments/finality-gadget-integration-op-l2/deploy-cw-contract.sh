@@ -4,14 +4,14 @@ set -euo pipefail
 # Copy the wasm file into the container
 BABYLON_CONTRACT_DIR=$1
 WASM_FILE_LOCAL="$BABYLON_CONTRACT_DIR/artifacts/op_finality_gadget.wasm"
-echo "wasm file: $WASM_FILE_LOCAL, $WASM_FILE_CONTAINER"
-docker cp $WASM_FILE_LOCAL babylondnode0:$WASM_FILE_CONTAINER
+echo "wasm file: $WASM_FILE_LOCAL, $BABYLON_HOME_DIR"
+docker cp $WASM_FILE_LOCAL babylondnode0:$BABYLON_HOME_DIR
 echo
 
 # Store the CW contract code
 echo "Storing the CW contract code..."
 STORE_CODE_TX_HASH=$(docker exec babylondnode0 /bin/sh -c "
-    /bin/babylond tx wasm store $WASM_FILE_CONTAINER \
+    /bin/babylond tx wasm store $BABYLON_HOME_DIR \
     --home $BABYLON_HOME_DIR \
     --chain-id $BABYLON_CHAIN_ID \
     --from $TEST_SPENDING_KEY_NAME \
