@@ -168,7 +168,6 @@ start-babylon:
 	sleep 10
 	@./init-babylon-accounts.sh
 	@./register-babylon-fp.sh
-	@./build-cw-contract.sh $(GIT_TOPLEVEL)/babylon-contract
 	@./deploy-cw-contract.sh $(GIT_TOPLEVEL)/babylon-contract
 	@$(DOCKER) compose -f artifacts/docker-compose-fg.yml up -d \
 		finality-gadget
