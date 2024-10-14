@@ -226,10 +226,6 @@ register-babylon-fp:
 	@./register-babylon-fp.sh
 .PHONY: register-babylon-fp
 
-build-cw-contract:
-	@./build-cw-contract.sh $(GIT_TOPLEVEL)/babylon-contract
-.PHONY: build-cw-contract
-
 deploy-cw-contract:
 	@./deploy-cw-contract.sh $(GIT_TOPLEVEL)/babylon-contract
 .PHONY: deploy-cw-contract
