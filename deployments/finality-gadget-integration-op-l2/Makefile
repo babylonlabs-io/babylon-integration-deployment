@@ -172,7 +172,6 @@ start-babylon:
 	@$(DOCKER) compose -f artifacts/docker-compose-fg.yml up -d \
 		finality-gadget
 	sleep 5
-	@$(MAKE) start-op-devnet
 	@$(DOCKER) compose -f artifacts/docker-compose-op-fp.yml up -d \
 		consumer-eotsmanager \
 		consumer-finality-provider
