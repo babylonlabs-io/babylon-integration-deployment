@@ -20,6 +20,11 @@ fi
 # Create bitcoin data directory and initialize bitcoin configuration file.
 mkdir -p "$BITCOIN_DATA"
 echo "Generating bitcoin.conf file at $BITCOIN_CONF"
+if [[ "$BITCOIN_NETWORK" == "testnet" ]]; then
+  NETWORK_LABEL="test"
+else
+  NETWORK_LABEL="$BITCOIN_NETWORK"
+fi
 cat <<EOF > "$BITCOIN_CONF"
 # Enable ${BITCOIN_NETWORK} mode.
 ${BITCOIN_NETWORK}=1
@@ -46,10 +51,9 @@ deprecatedrpc=create_bdb
 fallbackfee=0.00001
 
 # Allow all IPs to access the RPC server.
+[${NETWORK_LABEL}]
 rpcbind=0.0.0.0
 rpcallowip=0.0.0.0/0
-
-[test]
 rpcport=$BITCOIN_RPC_PORT
 EOF
 
