@@ -17,7 +17,7 @@
 [submodule "btc-staker"]
   path = btc-staker
   url = git@github.com:babylonlabs-io/btc-staker.git
-  branch = 8b59b86e49c5fdfbc64db9609ace7fb39e47f242
+  branch = 171011dba780c8fe422d5ee682830aad39f6909d
 [submodule "optimism"]
   path = optimism
   url = git@github.com:babylonlabs-io/optimism.git

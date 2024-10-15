@@ -149,7 +149,7 @@ services:
 
   btc-staker:
     container_name: btc-staker
-    image: babylonlabs/btc-staker:8b59b86e49c5fdfbc64db9609ace7fb39e47f242
+    image: babylonlabs/btc-staker:484bcb8fd9b7b0b525234d704dd049b1ef18e29f
     # build:
     #   context: ../../../btc-staker/
     #   dockerfile: ./Dockerfile
