@@ -81,11 +81,13 @@ if [ ! -d ".testnets" ]; then
       sed -i '' "s|\${BITCOIN_NETWORK}|$BITCOIN_NETWORK|g" .testnets/btc-staker/stakerd.conf
       sed -i '' "s|\${BITCOIN_RPC_PORT}|$BITCOIN_RPC_PORT|g" .testnets/btc-staker/stakerd.conf
       sed -i '' "s|\${WALLET_PASS}|$WALLET_PASS|g" .testnets/btc-staker/stakerd.conf
+      sed -i '' "s|\${BABYLON_CHAIN_ID}|$BABYLON_CHAIN_ID|g" .testnets/btc-staker/stakerd.conf
   else
       # Linux version
       sed -i "s|\${BITCOIN_NETWORK}|$BITCOIN_NETWORK|g" .testnets/btc-staker/stakerd.conf
       sed -i "s|\${BITCOIN_RPC_PORT}|$BITCOIN_RPC_PORT|g" .testnets/btc-staker/stakerd.conf
       sed -i "s|\${WALLET_PASS}|$WALLET_PASS|g" .testnets/btc-staker/stakerd.conf
+      sed -i "s|\${BABYLON_CHAIN_ID}|$BABYLON_CHAIN_ID|g" .testnets/btc-staker/stakerd.conf
   fi
 
   # for vigilante, replace placeholders with env variables
