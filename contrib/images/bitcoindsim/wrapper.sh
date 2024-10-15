@@ -113,7 +113,8 @@ if [[ "$BITCOIN_NETWORK" == "regtest" ]]; then
 elif [[ "$BITCOIN_NETWORK" == "signet" || "$BITCOIN_NETWORK" == "testnet" ]]; then
   # Check if the wallet database already exists.
   if [[ -d "$BITCOIN_DATA"/${BITCOIN_NETWORK}/wallets/"$BTCSTAKER_WALLET_NAME" ]]; then
-    echo "Wallet already exists: $BITCOIN_DATA/${BITCOIN_NETWORK}/wallets/$BTCSTAKER_WALLET_NAME"
+    echo "Wallet already exists, loading it: $BITCOIN_DATA/${BITCOIN_NETWORK}/wallets/$BTCSTAKER_WALLET_NAME"
+    bitcoin-cli -${BITCOIN_NETWORK} -rpcuser="$RPC_USER" -rpcpassword="$RPC_PASS" -rpcwallet="$BTCSTAKER_WALLET_NAME" loadwallet "$BTCSTAKER_WALLET_NAME"
   fi
   # Keep the container running
   echo "Bitcoind is running. Press CTRL+C to stop..."
