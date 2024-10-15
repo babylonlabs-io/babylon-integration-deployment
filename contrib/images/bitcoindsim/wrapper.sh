@@ -18,7 +18,9 @@ if [[ "$BITCOIN_NETWORK" != "regtest" && "$BITCOIN_NETWORK" != "signet" && "$BIT
 fi
 
 # Create bitcoin data directory and initialize bitcoin configuration file.
-mkdir -p "$BITCOIN_DATA"
+if [[ ! -d "$BITCOIN_DATA" ]]; then
+  mkdir -p "$BITCOIN_DATA"
+fi
 echo "Generating bitcoin.conf file at $BITCOIN_CONF"
 if [[ "$BITCOIN_NETWORK" == "testnet" ]]; then
   NETWORK_LABEL="test"
