@@ -12,8 +12,20 @@ if [[ -z "$BITCOIN_RPC_PORT" ]]; then
   BITCOIN_RPC_PORT="18443"
 fi
 
+if [[ "$BITCOIN_NETWORK" != "regtest" ]]; then
+  echo "Debug: BITCOIN_NETWORK is not regtest"
+fi
+
+if [[ "$BITCOIN_NETWORK" != "signet" ]]; then
+  echo "Debug: BITCOIN_NETWORK is not signet"
+fi
+
+if [[ "$BITCOIN_NETWORK" != "testnet" ]]; then
+  echo "Debug: BITCOIN_NETWORK is not testnet"
+fi
+
 if [[ "$BITCOIN_NETWORK" != "regtest" && "$BITCOIN_NETWORK" != "signet" && "$BITCOIN_NETWORK" != "testnet" ]]; then
-  echo "Unsupported network: $BITCOIN_NETWORK"
+  echo "Unsupported network: '$BITCOIN_NETWORK'"
   exit 1
 fi
 
