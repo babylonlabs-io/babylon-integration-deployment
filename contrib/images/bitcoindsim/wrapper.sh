@@ -46,7 +46,6 @@ deprecatedrpc=create_bdb
 fallbackfee=0.00001
 
 # Allow all IPs to access the RPC server.
-[${BITCOIN_NETWORK}]
 rpcbind=0.0.0.0
 rpcallowip=0.0.0.0/0
 
