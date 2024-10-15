@@ -108,20 +108,10 @@ if [[ "$BITCOIN_NETWORK" == "regtest" ]]; then
     fi
     sleep "${GENERATE_INTERVAL_SECS}"
   done
-elif [[ "$BITCOIN_NETWORK" == "signet" ]]; then
+elif [[ "$BITCOIN_NETWORK" == "signet" || "$BITCOIN_NETWORK" == "testnet" ]]; then
   # Check if the wallet database already exists.
-  if [[ -d "$BITCOIN_DATA"/signet/wallets/"$BTCSTAKER_WALLET_NAME" ]]; then
-    echo "Wallet already exists and removing it..."
-    rm -rf "$BITCOIN_DATA"/signet/wallets/"$BTCSTAKER_WALLET_NAME"
-  fi
-  # Keep the container running
-  echo "Bitcoind is running. Press CTRL+C to stop..."
-  tail -f /dev/null
-elif [[ "$BITCOIN_NETWORK" == "testnet" ]]; then
-  # Check if the wallet database already exists.
-  if [[ -d "$BITCOIN_DATA"/testnet/wallets/"$BTCSTAKER_WALLET_NAME" ]]; then
-    echo "Wallet already exists and removing it..."
-    rm -rf "$BITCOIN_DATA"/testnet/wallets/"$BTCSTAKER_WALLET_NAME"
+  if [[ -d "$BITCOIN_DATA"/${BITCOIN_NETWORK}/wallets/"$BTCSTAKER_WALLET_NAME" ]]; then
+    echo "Wallet already exists: $BITCOIN_DATA/${BITCOIN_NETWORK}/wallets/$BTCSTAKER_WALLET_NAME"
   fi
   # Keep the container running
   echo "Bitcoind is running. Press CTRL+C to stop..."
