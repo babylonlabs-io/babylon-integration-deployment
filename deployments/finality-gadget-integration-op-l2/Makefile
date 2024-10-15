@@ -236,3 +236,7 @@ register-op-consumer:
 register-op-consumer-fp:
 	@./register-op-consumer-fp.sh
 .PHONY: register-op-consumer-fp
+
+create-btc-delegations:
+	@./create-btc-delegations.sh
+.PHONY: create-btc-delegations
