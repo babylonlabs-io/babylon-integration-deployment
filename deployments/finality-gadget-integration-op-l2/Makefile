@@ -95,7 +95,7 @@ stop: stop-op-devnet
 	@rm -rf $(CURDIR)/.testnets
 	@if [ -z "$(BITCOIN_NETWORK)" ] || [ "$(BITCOIN_NETWORK)" = "regtest" ]; then \
 		echo "Removing Bitcoin data for regtest..."; \
-		rm -rf $(CURDIR)/bitcoin; \
+		rm -rf $(CURDIR)/.bitcoin; \
 	elif [ "$(BITCOIN_NETWORK)" = "signet" ] || [ "$(BITCOIN_NETWORK)" = "testnet" ]; then \
 		echo "Keeping Bitcoin data for $(BITCOIN_NETWORK) to preserve sync state..."; \
 		echo "To remove Bitcoin data for $(BITCOIN_NETWORK), if no longer needed, run the following command:"; \
