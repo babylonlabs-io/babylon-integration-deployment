@@ -62,6 +62,7 @@ if [ ! -d ".testnets" ]; then
   echo
 
   # Initialize files for a babylon testnet
+  # `covenant-pks` should be updated if `covenant-keyring` dir is changed` 
   docker run --rm -v $(pwd)/.testnets:/data babylonlabs/babylond:a98269d178879f22b136760701950d8929cc2093 \
       babylond testnet init-files --v 2 -o /data \
       --starting-ip-address 192.168.10.2 \
@@ -79,7 +80,9 @@ if [ ! -d ".testnets" ]; then
       --slashing-rate 0.1 \
       --min-commission-rate 0.05 \
       --covenant-quorum 1 \
-      --covenant-pks "2d4ccbe538f846a750d82a77cd742895e51afcf23d86d05004a356b783902748" # should be updated if `covenant-keyring` dir is changed`
+      --covenant-pks "2d4ccbe538f846a750d82a77cd742895e51afcf23d86d05004a356b783902748" \
+      --min-staking-amount-sat 10000 \
+      --max-staking-time-blocks 50000
 
   sudo chown -R $(whoami):$(whoami) .testnets
   sudo chmod -R 777 .testnets
