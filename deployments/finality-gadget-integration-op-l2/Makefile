@@ -181,7 +181,7 @@ start-babylon:
 	@if [ -z "$(BITCOIN_NETWORK)" ] || [ "$(BITCOIN_NETWORK)" = "regtest" ]; then \
 		echo "Creating BTC delegations for regtest..."; \
 		./create-btc-delegations.sh; \
-	elif [ "$(BITCOIN_NETWORK)" = "signet" ]; then \
+	elif [ "$(BITCOIN_NETWORK)" = "signet" ] || [ "$(BITCOIN_NETWORK)" = "testnet" ]; then \
 		echo "Please wait until the local Bitcoin node is fully synced with the signet network."; \
 		echo "Note: syncing can take several hours to complete."; \
 		echo "To check if the Bitcoin node is synced, run the following command:"; \
