@@ -12,7 +12,7 @@ if [[ -z "$BITCOIN_RPC_PORT" ]]; then
   BITCOIN_RPC_PORT="18443"
 fi
 
-if [[ "$BITCOIN_NETWORK" != "regtest" && "$BITCOIN_NETWORK" != "signet" ]]; then
+if [[ "$BITCOIN_NETWORK" != "regtest" && "$BITCOIN_NETWORK" != "signet" && "$BITCOIN_NETWORK" != "testnet" ]]; then
   echo "Unsupported network: $BITCOIN_NETWORK"
   exit 1
 fi
@@ -110,6 +110,15 @@ elif [[ "$BITCOIN_NETWORK" == "signet" ]]; then
   if [[ -d "$BITCOIN_DATA"/signet/wallets/"$BTCSTAKER_WALLET_NAME" ]]; then
     echo "Wallet already exists and removing it..."
     rm -rf "$BITCOIN_DATA"/signet/wallets/"$BTCSTAKER_WALLET_NAME"
+  fi
+  # Keep the container running
+  echo "Bitcoind is running. Press CTRL+C to stop..."
+  tail -f /dev/null
+elif [[ "$BITCOIN_NETWORK" == "testnet" ]]; then
+  # Check if the wallet database already exists.
+  if [[ -d "$BITCOIN_DATA"/testnet/wallets/"$BTCSTAKER_WALLET_NAME" ]]; then
+    echo "Wallet already exists and removing it..."
+    rm -rf "$BITCOIN_DATA"/testnet/wallets/"$BTCSTAKER_WALLET_NAME"
   fi
   # Keep the container running
   echo "Bitcoind is running. Press CTRL+C to stop..."

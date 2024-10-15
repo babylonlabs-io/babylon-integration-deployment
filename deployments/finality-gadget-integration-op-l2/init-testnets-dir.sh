@@ -33,6 +33,28 @@ if [ ! -d ".testnets" ]; then
     fi
     
     echo "Base header: $BASE_HEADER"
+  elif [[ "$BITCOIN_NETWORK" == "testnet" ]]; then
+    FINALIZATION_TIMEOUT=20
+    CONFIRMATION_DEPTH=1
+    # Get the next target difficulty adjustment height
+    NEXT_RETARGET_HEIGHT=$(curl -sSL "https://mempool.space/testnet/api/v1/difficulty-adjustment" | jq -r '.nextRetargetHeight')
+    echo "Next retarget height: $NEXT_RETARGET_HEIGHT"
+
+    # Calculate the previous difficulty adjustment height
+    # Each 2016-block interval is known as a difficulty epoch
+    BASE_HEADER_HEIGHT=$((NEXT_RETARGET_HEIGHT - 2016))
+    echo "Base header height: $BASE_HEADER_HEIGHT"
+
+    # Get the base header hash and header
+    BASE_HEIGHT_HASH=$(curl -sSL "https://mempool.space/testnet/api/block-height/$BASE_HEADER_HEIGHT")
+    BASE_HEADER=$(curl -sSL "https://mempool.space/testnet/api/block/$BASE_HEIGHT_HASH/header")
+    
+    if [ -z "$BASE_HEADER" ]; then
+      echo "Error: Failed to retrieve base header"
+      exit 1
+    fi
+    
+    echo "Base header: $BASE_HEADER"
   else
     echo "Unsupported bitcoin network: $BITCOIN_NETWORK"
     exit 1

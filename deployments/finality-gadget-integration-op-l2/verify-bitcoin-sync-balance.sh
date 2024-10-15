@@ -17,7 +17,7 @@ echo
 echo "Checking if Bitcoin node is synced..."
 SYNCED=$(docker exec bitcoindsim /bin/sh -c "
     bitcoin-cli \
-    -signet \
+    -${BITCOIN_NETWORK} \
     -rpcuser=rpcuser \
     -rpcpassword=rpcpass \
     getblockchaininfo" | jq -r '.verificationprogress')
@@ -30,7 +30,7 @@ echo
 
 BTCSTAKER_WALLET_EXISTS=$(docker exec bitcoindsim /bin/sh -c "
     bitcoin-cli \
-    -signet \
+    -${BITCOIN_NETWORK} \
     -rpcuser=rpcuser \
     -rpcpassword=rpcpass \
     listwallets" | jq -r '.[] | select(. == "btcstaker")'
@@ -39,14 +39,14 @@ if [ -z "$BTCSTAKER_WALLET_EXISTS" ]; then
     echo "Creating a wallet for btcstaker..."
     docker exec bitcoindsim /bin/sh -c "
         bitcoin-cli \
-        -signet \
+        -${BITCOIN_NETWORK} \
         -rpcuser=rpcuser \
         -rpcpassword=rpcpass \
         createwallet btcstaker false false $WALLET_PASS false false"
     echo "Unlocking btcstaker wallet..."
     docker exec bitcoindsim /bin/sh -c "
         bitcoin-cli \
-        -signet \
+        -${BITCOIN_NETWORK} \
         -rpcuser=rpcuser \
         -rpcpassword=rpcpass \
         -rpcwallet=btcstaker \
@@ -54,7 +54,7 @@ if [ -z "$BTCSTAKER_WALLET_EXISTS" ]; then
     echo "Importing btcstaker private key, it would take several minutes to complete rescan..."
     docker exec bitcoindsim /bin/sh -c "
         bitcoin-cli \
-        -signet \
+        -${BITCOIN_NETWORK} \
         -rpcuser=rpcuser \
         -rpcpassword=rpcpass \
         -rpcwallet=btcstaker \
@@ -67,7 +67,7 @@ fi
 # Check btcstaker address
 BTCSTAKER_ADDRESS=$(docker exec bitcoindsim /bin/sh -c "
     bitcoin-cli \
-    -signet \
+    -${BITCOIN_NETWORK} \
     -rpcuser=rpcuser \
     -rpcpassword=rpcpass \
     -rpcwallet=btcstaker \
@@ -78,13 +78,13 @@ echo "BTCStaker address: ${BTCSTAKER_ADDRESS}"
 # Check if btcstaker has any unspent transactions
 BALANCE_BTC=$(docker exec bitcoindsim /bin/sh -c "
     bitcoin-cli \
-    -signet \
+    -${BITCOIN_NETWORK} \
     -rpcuser=rpcuser \
     -rpcpassword=rpcpass \
     -rpcwallet=btcstaker \
     listunspent" | jq -r '[.[] | .amount] | add')
 if [ $(echo "$BALANCE_BTC < 0.01" | bc -l) -eq 1 ]; then
-    echo "Warning: BTCStaker balance is less than 0.01 BTC. You may need to fund this address for signet."
+    echo "Warning: BTCStaker balance is less than 0.01 BTC. You may need to fund this address for ${BITCOIN_NETWORK}."
 else
     echo "BTCStaker balance is sufficient: ${BALANCE_BTC} BTC"
 fi

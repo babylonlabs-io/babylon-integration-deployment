@@ -76,7 +76,7 @@ start: stop build
 	@if [ -z "$(BITCOIN_NETWORK)" ] || [ "$(BITCOIN_NETWORK)" = "regtest" ]; then \
 		echo "Creating BTC delegations for regtest..."; \
 		./create-btc-delegations.sh; \
-	elif [ "$(BITCOIN_NETWORK)" = "signet" ]; then \
+	elif [ "$(BITCOIN_NETWORK)" = "signet" ] || [ "$(BITCOIN_NETWORK)" = "testnet" ]; then \
 		echo "Please wait until the local Bitcoin node is fully synced with the signet network."; \
 		echo "Note: syncing can take several hours to complete."; \
 		echo "To check if the Bitcoin node is synced, run the following command:"; \
@@ -96,9 +96,9 @@ stop: stop-op-devnet
 	@if [ -z "$(BITCOIN_NETWORK)" ] || [ "$(BITCOIN_NETWORK)" = "regtest" ]; then \
 		echo "Removing Bitcoin data for regtest..."; \
 		rm -rf $(CURDIR)/bitcoin; \
-	elif [ "$(BITCOIN_NETWORK)" = "signet" ]; then \
-		echo "Keeping Bitcoin data for signet to preserve sync state..."; \
-		echo "To remove Bitcoin data for signet, if no longer needed, run the following command:"; \
+	elif [ "$(BITCOIN_NETWORK)" = "signet" ] || [ "$(BITCOIN_NETWORK)" = "testnet" ]; then \
+		echo "Keeping Bitcoin data for $(BITCOIN_NETWORK) to preserve sync state..."; \
+		echo "To remove Bitcoin data for $(BITCOIN_NETWORK), if no longer needed, run the following command:"; \
 		echo "rm -rf $(CURDIR)/.bitcoin"; \
 	else \
 		echo "Unsupported bitcoin network: $(BITCOIN_NETWORK)"; \
@@ -202,9 +202,9 @@ stop-babylon:
 	@if [ -z "$(BITCOIN_NETWORK)" ] || [ "$(BITCOIN_NETWORK)" = "regtest" ]; then \
 		echo "Removing Bitcoin data for regtest..."; \
 		sudo rm -rf $(CURDIR)/bitcoin; \
-	elif [ "$(BITCOIN_NETWORK)" = "signet" ]; then \
-		echo "Keeping Bitcoin data for signet to preserve sync state..."; \
-		echo "To remove Bitcoin data for signet, if no longer needed, run the following command:"; \
+	elif [ "$(BITCOIN_NETWORK)" = "signet" ] || [ "$(BITCOIN_NETWORK)" = "testnet" ]; then \
+		echo "Keeping Bitcoin data for $(BITCOIN_NETWORK) to preserve sync state..."; \
+		echo "To remove Bitcoin data for $(BITCOIN_NETWORK), if no longer needed, run the following command:"; \
 		echo "rm -rf $(CURDIR)/.bitcoin"; \
 	else \
 		echo "Unsupported bitcoin network: $(BITCOIN_NETWORK)"; \
