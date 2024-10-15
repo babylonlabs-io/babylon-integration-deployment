@@ -26,9 +26,9 @@ OP_FP_BTC_PK=$(docker exec babylondnode0 /bin/sh -c "
     /bin/babylond query btcstkconsumer \
     finality-providers $CONSUMER_ID \
     --output json" | jq -r '.finality_providers[].btc_pk')
-STAKING_TIME=50000
-STAKING_AMOUNT=1000000
-echo "Delegating 1 million Satoshis from BTC address $DELEGATION_ADDR to Babylon finality provider $BBN_FP_BTC_PK and OP consumer finality provider $OP_FP_BTC_PK for $STAKING_TIME BTC blocks"
+STAKING_TIME=10000
+STAKING_AMOUNT=10000
+echo "Delegating $STAKING_AMOUNT Satoshis from BTC address $DELEGATION_ADDR to Babylon finality provider $BBN_FP_BTC_PK and OP consumer finality provider $OP_FP_BTC_PK for $STAKING_TIME BTC blocks"
 BTC_DEL_TX_HASH=$(docker exec btc-staker /bin/sh -c "
     /bin/stakercli daemon stake \
     --staker-address $DELEGATION_ADDR \
