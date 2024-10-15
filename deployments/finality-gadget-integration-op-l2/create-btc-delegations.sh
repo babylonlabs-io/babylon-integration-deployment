@@ -16,8 +16,10 @@ echo
 
 # Create BTC delegation to the finality providers
 echo "Create BTC delegation to Babylon and OP consumer finality providers from a dedicated BTC address"
-DELEGATION_ADDR=$(docker exec btc-staker /bin/sh -c "
-    /bin/stakercli daemon list-outputs" | jq -r '.outputs[].address' | sort | uniq)
+# DELEGATION_ADDR=$(docker exec btc-staker /bin/sh -c "
+#     /bin/stakercli daemon list-outputs" | jq -r '.outputs[].address' | sort | uniq)
+DELEGATION_ADDR=$(docker exec bitcoindsim /bin/sh -c "
+    bitcoin-cli -${BITCOIN_NETWORK} -rpcuser=rpcuser -rpcpassword=rpcpass -rpcwallet=btcstaker listunspent" | jq -r '.[].address' | sort | uniq)
 BBN_FP_BTC_PK=$(docker exec btc-staker /bin/sh -c "
     /bin/stakercli daemon babylon-finality-providers" | jq -r '.finality_providers[].bitcoin_public_Key')
 OP_FP_BTC_PK=$(docker exec babylondnode0 /bin/sh -c "
