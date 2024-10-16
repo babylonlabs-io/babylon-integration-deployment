@@ -16,10 +16,8 @@ echo
 
 # Create BTC delegation to the finality providers
 echo "Create BTC delegation to Babylon and OP consumer finality providers from a dedicated BTC address"
-# DELEGATION_ADDR=$(docker exec btc-staker /bin/sh -c "
-#     /bin/stakercli daemon list-outputs" | jq -r '.outputs[].address' | sort | uniq)
-DELEGATION_ADDR=$(docker exec bitcoindsim /bin/sh -c "
-    bitcoin-cli -${BITCOIN_NETWORK} -rpcuser=rpcuser -rpcpassword=rpcpass -rpcwallet=btcstaker listunspent" | jq -r '.[].address' | sort | uniq)
+DELEGATION_ADDR=$(docker exec btc-staker /bin/sh -c "
+    /bin/stakercli daemon list-outputs" | jq -r '.outputs[].address' | sort | uniq)
 BBN_FP_BTC_PK=$(docker exec btc-staker /bin/sh -c "
     /bin/stakercli daemon babylon-finality-providers" | jq -r '.finality_providers[].bitcoin_public_Key')
 OP_FP_BTC_PK=$(docker exec babylondnode0 /bin/sh -c "
@@ -39,8 +37,13 @@ BTC_DEL_TX_HASH=$(docker exec btc-staker /bin/sh -c "
 echo "Delegation was successful; staking tx hash is $BTC_DEL_TX_HASH"
 echo
 
+# Restart btc-staker to fix issue with not receiving new blocks
+sleep 10
+docker compose -f artifacts/docker-compose.yml restart btc-staker
+echo "Restarted btc-staker"
+
 # Query babylon and check if the delegation is active
-echo "Wait a few minutes for the delegation to become active..."
+echo "Wait for the delegation to become active..."
 while true; do
     # Get the active delegations count from Babylon
     ACTIVE_DELEGATIONS_COUNT=$(docker exec babylondnode0 /bin/sh -c "
