@@ -178,5 +178,6 @@ if [ ! -d ".testnets" ]; then
 fi
 
 if [ ! -d ".bitcoin" ]; then
+  echo "Creating .bitcoin directory..."
   mkdir -p .bitcoin && chmod -R 777 .bitcoin
 fi
