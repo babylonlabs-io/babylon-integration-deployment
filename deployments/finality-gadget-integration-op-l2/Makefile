@@ -29,17 +29,13 @@ build-covenant-emulator:
 build-finality-gadget:
 	@$(MAKE) -C $(GIT_TOPLEVEL)/finality-gadget build-docker
 
-build-cw-contract:
-	@./build-cw-contract.sh $(GIT_TOPLEVEL)/babylon-contract
-
 build: build-babylond \
 	build-bitcoindsim \
 	build-vigilante \
 	build-btc-staker-phase-3 \
 	build-finality-provider-phase-3 \
 	build-finality-gadget \
-	build-covenant-emulator \
-	build-cw-contract
+	build-covenant-emulator
 
 ## Start the OP chain on the local L1 chain
 start-op-devnet:
@@ -62,7 +58,7 @@ start: stop build
 	sleep 10
 	@./init-babylon-accounts.sh
 	@./register-babylon-fp.sh
-	@./deploy-cw-contract.sh $(GIT_TOPLEVEL)/babylon-contract
+	@./deploy-cw-contract.sh $(CURDIR)/artifacts/op_finality_gadget-v0.10.0-rc.0.wasm
 	@$(DOCKER) compose -f artifacts/docker-compose-fg.yml up -d \
 		finality-gadget
 	sleep 5

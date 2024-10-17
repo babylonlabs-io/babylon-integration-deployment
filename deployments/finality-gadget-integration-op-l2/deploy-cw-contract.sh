@@ -2,9 +2,8 @@
 set -euo pipefail
 
 # Copy the wasm file into the container
-BABYLON_CONTRACT_DIR=$1
-WASM_FILE_LOCAL="$BABYLON_CONTRACT_DIR/artifacts/op_finality_gadget.wasm"
-echo "wasm file: $WASM_FILE_LOCAL, $BABYLON_HOME_DIR/op_finality_gadget.wasm"
+WASM_FILE_LOCAL=$1
+echo "wasm file: $WASM_FILE_LOCAL"
 docker cp $WASM_FILE_LOCAL babylondnode0:$BABYLON_HOME_DIR/op_finality_gadget.wasm
 echo
 
