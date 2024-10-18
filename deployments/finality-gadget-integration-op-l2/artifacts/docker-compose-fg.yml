@@ -4,8 +4,8 @@ include:
 services:
   finality-gadget:
     container_name: finality-gadget
-    # TODO: replace with babylonlabs/finality-gadget once image published
-    image: parketh/finality-gadget:8d38bf769d2054dc647f96ea5f55d4dd68b8a72a
+    # https://github.com/babylonlabs-io/finality-gadget/commit/37a8b1c9b2698c9967bbc060583668d6c7a1e6f9
+    image: babylonlabs/finality-gadget:37a8b1c9b2698c9967bbc060583668d6c7a1e6f9
     command: >
       opfgd start --cfg /home/finality-gadget/opfgd.toml
     ports:
