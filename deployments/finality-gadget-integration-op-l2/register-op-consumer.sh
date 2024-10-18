@@ -2,6 +2,8 @@
 set -euo pipefail
 
 # Get all registered consumer IDs and store them in an array
+# TODO: this adds another coupling between our system and the Babylon chain.
+# we should use RPC calls
 CONSUMER_IDS=($(docker exec babylondnode0 /bin/sh -c "
     /bin/babylond query btcstkconsumer registered-consumers \
     --home $BABYLON_HOME_DIR \
