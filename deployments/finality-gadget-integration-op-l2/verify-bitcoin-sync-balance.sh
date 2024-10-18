@@ -83,7 +83,7 @@ BALANCE_BTC=$(docker exec bitcoindsim /bin/sh -c "
     -rpcpassword=rpcpass \
     -rpcwallet=btcstaker \
     listunspent" | jq -r '[.[] | .amount] | add')
-if [ $(echo "$BALANCE_BTC < 0.01" | bc -l) -eq 1 ]; then
+if (( $(awk 'BEGIN {print ($BALANCE_BTC < 0.01)}') )); then
     echo "Warning: BTCStaker balance is less than 0.01 BTC. You may need to fund this address for ${BITCOIN_NETWORK}."
 else
     echo "BTCStaker balance is sufficient: ${BALANCE_BTC} BTC"
