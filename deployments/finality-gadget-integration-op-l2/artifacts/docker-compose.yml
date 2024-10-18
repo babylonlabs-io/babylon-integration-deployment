@@ -1,7 +1,7 @@
 services:
   babylondnode0:
     container_name: babylondnode0
-    image: "babylonlabs-io/babylond"
+    image: babylonlabs/babylond:a98269d178879f22b136760701950d8929cc2093 # euphrates-0.5.0-rc.0
     command: >
       babylond --home /babylondhome start --log_format 'plain' 2>&1 | tee /babylondhome/babylond.log
     cap_add:
@@ -21,7 +21,7 @@ services:
 
   babylondnode1:
     container_name: babylondnode1
-    image: "babylonlabs-io/babylond"
+    image: babylonlabs/babylond:a98269d178879f22b136760701950d8929cc2093 # euphrates-0.5.0-rc.0
     command: >
       babylond --home /babylondhome start --log_format 'plain' 2>&1 | tee /babylondhome/babylond.log
     cap_add:
@@ -41,9 +41,8 @@ services:
 
   bitcoindsim:
     build:
-      context: contrib/images/bitcoindsim/
+      context: ../../../contrib/images/bitcoindsim/
       dockerfile: ./Dockerfile
-    image: babylonlabs-io/bitcoindsim:latest
     platform: linux/amd64
     container_name: bitcoindsim
     networks:
@@ -71,7 +70,8 @@ services:
 
   vigilante-reporter:
     container_name: vigilante-reporter
-    image: babylonlabs-io/vigilante
+    image: babylonlabs/vigilante:v0.11.2
+    platform: linux/amd64
     command: >
       vigilante reporter --config /home/vigilante/config/vigilante.yml 2>&1 | tee /home/vigilante/config/reporter.log
     networks:
@@ -86,7 +86,7 @@ services:
 
   vigilante-submitter:
     container_name: vigilante-submitter
-    image: babylonlabs-io/vigilante
+    image: babylonlabs/vigilante:v0.11.2
     command: >
       vigilante submitter --config /home/vigilante/config/vigilante.yml 2>&1 | tee /home/vigilante/config/submitter.log
     networks:
@@ -101,7 +101,7 @@ services:
 
   vigilante-monitor:
     container_name: vigilante-monitor
-    image: babylonlabs-io/vigilante
+    image: babylonlabs/vigilante:v0.11.2
     command: >
       vigilante monitor --config /home/vigilante/config/vigilante.yml --genesis /home/vigilante/config/bbnconfig/genesis.json 2>&1 | tee /home/vigilante/config/monitor.log
     networks:
@@ -116,7 +116,7 @@ services:
 
   vigilante-bstracker:
     container_name: vigilante-bstracker
-    image: babylonlabs-io/vigilante
+    image: babylonlabs/vigilante:v0.11.2
     command: >
       vigilante bstracker --config /home/vigilante/config/vigilante.yml 2>&1 | tee /home/vigilante/config/unbonding-watcher.log
     networks:
@@ -131,7 +131,9 @@ services:
 
   btc-staker:
     container_name: btc-staker
-    image: babylonlabs-io/btc-staker
+    # https://github.com/babylonlabs-io/btc-staker/commit/484bcb8fd9b7b0b525234d704dd049b1ef18e29f
+    # euphrates-0.5.0-rc.0
+    image: babylonlabs/btc-staker:484bcb8fd9b7b0b525234d704dd049b1ef18e29f
     networks:
       localnet:
         ipv4_address: 192.168.10.11
@@ -146,7 +148,8 @@ services:
 
   eotsmanager:
     container_name: eotsmanager
-    image: babylonlabs-io/finality-provider
+    # https://github.com/babylonlabs-io/finality-provider/commit/45a24e1f5c235a829eaeca3c3336053032ec0088
+    image: babylonlabs/finality-provider:45a24e1f5c235a829eaeca3c3336053032ec0088
     command: eotsd start
     networks:
       localnet:
@@ -161,8 +164,17 @@ services:
 
   finality-provider:
     container_name: finality-provider
-    image: babylonlabs-io/finality-provider
-    command: fpd start
+    # https://github.com/babylonlabs-io/finality-provider/commit/45a24e1f5c235a829eaeca3c3336053032ec0088
+    image: babylonlabs/finality-provider:45a24e1f5c235a829eaeca3c3336053032ec0088
+    # fpd crashes if starting up with no keys, so we add a key and delete it immediately after starting
+    command: >
+      /bin/sh -c "
+        if [ ! -d /home/finality-provider/.testnets/node0/babylond/finality-provider/keyring-test/ ]; then
+          fpd keys add finality-provider --keyring-backend test --home /home/finality-provider/.fpd;
+          sleep 10;
+        fi &&
+        fpd start
+      "
     networks:
       localnet:
         ipv4_address: 192.168.10.13
@@ -177,7 +189,7 @@ services:
 
   covenant-emulator:
     container_name: covenant-emulator
-    image: babylonlabs-io/covenant-emulator
+    image: babylonlabs/covenant-emulator:v0.5.0
     command: covd start
     networks:
       localnet:

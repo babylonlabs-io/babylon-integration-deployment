@@ -14,43 +14,86 @@ function init_babylon_account() {
             --keyring-backend test \
             --output json" | jq -r .address)
     else
-        local account_addr=$(docker exec babylondnode0 /bin/sh -c "
-            /bin/babylond keys add $account_name \
+        keys_list=$(docker exec babylondnode0 /bin/sh -c "
+            /bin/babylond keys list \
             --home $BABYLON_HOME_DIR/$account_name \
             --keyring-backend test \
-            --output json" | jq -r .address)
+            --output json")
+
+        # Check if the key already exists in the keyring
+        key_exists=$(echo "$keys_list" | jq -r --arg account_name "$account_name" '.[] | select(.name == $account_name)')
+
+        # If the key does not exist, add it
+        if [ -z "$key_exists" ]; then
+            echo "Key not found, adding new key..."
+            local account_addr=$(docker exec babylondnode0 /bin/sh -c "
+                /bin/babylond keys add $account_name \
+                --home $BABYLON_HOME_DIR/$account_name \
+                --keyring-backend test \
+                --output json" | jq -r .address)
+            echo "New key added with address: $account_addr"
+        else
+            # Extract the existing address from the already fetched keys list
+            local account_addr=$(echo "$keys_list" | jq -r --arg account_name "$account_name" '.[] | select(.name == $account_name) | .address')
+            echo "Key already exists with address: $account_addr"
+        fi
     fi
     echo "account_addr: $account_addr"
     sleep 5
 
     if [ "$account_name" == "consumer-finality-provider" ]; then
-        local fund_tx_hash=$(docker exec babylondnode0 /bin/sh -c "
-            /bin/babylond tx bank send \
-            $TEST_SPENDING_KEY_NAME \
-            $account_addr \
-            60000000000ubbn \
+        local account_balance=$(docker exec babylondnode0 /bin/sh -c "
+            /bin/babylond query bank balances $account_addr \
             --home $BABYLON_HOME_DIR \
             --chain-id $BABYLON_CHAIN_ID \
-            --keyring-backend test \
-            --gas-prices 0.2ubbn \
-            --gas auto \
-            --gas-adjustment 1.3 \
-            -o json -y" | jq -r '.txhash')
+            --output json" | jq -r .balances[0].amount)
+        echo "account_balance: $account_balance"
+        # If account not yet funded, fund it
+        if [ "$account_balance" = "null" ] || [ -z "$account_balance" ]; then
+            echo "account not yet funded, funding it"
+            local fund_tx_hash=$(docker exec babylondnode0 /bin/sh -c "
+                /bin/babylond tx bank send \
+                $TEST_SPENDING_KEY_NAME \
+                $account_addr \
+                60000000000ubbn \
+                --home $BABYLON_HOME_DIR \
+                --chain-id $BABYLON_CHAIN_ID \
+                --keyring-backend test \
+                --gas-prices 0.2ubbn \
+                --gas auto \
+                --gas-adjustment 1.3 \
+                -o json -y" | jq -r '.txhash')
+            echo "fund_tx_hash: $fund_tx_hash"
+        else
+            echo "account already funded, skipping"
+        fi
     else
-        local fund_tx_hash=$(docker exec babylondnode0 /bin/sh -c "
-            /bin/babylond tx bank send \
-            $TEST_SPENDING_KEY_NAME \
-            $account_addr \
-            1000000000ubbn \
+        local account_balance=$(docker exec babylondnode0 /bin/sh -c "
+            /bin/babylond query bank balances $account_addr \
             --home $BABYLON_HOME_DIR \
             --chain-id $BABYLON_CHAIN_ID \
-            --keyring-backend test \
-            --gas-prices 0.2ubbn \
-            --gas auto \
-            --gas-adjustment 1.3 \
-            -o json -y" | jq -r '.txhash')
+            --output json" | jq -r .balances[0].amount)
+        echo "account_balance: $account_balance"
+        # If account not yet funded, fund it
+        if [ "$account_balance" = "null" ] || [ -z "$account_balance" ]; then
+            echo "account not yet funded, funding it"
+            local fund_tx_hash=$(docker exec babylondnode0 /bin/sh -c "
+                /bin/babylond tx bank send \
+                $TEST_SPENDING_KEY_NAME \
+                $account_addr \
+                1000000000ubbn \
+                --home $BABYLON_HOME_DIR \
+                --chain-id $BABYLON_CHAIN_ID \
+                --keyring-backend test \
+                --gas-prices 0.2ubbn \
+                --gas auto \
+                --gas-adjustment 1.3 \
+                -o json -y" | jq -r '.txhash')
+            echo "fund_tx_hash: $fund_tx_hash"
+        else
+            echo "account already funded, skipping"
+        fi
     fi
-    echo "fund_tx_hash: $fund_tx_hash"
 }
 
 init_babylon_account vigilante
@@ -71,14 +114,16 @@ sleep 7
 
 function setup_account_keyring() {
     local account_name=$1
-    mkdir -p .testnets/$account_name/keyring-test
-    cp .testnets/node0/babylond/$account_name/keyring-test/* .testnets/$account_name/keyring-test
+    if [ ! -d ".testnets/$account_name/keyring-test" ]; then
+        mkdir -p .testnets/$account_name/keyring-test
+    fi
+    sudo find .testnets/node0/babylond/$account_name/keyring-test/ -type f -exec cp {} .testnets/$account_name/keyring-test/ \;
 }
 
 function chown_testnet_dir() {
     local account_name=$1
     if [[ "$(uname)" == "Linux" ]]; then
-        chown -R 1138:1138 .testnets/$account_name
+        sudo chown -R 1138:1138 .testnets/$account_name
         echo "chown done for .testnets/$account_name on $(uname) system"
     elif [[ "$(uname)" == "Darwin" ]]; then # for MacOS
         docker run --rm -v "$(pwd)/.testnets/$account_name:/data" alpine chown -R 1138:1138 /data
@@ -89,8 +134,6 @@ function chown_testnet_dir() {
     fi
 }
 
-mkdir -p .testnets/vigilante/bbnconfig
-cp .testnets/node0/babylond/config/genesis.json .testnets/vigilante/bbnconfig
 setup_account_keyring vigilante
 chown_testnet_dir vigilante
 echo
