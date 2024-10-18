@@ -1,7 +1,7 @@
 services:
   babylondnode0:
     container_name: babylondnode0
-    image: babylonlabs/babylond:a98269d178879f22b136760701950d8929cc2093
+    image: babylonlabs/babylond:a98269d178879f22b136760701950d8929cc2093 # euphrates-0.5.0-rc.0
     # build:
     #   context: ../../../babylon/
     #   dockerfile: ./contrib/images/babylond/Dockerfile
@@ -24,7 +24,7 @@ services:
 
   babylondnode1:
     container_name: babylondnode1
-    image: babylonlabs/babylond:a98269d178879f22b136760701950d8929cc2093
+    image: babylonlabs/babylond:a98269d178879f22b136760701950d8929cc2093 # euphrates-0.5.0-rc.0
     # build:
     #   context: ../../../babylon/
     #   dockerfile: ./contrib/images/babylond/Dockerfile
@@ -149,6 +149,8 @@ services:
 
   btc-staker:
     container_name: btc-staker
+    # https://github.com/babylonlabs-io/btc-staker/commit/484bcb8fd9b7b0b525234d704dd049b1ef18e29f
+    # euphrates-0.5.0-rc.0
     image: babylonlabs/btc-staker:484bcb8fd9b7b0b525234d704dd049b1ef18e29f
     # build:
     #   context: ../../../btc-staker/
@@ -167,7 +169,8 @@ services:
 
   eotsmanager:
     container_name: eotsmanager
-    # image: babylonlabs/finality-provider:v0.6.0
+    # https://github.com/babylonlabs-io/finality-provider/commit/45a24e1f5c235a829eaeca3c3336053032ec0088
+    image: babylonlabs/finality-provider:45a24e1f5c235a829eaeca3c3336053032ec0088
     build:
       context: ../../../finality-provider/
       dockerfile: ./Dockerfile
@@ -185,7 +188,8 @@ services:
 
   finality-provider:
     container_name: finality-provider
-    # image: babylonlabs/finality-provider:v0.6.0
+    # https://github.com/babylonlabs-io/finality-provider/commit/45a24e1f5c235a829eaeca3c3336053032ec0088
+    image: babylonlabs/finality-provider:45a24e1f5c235a829eaeca3c3336053032ec0088
     build:
       context: ../../../finality-provider/
       dockerfile: ./Dockerfile
@@ -212,7 +216,7 @@ services:
 
   covenant-emulator:
     container_name: covenant-emulator
-    image: babylonlabs/covenant-emulator:02ca7fdcea7512720a21360413315be41b6d17de
+    image: babylonlabs/covenant-emulator:v0.5.0
     # build:
     #   context: ../../../covenant-emulator/
     #   dockerfile: ./Dockerfile
