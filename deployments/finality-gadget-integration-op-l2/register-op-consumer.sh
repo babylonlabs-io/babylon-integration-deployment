@@ -1,6 +1,19 @@
 #!/bin/bash
 set -euo pipefail
 
+# Get all registered consumer IDs and store them in an array
+CONSUMER_IDS=($(docker exec babylondnode0 /bin/sh -c "
+    /bin/babylond query btcstkconsumer registered-consumers \
+    --home $BABYLON_HOME_DIR \
+    --chain-id $BABYLON_CHAIN_ID \
+    -o json" | jq -r '.consumer_ids[]'))
+
+# Check if the OP consumer chain is already registered
+if [[ "${CONSUMER_IDS[@]}" =~ "${CONSUMER_ID}" ]]; then
+    echo "OP consumer chain already registered with ID: $CONSUMER_ID"
+    exit 0
+fi
+
 # Register op consumer chain
 echo "Registering OP consumer chain..."
 REGISTER_TX_HASH=$(docker exec babylondnode0 /bin/sh -c "
