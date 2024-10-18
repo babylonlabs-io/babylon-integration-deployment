@@ -21,7 +21,7 @@ SYNCED=$(docker exec bitcoindsim /bin/sh -c "
     -rpcuser=rpcuser \
     -rpcpassword=rpcpass \
     getblockchaininfo" | jq -r '.verificationprogress')
-if [ $(echo "$SYNCED < 0.999" | bc -l) -eq 1 ]; then
+if (( $(awk 'BEGIN {print ($SYNCED < 0.999)}') )); then
     echo "Error: Bitcoin node is not fully synced. Expected at least 99.9%, got ${SYNCED}"
     exit 1
 fi
