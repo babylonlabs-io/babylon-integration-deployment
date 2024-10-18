@@ -1,0 +1,16 @@
+name: docker_publish
+
+on:
+  push:
+    paths:
+      - 'contrib/images/bitcoindsim/**'
+
+jobs:
+  docker_pipeline:
+    needs: []
+    uses: babylonlabs-io/.github/.github/workflows/reusable_docker_pipeline.yml@v0.7.0
+    secrets: inherit
+    with:
+      publish: true
+      dockerfile: ./contrib/images/bitcoindsim/Dockerfile
+      repoName: bitcoindsim

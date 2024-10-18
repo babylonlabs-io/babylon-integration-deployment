@@ -23,7 +23,7 @@ if [[ ! -d "$BITCOIN_DATA" ]]; then
 fi
 echo "Generating bitcoin.conf file at $BITCOIN_CONF"
 if [[ "$BITCOIN_NETWORK" == "testnet" ]]; then
-  NETWORK_LABEL="test"
+  NETWORK_LABEL="test" # Testnet3
 else
   NETWORK_LABEL="$BITCOIN_NETWORK"
 fi
