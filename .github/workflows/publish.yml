@@ -13,4 +13,5 @@ jobs:
     with:
       publish: true
       dockerfile: ./contrib/images/bitcoindsim/Dockerfile
+      dockerContext: ./contrib/images/bitcoindsim
       repoName: bitcoindsim
