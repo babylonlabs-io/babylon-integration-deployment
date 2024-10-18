@@ -63,6 +63,7 @@ if [ ! -d ".testnets" ]; then
 
   # Initialize files for a babylon testnet
   # `covenant-pks` should be updated if `covenant-keyring` dir is changed` 
+  # TODO: --min-staking-amount-sat and --max-staking-time-blocks can be a ENV variable
   docker run --rm -v $(pwd)/.testnets:/data babylonlabs/babylond:a98269d178879f22b136760701950d8929cc2093 \
       babylond testnet init-files --v 2 -o /data \
       --starting-ip-address 192.168.10.2 \
