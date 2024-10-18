@@ -4,7 +4,8 @@ include:
 services:
   consumer-eotsmanager:
     container_name: consumer-eotsmanager
-    image: babylonlabs-io/finality-provider
+    # https://github.com/babylonlabs-io/finality-provider/commit/45a24e1f5c235a829eaeca3c3336053032ec0088
+    image: babylonlabs/finality-provider:45a24e1f5c235a829eaeca3c3336053032ec0088
     command: eotsd start
     networks:
       localnet:
@@ -17,7 +18,8 @@ services:
 
   consumer-finality-provider:
     container_name: consumer-finality-provider
-    image: babylonlabs-io/finality-provider
+    # https://github.com/babylonlabs-io/finality-provider/commit/45a24e1f5c235a829eaeca3c3336053032ec0088
+    image: babylonlabs/finality-provider:45a24e1f5c235a829eaeca3c3336053032ec0088
     command: fpd start
     networks:
       localnet:
