@@ -187,7 +187,7 @@ start-babylon:
 	else \
 		echo "Unsupported bitcoin network: $(BITCOIN_NETWORK)"; \
 	fi
-.PHONY: start
+.PHONY: start-babylon
 
 stop-babylon:
 	@$(DOCKER) compose -f artifacts/docker-compose.yml down -v
@@ -204,7 +204,7 @@ stop-babylon:
 	else \
 		echo "Unsupported bitcoin network: $(BITCOIN_NETWORK)"; \
 	fi
-.PHONY: stop
+.PHONY: stop-babylon
 
 # Run independent steps 
 # TODO: remove these after testing
