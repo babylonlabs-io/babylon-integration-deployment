@@ -158,6 +158,7 @@ make stop-deployment-finality-gadget-integration-op-l2
 1. `BASE_HEADER_HEIGHT`, initialization for the babylon network, it should use the latest Bitcoin difficulty adjustment height
 2. `btc-cache-size`, in the Vigilante reporter, it should not be less than the Bitcoin difficulty epoch 2016
 3. `btc-confirmation-depth`, in the Vigilante moniter, it should not be less than 6
+4. `min-staking-amount-sat`, in the init-babylon-accounts.sh, it should not be less than 10000 (same as Euphrates v0.5.0)
 
 
 

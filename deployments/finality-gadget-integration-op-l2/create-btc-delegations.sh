@@ -2,10 +2,9 @@
 set -euo pipefail
 
 # For signet, load environment variables from .env file
-echo "Load environment variables from .env file..."
-if [ -f .env ]; then
-    export $(cat .env | grep -v '^#' | xargs)
-fi
+set -a
+source $(pwd)/.env
+set +a
 
 if [ -z "$(echo ${CONSUMER_ID})" ]; then
     echo "Error: CONSUMER_ID environment variable is not set"

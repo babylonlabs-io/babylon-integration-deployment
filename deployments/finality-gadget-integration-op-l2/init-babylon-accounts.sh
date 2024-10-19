@@ -77,6 +77,8 @@ function init_babylon_account() {
         # If account not yet funded, fund it
         if [ "$account_balance" = "null" ] || [ -z "$account_balance" ]; then
             echo "account not yet funded, funding it"
+            # TODO: 1000000000ubbn should be configurable
+            # TODO: we cannot do this when running against Euphrates.
             local fund_tx_hash=$(docker exec babylondnode0 /bin/sh -c "
                 /bin/babylond tx bank send \
                 $TEST_SPENDING_KEY_NAME \
