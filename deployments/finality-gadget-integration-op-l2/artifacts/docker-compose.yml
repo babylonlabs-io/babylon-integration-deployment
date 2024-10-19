@@ -40,9 +40,7 @@ services:
         ipv4_address: 192.168.10.3
 
   bitcoindsim:
-    build:
-      context: ../../../contrib/images/bitcoindsim/
-      dockerfile: ./Dockerfile
+    image: babylonlabs/bitcoindsim:d6b0ff7de784548faad40391816099890324557
     platform: linux/amd64
     container_name: bitcoindsim
     networks:
