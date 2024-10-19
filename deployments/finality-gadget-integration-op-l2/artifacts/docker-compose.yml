@@ -40,7 +40,7 @@ services:
         ipv4_address: 192.168.10.3
 
   bitcoindsim:
-    image: babylonlabs/bitcoindsim:d6b0ff7de784548faad40391816099890324557
+    image: babylonlabs/bitcoindsim:d6b0ff7de784548faad40391816099890324557a
     platform: linux/amd64
     container_name: bitcoindsim
     networks:
