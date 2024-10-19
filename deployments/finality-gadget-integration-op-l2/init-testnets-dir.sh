@@ -80,73 +80,36 @@ if [ ! -d ".testnets" ]; then
 
   # for btc-staker, replace placeholders with env variables
   cp artifacts/stakerd.conf .testnets/btc-staker/stakerd.conf
-  if [[ "$(uname)" == "Darwin" ]]; then
-      # macOS version
-      sed -i '' "s|\${BITCOIN_NETWORK}|$BITCOIN_NETWORK|g" .testnets/btc-staker/stakerd.conf
-      sed -i '' "s|\${BITCOIN_RPC_PORT}|$BITCOIN_RPC_PORT|g" .testnets/btc-staker/stakerd.conf
-      sed -i '' "s|\${WALLET_PASS}|$WALLET_PASS|g" .testnets/btc-staker/stakerd.conf
-      sed -i '' "s|\${BABYLON_CHAIN_ID}|$BABYLON_CHAIN_ID|g" .testnets/btc-staker/stakerd.conf
-  else
-      # Linux version
-      sed -i "s|\${BITCOIN_NETWORK}|$BITCOIN_NETWORK|g" .testnets/btc-staker/stakerd.conf
-      sed -i "s|\${BITCOIN_RPC_PORT}|$BITCOIN_RPC_PORT|g" .testnets/btc-staker/stakerd.conf
-      sed -i "s|\${WALLET_PASS}|$WALLET_PASS|g" .testnets/btc-staker/stakerd.conf
-      sed -i "s|\${BABYLON_CHAIN_ID}|$BABYLON_CHAIN_ID|g" .testnets/btc-staker/stakerd.conf
-  fi
+  sed -i.bak "s|\${BITCOIN_NETWORK}|$BITCOIN_NETWORK|g" .testnets/btc-staker/stakerd.conf
+  sed -i.bak "s|\${BITCOIN_RPC_PORT}|$BITCOIN_RPC_PORT|g" .testnets/btc-staker/stakerd.conf
+  sed -i.bak "s|\${WALLET_PASS}|$WALLET_PASS|g" .testnets/btc-staker/stakerd.conf
+  sed -i.bak "s|\${BABYLON_CHAIN_ID}|$BABYLON_CHAIN_ID|g" .testnets/btc-staker/stakerd.conf
+  rm .testnets/btc-staker/stakerd.conf.bak
 
   # for vigilante, replace placeholders with env variables
   cp artifacts/vigilante.yml .testnets/vigilante/vigilante.yml
-  if [[ "$(uname)" == "Darwin" ]]; then
-      # macOS version
-      sed -i '' "s|\${BITCOIN_NETWORK}|$BITCOIN_NETWORK|g" .testnets/vigilante/vigilante.yml
-      sed -i '' "s|\${BITCOIN_RPC_PORT}|$BITCOIN_RPC_PORT|g" .testnets/vigilante/vigilante.yml
-      sed -i '' "s|\${WALLET_PASS}|$WALLET_PASS|g" .testnets/vigilante/vigilante.yml
-  else
-      # Linux version
-      sed -i "s|\${BITCOIN_NETWORK}|$BITCOIN_NETWORK|g" .testnets/vigilante/vigilante.yml
-      sed -i "s|\${BITCOIN_RPC_PORT}|$BITCOIN_RPC_PORT|g" .testnets/vigilante/vigilante.yml
-      sed -i "s|\${WALLET_PASS}|$WALLET_PASS|g" .testnets/vigilante/vigilante.yml
-  fi
-  # copy genesis file to vigilante config directory
-  cp .testnets/node0/babylond/config/genesis.json .testnets/vigilante/bbnconfig/genesis.json
+  sed -i.bak "s|\${BITCOIN_NETWORK}|$BITCOIN_NETWORK|g" .testnets/vigilante/vigilante.yml
+  sed -i.bak "s|\${BITCOIN_RPC_PORT}|$BITCOIN_RPC_PORT|g" .testnets/vigilante/vigilante.yml
+  sed -i.bak "s|\${WALLET_PASS}|$WALLET_PASS|g" .testnets/vigilante/vigilante.yml
+  rm .testnets/vigilante/vigilante.yml.bak
 
   cp artifacts/eotsd.conf .testnets/eotsmanager/eotsd.conf
   cp artifacts/fpd.conf .testnets/finality-provider/fpd.conf
-  if [[ "$(uname)" == "Darwin" ]]; then
-      # macOS version
-      sed -i '' "s|\${BITCOIN_NETWORK}|$BITCOIN_NETWORK|g" .testnets/finality-provider/fpd.conf
-  else
-      # Linux version
-      sed -i "s|\${BITCOIN_NETWORK}|$BITCOIN_NETWORK|g" .testnets/finality-provider/fpd.conf
-  fi
+  sed -i.bak "s|\${BITCOIN_NETWORK}|$BITCOIN_NETWORK|g" .testnets/finality-provider/fpd.conf
+  rm .testnets/finality-provider/fpd.conf.bak
 
   cp artifacts/opfgd.toml .testnets/finality-gadget/opfgd.toml
-  if [[ "$(uname)" == "Darwin" ]]; then
-      # macOS version
-      sed -i '' "s|\${BITCOIN_RPC_PORT}|$BITCOIN_RPC_PORT|g" .testnets/finality-gadget/opfgd.toml
-  else
-      # Linux version
-      sed -i "s|\${BITCOIN_RPC_PORT}|$BITCOIN_RPC_PORT|g" .testnets/finality-gadget/opfgd.toml
-  fi
+  sed -i.bak "s|\${BITCOIN_RPC_PORT}|$BITCOIN_RPC_PORT|g" .testnets/finality-gadget/opfgd.toml
+  rm .testnets/finality-gadget/opfgd.toml.bak
 
   cp artifacts/consumer-eotsd.conf .testnets/consumer-eotsmanager/eotsd.conf
   cp artifacts/consumer-fpd.conf .testnets/consumer-finality-provider/fpd.conf
-  if [[ "$(uname)" == "Darwin" ]]; then
-      # macOS version
-      sed -i '' "s|\${BITCOIN_NETWORK}|$BITCOIN_NETWORK|g" .testnets/consumer-finality-provider/fpd.conf
-  else
-      # Linux version
-      sed -i "s|\${BITCOIN_NETWORK}|$BITCOIN_NETWORK|g" .testnets/consumer-finality-provider/fpd.conf
-  fi
+  sed -i.bak "s|\${BITCOIN_NETWORK}|$BITCOIN_NETWORK|g" .testnets/consumer-finality-provider/fpd.conf
+  rm .testnets/consumer-finality-provider/fpd.conf.bak
 
   cp artifacts/covd.conf .testnets/covenant-emulator/covd.conf
-  if [[ "$(uname)" == "Darwin" ]]; then
-      # macOS version
-      sed -i '' "s|\${BITCOIN_NETWORK}|$BITCOIN_NETWORK|g" .testnets/covenant-emulator/covd.conf
-  else
-      # Linux version
-      sed -i "s|\${BITCOIN_NETWORK}|$BITCOIN_NETWORK|g" .testnets/covenant-emulator/covd.conf
-  fi
+  sed -i.bak "s|\${BITCOIN_NETWORK}|$BITCOIN_NETWORK|g" .testnets/covenant-emulator/covd.conf
+  rm .testnets/covenant-emulator/covd.conf.bak
 
   cp -R artifacts/covenant-keyring .testnets/covenant-emulator/keyring-test
   cp .testnets/covenant-emulator/keyring-test/* .testnets/node0/babylond/covenant-emulator/keyring-test/
