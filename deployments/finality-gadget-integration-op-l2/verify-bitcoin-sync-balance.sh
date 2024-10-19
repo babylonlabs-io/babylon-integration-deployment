@@ -1,11 +1,10 @@
 #!/bin/bash
 set -euo pipefail
 
-# Load environment variables from .env file
-echo "Load environment variables from .env file..."
-if [ -f .env ]; then
-    export $(cat .env | grep -v '^#' | xargs)
-fi
+# Load environment variables from the .env file
+set -a
+source $(pwd)/.env
+set +a
 
 if [ -z "$(echo ${WALLET_PASS})" ] || [ -z "$(echo ${BTCSTAKER_PRIVKEY})" ]; then
     echo "Error: WALLET_PASS or BTCSTAKER_PRIVKEY environment variable is not set"
