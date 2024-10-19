@@ -46,7 +46,7 @@ if [ ! -d ".testnets" ]; then
       babylond testnet init-files --v 2 -o /data \
       --starting-ip-address 192.168.10.2 \
       --keyring-backend=test \
-      --chain-id chain-test \
+      --chain-id $BABYLON_CHAIN_ID \
       --epoch-interval 10 \
       --btc-finalization-timeout $FINALIZATION_TIMEOUT \
       --btc-confirmation-depth $CONFIRMATION_DEPTH \
@@ -66,6 +66,10 @@ if [ ! -d ".testnets" ]; then
   sudo chown -R $(whoami):$(whoami) .testnets
   sudo chmod -R 777 .testnets
 
+  # TODO: we need to decouple the babylon system and our finality system.
+  #   only put the configs that are needed for the babylon system in the .testnets dir
+  #   and for the finality gadget system in a separate dir.
+  #   it might also make sense to split this script into two.
   # Create separate subpaths for each component and copy relevant configuration
   mkdir -p .testnets/vigilante/bbnconfig
   mkdir -p .testnets/btc-staker
@@ -119,6 +123,7 @@ if [ ! -d ".testnets" ]; then
   echo
 fi
 
+# Only run if .bitcoin directory does not exist
 if [ ! -d ".bitcoin" ]; then
   echo "Creating .bitcoin directory..."
   mkdir -p .bitcoin && chmod -R 777 .bitcoin
