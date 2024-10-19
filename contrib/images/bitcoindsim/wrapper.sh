@@ -12,7 +12,7 @@ if [[ -z "$BITCOIN_RPC_PORT" ]]; then
   BITCOIN_RPC_PORT="18443"
 fi
 
-if [[ "$BITCOIN_NETWORK" != "regtest" && "$BITCOIN_NETWORK" != "signet" && "$BITCOIN_NETWORK" != "testnet" ]]; then
+if [[ "$BITCOIN_NETWORK" != "regtest" && "$BITCOIN_NETWORK" != "signet" ]]; then
   echo "Unsupported network: $BITCOIN_NETWORK"
   exit 1
 fi
@@ -22,11 +22,7 @@ if [[ ! -d "$BITCOIN_DATA" ]]; then
   mkdir -p "$BITCOIN_DATA"
 fi
 echo "Generating bitcoin.conf file at $BITCOIN_CONF"
-if [[ "$BITCOIN_NETWORK" == "testnet" ]]; then
-  NETWORK_LABEL="test"
-else
-  NETWORK_LABEL="$BITCOIN_NETWORK"
-fi
+NETWORK_LABEL="$BITCOIN_NETWORK"
 cat <<EOF > "$BITCOIN_CONF"
 # Enable ${BITCOIN_NETWORK} mode.
 ${BITCOIN_NETWORK}=1
@@ -110,7 +106,7 @@ if [[ "$BITCOIN_NETWORK" == "regtest" ]]; then
     fi
     sleep "${GENERATE_INTERVAL_SECS}"
   done
-elif [[ "$BITCOIN_NETWORK" == "signet" || "$BITCOIN_NETWORK" == "testnet" ]]; then
+elif [[ "$BITCOIN_NETWORK" == "signet" ]]; then
   # Check if the wallet database already exists.
   if [[ -d "$BITCOIN_DATA"/${BITCOIN_NETWORK}/wallets/"$BTCSTAKER_WALLET_NAME" ]]; then
     echo "Wallet already exists, loading it: $BITCOIN_DATA/${BITCOIN_NETWORK}/wallets/$BTCSTAKER_WALLET_NAME"
