@@ -15,9 +15,6 @@ services:
       - "2345:2345"
     volumes:
       - ../.testnets/node0/babylond:/babylondhome:Z
-    networks:
-      localnet:
-        ipv4_address: 192.168.10.2
 
   babylondnode1:
     container_name: babylondnode1
@@ -35,17 +32,11 @@ services:
       - "2346:2345"
     volumes:
       - ../.testnets/node1/babylond:/babylondhome:Z
-    networks:
-      localnet:
-        ipv4_address: 192.168.10.3
 
   bitcoindsim:
     image: babylonlabs/bitcoindsim:d6b0ff7de784548faad40391816099890324557a
     platform: linux/amd64
     container_name: bitcoindsim
-    networks:
-      localnet:
-        ipv4_address: 192.168.10.30
     environment:
       - BITCOIN_NETWORK=${BITCOIN_NETWORK:-regtest}
       - ZMQ_SEQUENCE_PORT=29000
@@ -72,9 +63,6 @@ services:
     platform: linux/amd64
     command: >
       vigilante reporter --config /home/vigilante/config/vigilante.yml 2>&1 | tee /home/vigilante/config/reporter.log
-    networks:
-      localnet:
-        ipv4_address: 192.168.10.7
     volumes:
       - ../.testnets/vigilante:/home/vigilante/config
     depends_on:
@@ -87,9 +75,6 @@ services:
     image: babylonlabs/vigilante:v0.11.2
     command: >
       vigilante submitter --config /home/vigilante/config/vigilante.yml 2>&1 | tee /home/vigilante/config/submitter.log
-    networks:
-      localnet:
-        ipv4_address: 192.168.10.8
     volumes:
       - ../.testnets/vigilante:/home/vigilante/config
     depends_on:
@@ -102,9 +87,6 @@ services:
     image: babylonlabs/vigilante:v0.11.2
     command: >
       vigilante monitor --config /home/vigilante/config/vigilante.yml --genesis /home/vigilante/config/bbnconfig/genesis.json 2>&1 | tee /home/vigilante/config/monitor.log
-    networks:
-      localnet:
-        ipv4_address: 192.168.10.9
     volumes:
       - ../.testnets/vigilante:/home/vigilante/config
     depends_on:
@@ -117,9 +99,6 @@ services:
     image: babylonlabs/vigilante:v0.11.2
     command: >
       vigilante bstracker --config /home/vigilante/config/vigilante.yml 2>&1 | tee /home/vigilante/config/unbonding-watcher.log
-    networks:
-      localnet:
-        ipv4_address: 192.168.10.10
     volumes:
       - ../.testnets/vigilante:/home/vigilante/config
     depends_on:
@@ -132,9 +111,6 @@ services:
     # https://github.com/babylonlabs-io/btc-staker/commit/484bcb8fd9b7b0b525234d704dd049b1ef18e29f
     # euphrates-0.5.0-rc.0
     image: babylonlabs/btc-staker:484bcb8fd9b7b0b525234d704dd049b1ef18e29f
-    networks:
-      localnet:
-        ipv4_address: 192.168.10.11
     volumes:
       - ../.testnets/btc-staker:/home/btcstaker/.stakerd
     ports:
@@ -149,9 +125,6 @@ services:
     # https://github.com/babylonlabs-io/finality-provider/commit/45a24e1f5c235a829eaeca3c3336053032ec0088
     image: babylonlabs/finality-provider:45a24e1f5c235a829eaeca3c3336053032ec0088
     command: eotsd start
-    networks:
-      localnet:
-        ipv4_address: 192.168.10.12
     ports:
       - "15825:15813"
     volumes:
@@ -173,9 +146,6 @@ services:
         fi &&
         fpd start
       "
-    networks:
-      localnet:
-        ipv4_address: 192.168.10.13
     ports:
       - "15822:15812"
     volumes:
@@ -189,9 +159,6 @@ services:
     container_name: covenant-emulator
     image: babylonlabs/covenant-emulator:v0.4.0
     command: covd start
-    networks:
-      localnet:
-        ipv4_address: 192.168.10.17
     volumes:
       - ../.testnets/covenant-emulator:/home/covenant-emulator/.covd
     depends_on:
@@ -200,8 +167,3 @@ services:
 
 networks:
   localnet:
-    driver: bridge
-    ipam:
-      driver: default
-      config:
-        - subnet: 192.168.10.0/25
