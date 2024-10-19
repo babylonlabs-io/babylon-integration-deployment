@@ -191,8 +191,8 @@ start-babylon:
 
 stop-babylon:
 	@$(DOCKER) compose -f artifacts/docker-compose.yml down -v
-	@$(DOCKER) compose -f artifacts/docker-compose-op-fp.yml down
-	@$(DOCKER) compose -f artifacts/docker-compose-fg.yml down
+	@$(DOCKER) compose -f artifacts/docker-compose-op-fp.yml down -v
+	@$(DOCKER) compose -f artifacts/docker-compose-fg.yml down -v
 	@sudo rm -rf $(CURDIR)/.testnets
 	@if [ -z "$(BITCOIN_NETWORK)" ] || [ "$(BITCOIN_NETWORK)" = "regtest" ]; then \
 		echo "Removing Bitcoin data for regtest..."; \
