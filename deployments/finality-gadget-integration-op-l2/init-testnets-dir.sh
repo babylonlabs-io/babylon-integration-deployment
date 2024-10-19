@@ -6,7 +6,7 @@ if [ ! -d ".testnets" ]; then
   # Create new directory that will hold node and services' configuration
   mkdir -p .testnets && chmod -R 777 .testnets
 
-  if [[ -z "$BITCOIN_NETWORK" || "$BITCOIN_NETWORK" == "regtest" ]]; then
+  if [[ "$BITCOIN_NETWORK" == "regtest" ]]; then
     FINALIZATION_TIMEOUT=2
     CONFIRMATION_DEPTH=1
     BASE_HEADER=0100000000000000000000000000000000000000000000000000000000000000000000003ba3edfd7a7b12b27ac72c3e67768f617fc81bc3888a51323a9fb8aa4b1e5e4adae5494dffff7f2002000000
