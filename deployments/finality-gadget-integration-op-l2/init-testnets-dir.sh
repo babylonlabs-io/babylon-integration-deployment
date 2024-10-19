@@ -124,6 +124,7 @@ if [ ! -d ".testnets" ]; then
 fi
 
 # Only run if .bitcoin directory does not exist
+# TODO: this belongs to the bitcoin system and should be decoupled
 if [ ! -d ".bitcoin" ]; then
   echo "Creating .bitcoin directory..."
   mkdir -p .bitcoin && chmod -R 777 .bitcoin
