@@ -36,7 +36,7 @@ echo "CODE_ID: $CODE_ID"
 echo
 
 # Instantiate the CW contract
-JSON_VALUE=$(printf '{"admin":"%s","consumer_id":"%s","activated_height":%d,"is_enabled":true}' "$CW_ADMIN" "$CONSUMER_ID" "$ACTIVATED_HEIGHT")
+JSON_VALUE=$(printf '{"admin":"%s","consumer_id":"%s","is_enabled":true}' "$CW_ADMIN" "$CONSUMER_ID")
 echo "Instantiating the CW contract with arguments: $JSON_VALUE ..."
 CREATE_CONTRACT_TX_HASH=$(docker exec babylondnode0 /bin/sh -c "
     /bin/babylond tx wasm instantiate $CODE_ID '$JSON_VALUE' \
