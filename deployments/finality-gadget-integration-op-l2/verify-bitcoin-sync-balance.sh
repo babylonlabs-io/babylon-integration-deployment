@@ -1,11 +1,10 @@
 #!/bin/bash
 set -euo pipefail
 
-# Load environment variables from .env file
-echo "Load environment variables from .env file..."
-if [ -f .env ]; then
-    export $(cat .env | grep -v '^#' | xargs)
-fi
+# Load environment variables from the .env file
+set -a
+source $(pwd)/.env
+set +a
 
 if [ -z "$(echo ${WALLET_PASS})" ] || [ -z "$(echo ${BTCSTAKER_PRIVKEY})" ]; then
     echo "Error: WALLET_PASS or BTCSTAKER_PRIVKEY environment variable is not set"
@@ -17,11 +16,11 @@ echo
 echo "Checking if Bitcoin node is synced..."
 SYNCED=$(docker exec bitcoindsim /bin/sh -c "
     bitcoin-cli \
-    -signet \
+    -${BITCOIN_NETWORK} \
     -rpcuser=rpcuser \
     -rpcpassword=rpcpass \
     getblockchaininfo" | jq -r '.verificationprogress')
-if [ $(echo "$SYNCED < 0.999" | bc -l) -eq 1 ]; then
+if (( $(awk -v synced="$SYNCED" 'BEGIN {print (synced < 0.999)}') )); then
     echo "Error: Bitcoin node is not fully synced. Expected at least 99.9%, got ${SYNCED}"
     exit 1
 fi
@@ -30,7 +29,7 @@ echo
 
 BTCSTAKER_WALLET_EXISTS=$(docker exec bitcoindsim /bin/sh -c "
     bitcoin-cli \
-    -signet \
+    -${BITCOIN_NETWORK} \
     -rpcuser=rpcuser \
     -rpcpassword=rpcpass \
     listwallets" | jq -r '.[] | select(. == "btcstaker")'
@@ -39,14 +38,14 @@ if [ -z "$BTCSTAKER_WALLET_EXISTS" ]; then
     echo "Creating a wallet for btcstaker..."
     docker exec bitcoindsim /bin/sh -c "
         bitcoin-cli \
-        -signet \
+        -${BITCOIN_NETWORK} \
         -rpcuser=rpcuser \
         -rpcpassword=rpcpass \
         createwallet btcstaker false false $WALLET_PASS false false"
     echo "Unlocking btcstaker wallet..."
     docker exec bitcoindsim /bin/sh -c "
         bitcoin-cli \
-        -signet \
+        -${BITCOIN_NETWORK} \
         -rpcuser=rpcuser \
         -rpcpassword=rpcpass \
         -rpcwallet=btcstaker \
@@ -54,7 +53,7 @@ if [ -z "$BTCSTAKER_WALLET_EXISTS" ]; then
     echo "Importing btcstaker private key, it would take several minutes to complete rescan..."
     docker exec bitcoindsim /bin/sh -c "
         bitcoin-cli \
-        -signet \
+        -${BITCOIN_NETWORK} \
         -rpcuser=rpcuser \
         -rpcpassword=rpcpass \
         -rpcwallet=btcstaker \
@@ -67,7 +66,7 @@ fi
 # Check btcstaker address
 BTCSTAKER_ADDRESS=$(docker exec bitcoindsim /bin/sh -c "
     bitcoin-cli \
-    -signet \
+    -${BITCOIN_NETWORK} \
     -rpcuser=rpcuser \
     -rpcpassword=rpcpass \
     -rpcwallet=btcstaker \
@@ -78,13 +77,13 @@ echo "BTCStaker address: ${BTCSTAKER_ADDRESS}"
 # Check if btcstaker has any unspent transactions
 BALANCE_BTC=$(docker exec bitcoindsim /bin/sh -c "
     bitcoin-cli \
-    -signet \
+    -${BITCOIN_NETWORK} \
     -rpcuser=rpcuser \
     -rpcpassword=rpcpass \
     -rpcwallet=btcstaker \
     listunspent" | jq -r '[.[] | .amount] | add')
-if [ $(echo "$BALANCE_BTC < 0.01" | bc -l) -eq 1 ]; then
-    echo "Warning: BTCStaker balance is less than 0.01 BTC. You may need to fund this address for signet."
+if (( $(awk -v balance="$BALANCE_BTC" 'BEGIN {print (balance < 0.01)}') )); then
+    echo "Warning: BTCStaker balance is less than 0.01 BTC. You may need to fund this address for ${BITCOIN_NETWORK}."
 else
     echo "BTCStaker balance is sufficient: ${BALANCE_BTC} BTC"
 fi

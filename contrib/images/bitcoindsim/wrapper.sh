@@ -18,7 +18,11 @@ if [[ "$BITCOIN_NETWORK" != "regtest" && "$BITCOIN_NETWORK" != "signet" ]]; then
 fi
 
 # Create bitcoin data directory and initialize bitcoin configuration file.
-mkdir -p "$BITCOIN_DATA"
+if [[ ! -d "$BITCOIN_DATA" ]]; then
+  mkdir -p "$BITCOIN_DATA"
+fi
+echo "Generating bitcoin.conf file at $BITCOIN_CONF"
+NETWORK_LABEL="$BITCOIN_NETWORK"
 cat <<EOF > "$BITCOIN_CONF"
 # Enable ${BITCOIN_NETWORK} mode.
 ${BITCOIN_NETWORK}=1
@@ -45,13 +49,15 @@ deprecatedrpc=create_bdb
 fallbackfee=0.00001
 
 # Allow all IPs to access the RPC server.
-[${BITCOIN_NETWORK}]
+[${NETWORK_LABEL}]
 rpcbind=0.0.0.0
 rpcallowip=0.0.0.0/0
+rpcport=$BITCOIN_RPC_PORT
 EOF
 
 echo "Starting bitcoind..."
-bitcoind -${BITCOIN_NETWORK} -datadir="$BITCOIN_DATA" -conf="$BITCOIN_CONF" -daemon
+bitcoind -${BITCOIN_NETWORK} -datadir="$BITCOIN_DATA" -conf="$BITCOIN_CONF" -rpcport="$BITCOIN_RPC_PORT" -daemon
+
 # Allow some time for bitcoind to start
 sleep 3
 
@@ -102,9 +108,9 @@ if [[ "$BITCOIN_NETWORK" == "regtest" ]]; then
   done
 elif [[ "$BITCOIN_NETWORK" == "signet" ]]; then
   # Check if the wallet database already exists.
-  if [[ -d "$BITCOIN_DATA"/signet/wallets/"$BTCSTAKER_WALLET_NAME" ]]; then
-    echo "Wallet already exists and removing it..."
-    rm -rf "$BITCOIN_DATA"/signet/wallets/"$BTCSTAKER_WALLET_NAME"
+  if [[ -d "$BITCOIN_DATA"/${BITCOIN_NETWORK}/wallets/"$BTCSTAKER_WALLET_NAME" ]]; then
+    echo "Wallet already exists, loading it: $BITCOIN_DATA/${BITCOIN_NETWORK}/wallets/$BTCSTAKER_WALLET_NAME"
+    bitcoin-cli -${BITCOIN_NETWORK} -rpcuser="$RPC_USER" -rpcpassword="$RPC_PASS" -rpcwallet="$BTCSTAKER_WALLET_NAME" loadwallet "$BTCSTAKER_WALLET_NAME"
   fi
   # Keep the container running
   echo "Bitcoind is running. Press CTRL+C to stop..."

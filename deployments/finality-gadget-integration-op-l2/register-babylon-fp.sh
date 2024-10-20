@@ -1,6 +1,20 @@
 #!/bin/bash
 set -euo pipefail
 
+# check if the Babylon FP already exists
+EXISTING_BBN_FP_MONIKER=$(docker exec finality-provider /bin/sh \
+    -c "/bin/fpd list-finality-providers" \
+    | jq '.finality_providers[0].description.moniker')
+EXISTING_BBN_FP_EOTS_PK_HEX=$(docker exec finality-provider /bin/sh \
+    -c "/bin/fpd list-finality-providers" \
+    | jq -r '.finality_providers[0].btc_pk_hex')
+if [ "$EXISTING_BBN_FP_MONIKER" == "$BBN_FP_MONIKER" ]; then
+    echo "Babylon finality provider already exists with \
+moniker: $EXISTING_BBN_FP_MONIKER and \
+EOTS PK: $EXISTING_BBN_FP_EOTS_PK_HEX"
+    exit 0
+fi
+
 # create FP for Babylon
 echo "Creating Babylon finality provider..."
 BBN_FP_EOTS_PK_HEX=$(docker exec finality-provider /bin/sh -c "
