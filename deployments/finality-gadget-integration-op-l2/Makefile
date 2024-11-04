@@ -17,11 +17,11 @@ build-babylond:
 build-vigilante:
 	@$(MAKE) -C $(GIT_TOPLEVEL)/vigilante build-docker
 
-build-btc-staker-phase-3:
-	@$(MAKE) -C $(GIT_TOPLEVEL)/btc-staker-phase-3 build-docker
+build-btc-staker:
+	@$(MAKE) -C $(GIT_TOPLEVEL)/btc-staker build-docker
 
-build-finality-provider-phase-3:
-	@$(MAKE) -C $(GIT_TOPLEVEL)/finality-provider-phase-3 build-docker
+build-finality-provider:
+	@$(MAKE) -C $(GIT_TOPLEVEL)/finality-provider build-docker
 
 build-covenant-emulator:
 	@$(MAKE) -C $(GIT_TOPLEVEL)/covenant-emulator build-docker
@@ -35,8 +35,8 @@ build-cw-contract:
 build: build-babylond \
 	build-bitcoindsim \
 	build-vigilante \
-	build-btc-staker-phase-3 \
-	build-finality-provider-phase-3 \
+	build-btc-staker \
+	build-finality-provider \
 	build-finality-gadget \
 	build-covenant-emulator \
 	build-cw-contract
