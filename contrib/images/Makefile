@@ -5,19 +5,23 @@ else
 	BITCOINDSIM_TAG := $(BITCOIN_CORE_VERSION)
 endif
 
+GIT_TOPLEVEL := $(shell git rev-parse --show-toplevel)
+
 all: bitcoinsim
 
 bitcoindsim:
 	docker build --platform "linux/amd64" --tag babylonlabs-io/bitcoindsim:$(BITCOINDSIM_TAG) -f bitcoindsim/Dockerfile \
-		$(shell git rev-parse --show-toplevel)/contrib/images/bitcoindsim $(BITCOINDSIM_BUILD_ARG)
+		$(GIT_TOPLEVEL)/contrib/images/bitcoindsim $(BITCOINDSIM_BUILD_ARG)
 
 ibcsim-gaia:
 	docker build --tag babylonlabs-io/ibcsim-gaia -f ibcsim-gaia/Dockerfile \
-		$(shell git rev-parse --show-toplevel)/contrib/images/ibcsim-gaia
+		$(GIT_TOPLEVEL)/contrib/images/ibcsim-gaia
 
 ibcsim-bcd:
+	cp -a $(GIT_TOPLEVEL)/babylon-sdk/ $(GIT_TOPLEVEL)/contrib/images/ibcsim-bcd
 	docker build --tag babylonlabs-io/ibcsim-bcd -f ibcsim-bcd/Dockerfile \
-		$(shell git rev-parse --show-toplevel)/contrib/images/ibcsim-bcd
+		$(GIT_TOPLEVEL)/contrib/images/ibcsim-bcd
+	rm -rf $(GIT_TOPLEVEL)/contrib/images/ibcsim-bcd/babylon-sdk
 
 btcdsim-rmi:
 	docker rmi babylonlabs-io/btcdsim 2>/dev/null; true

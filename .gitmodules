@@ -16,3 +16,12 @@
 [submodule "btc-staker"]
 	path = btc-staker
 	url = git@github.com:babylonlabs-io/btc-staker.git
+[submodule "optimism"]
+	path = optimism
+	url = git@github.com:babylonlabs-io/optimism.git
+[submodule "finality-gadget"]
+	path = finality-gadget
+	url = git@github.com:babylonlabs-io/finality-gadget.git
+[submodule "babylon-sdk"]
+	path = babylon-sdk
+	url = https://github.com/babylonlabs-io/babylon-sdk
