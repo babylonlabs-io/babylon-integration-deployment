@@ -58,7 +58,7 @@ submitter:
   polling-interval-seconds: 60
   resend-interval-seconds: 1800
   resubmit-fee-multiplier: 2
-  database-config:
+  dbconfig:
     dbpath: /home/vigilante/db
     dbfilename: vigilante.db
     nofreelistsync: false
@@ -79,7 +79,7 @@ monitor:
   enable-liveness-checker: true
   enable-slasher: true
   btcnetparams: regtest
-  database-config:
+  dbconfig:
     dbpath: /home/vigilante/db
     dbfilename: vigilante.db
     nofreelistsync: false
