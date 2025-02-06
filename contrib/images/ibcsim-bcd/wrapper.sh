@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
+# shellcheck disable=SC3037
 
 # 0. Define configuration
 BABYLON_KEY="babylon-key"
@@ -7,19 +8,11 @@ CONSUMER_KEY="bcd-key"
 CONSUMER_CHAIN_ID="bcd-test"
 
 # 1. Create a bcd testnet with Babylon contract
-./setup-bcd.sh $CONSUMER_CHAIN_ID $CONSUMER_CONF 26657 26656 6060 9090 ./babylon_contract.wasm ./btc_staking.wasm '{
-    "network": "regtest",
-    "babylon_tag": "01020304",
-    "btc_confirmation_depth": 1,
-    "checkpoint_finalization_timeout": 2,
-    "notify_cosmos_zone": false,
-    "btc_staking_code_id": 2,
-    "consumer_name": "Test Consumer",
-    "consumer_description": "Test Consumer Description"
-}'
+./setup-bcd.sh $CONSUMER_CHAIN_ID $CONSUMER_CONF 26657 26656 6060 9090 ./babylon_contract.wasm ./btc_staking.wasm ./btc_finality.wasm
 
-sleep 10
+sleep 5
 
+# TODO: query babylon module for getting the contract address
 CONTRACT_ADDRESS=$(bcd query wasm list-contract-by-code 1 | grep bbnc | cut -d' ' -f2)
 CONTRACT_PORT="wasm.$CONTRACT_ADDRESS"
 echo "bcd started. Status of bcd node:"
@@ -34,6 +27,7 @@ RELAYER_CONF=$RELAYER_CONF_DIR/config/config.yaml
 cat <<EOT >$RELAYER_CONF
 global:
     api-listen-addr: :5183
+    max-retries: 20
     timeout: 20s
     memo: ""
     light-cache-size: 10
@@ -89,9 +83,13 @@ rly --home $RELAYER_CONF_DIR keys restore babylon $BABYLON_KEY "$BABYLON_MEMO"
 sleep 10
 
 # 3. Start relayer
-echo "Creating an IBC light clients, connection, and channel between the two CZs"
+echo "Creating IBC channel for zoneconcierge"
 rly --home $RELAYER_CONF_DIR tx link bcd --src-port zoneconcierge --dst-port $CONTRACT_PORT --order ordered --version zoneconcierge-1
-echo "Created IBC channel successfully!"
+[ $? -eq 0 ] && echo "Created zonecincierge IBC channel successfully!" || echo "Error creating zonecincierge IBC channel"
+
+echo "Creating IBC channel for IBC transfer"
+rly --home $RELAYER_CONF_DIR tx link bcd --src-port transfer --dst-port transfer --order unordered --version ics20-1 &
+[ $? -eq 0 ] && echo "Created IBC transfer channel successfully!" || echo "Error creating IBC transfer channel"
 
 sleep 10
 
