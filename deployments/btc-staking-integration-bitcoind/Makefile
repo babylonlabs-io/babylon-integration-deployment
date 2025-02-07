@@ -22,7 +22,10 @@ build-finality-provider:
 build-covenant-emulator:
 	$(MAKE) -C $(GIT_TOPLEVEL)/covenant-emulator build-docker
 
-build-deployment-btc-staking-integration-bitcoind: build-babylond build-bitcoindsim build-vigilante build-btc-staker build-finality-provider build-covenant-emulator build-ibcsim-bcd
+build-covenant-signer:
+	$(MAKE) -C $(GIT_TOPLEVEL)/covenant-emulator/covenant-signer build-docker
+
+build-deployment-btc-staking-integration-bitcoind: build-babylond build-bitcoindsim build-vigilante build-btc-staker build-finality-provider build-covenant-signer build-covenant-emulator build-ibcsim-bcd
 
 start-deployment-btc-staking-integration-bitcoind: stop-deployment-btc-staking-integration-bitcoind build-deployment-btc-staking-integration-bitcoind
 	./pre-deployment.sh
