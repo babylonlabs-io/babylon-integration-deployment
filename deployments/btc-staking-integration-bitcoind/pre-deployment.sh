@@ -37,7 +37,7 @@ cp artifacts/consumer-fpd.conf .testnets/consumer-fp/fpd.conf
 cp artifacts/eotsd.conf .testnets/eotsmanager/eotsd.conf
 cp artifacts/consumer-eotsd.conf .testnets/consumer-eotsmanager/eotsd.conf
 cp artifacts/covd.conf .testnets/covenant-emulator/covd.conf
-cp -R artifacts/covenant-keyring .testnets/covenant-emulator/keyring-test
+cp -R artifacts/covenant-emulator-keyring .testnets/covenant-emulator/keyring-test
 cp artifacts/covenant-signer.toml .testnets/covenant-signer/config.toml
 cp -R artifacts/covenant-signer-keyring .testnets/covenant-signer/keyring-test
 
