@@ -62,8 +62,6 @@ COPY --from=build-env /work/babylon-sdk/tests/testdata/btc_finality.wasm /ibcsim
 
 ENV BABYLON_HOME=/data/node1/babylond
 ENV BABYLON_NODE_RPC="http://babylondnode1:26657"
-ENV RELAYER_CONF_DIR=/data/relayer
-ENV CONSUMER_CONF=/data/bcd
 ENV UPDATE_CLIENTS_INTERVAL=20s
 
 ENTRYPOINT ["/ibcsim-bcd/wrapper.sh"]

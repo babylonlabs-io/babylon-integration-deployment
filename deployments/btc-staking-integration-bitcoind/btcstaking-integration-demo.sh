@@ -2,39 +2,50 @@
 
 BBN_CHAIN_ID="chain-test"
 
-# TODO: fix the permissioned integration flow
-# - create IBC light client
-# - register consumer on top of the IBC light client
-# - create IBC transfer channel
-# - create IBC channel for ZoneConcierge
-# - start relayer
-
-# Wait until the IBC channels are ready
-echo "Waiting for IBC channels to be ready..."
+echo "Waiting for relayer to recover keys..."
 while true; do
-    # Fetch the port ID and channel ID from the Consumer IBC channel list
-    channelInfoJson=$(docker exec ibcsim-bcd /bin/sh -c "bcd query ibc channel channels -o json")
+    # Check if both keys are recovered by querying them
+    BABYLON_ADDRESS=$(docker exec ibcsim-bcd /bin/sh -c "rly --home /data/relayer keys list babylon 2>/dev/null" | cut -d' ' -f3)
+    BCD_ADDRESS=$(docker exec ibcsim-bcd /bin/sh -c "rly --home /data/relayer keys list bcd 2>/dev/null" | cut -d' ' -f3)
 
-    # Check if there are any channels available
-    channelsLength=$(echo $channelInfoJson | jq -r '.channels | length')
-    if [ "$channelsLength" -gt 0 ]; then
-        portId=$(echo $channelInfoJson | jq -r '.channels[0].port_id')
-        channelId=$(echo $channelInfoJson | jq -r '.channels[0].channel_id')
-        echo "Fetched port ID: $portId"
-        echo "Fetched channel ID: $channelId"
+    if [ -n "$BABYLON_ADDRESS" ] && [ -n "$BCD_ADDRESS" ]; then
+        echo "Successfully recovered keys for both chains"
         break
     else
-        echo "No channels found, retrying in 10 seconds..."
-        sleep 10
+        echo "Waiting for key recovery... (babylon: $BABYLON_ADDRESS, bcd: $BCD_ADDRESS)"
+        sleep 5
     fi
 done
 
-# Get the BTC staking contract address from the list-contract-by-code query
-btcStakingContractAddr=$(docker exec ibcsim-bcd /bin/sh -c 'bcd q wasm list-contract-by-code 2 -o json | jq -r ".contracts[0]"')
+###############################
+#    Create IBC Light Clients #
+###############################
 
-# Fetch the client ID from the IBC channel client-state query using the fetched port ID and channel ID
-clientStateJson=$(docker exec ibcsim-bcd /bin/sh -c "bcd query ibc channel client-state $portId $channelId -o json")
-CONSUMER_ID=$(echo $clientStateJson | jq -r '.client_id')
+echo "Creating IBC light clients on Babylon and bcd"
+docker exec ibcsim-bcd /bin/sh -c "rly --home /data/relayer tx clients bcd"
+[ $? -eq 0 ] && echo "Created IBC light clients successfully!" || echo "Error creating IBC light clients"
+
+sleep 10
+
+# Query client ID registered in Babylon node, as consumer ID
+echo "Querying client ID registered in Babylon node..."
+CONSUMER_ID=$(docker exec babylondnode0 babylond query ibc client states -o json | jq -r '.client_states[0].client_id')
+[ -n "$CONSUMER_ID" ] && echo "Found client ID: $CONSUMER_ID" || echo "Error: Could not find client ID"
+
+########################################
+#    Create IBC Channel for IBC transfer #
+########################################
+
+echo "Creating IBC channel for IBC transfer"
+docker exec ibcsim-bcd /bin/sh -c "rly --home /data/relayer tx link bcd --src-port transfer --dst-port transfer --order unordered --version ics20-1"
+[ $? -eq 0 ] && echo "Created IBC transfer channel successfully!" || echo "Error creating IBC transfer channel"
+
+###############################
+#    Register the consumer    #
+###############################
+
+echo "Registering the consumer"
+docker exec babylondnode0 babylond tx btcstkconsumer register-consumer $CONSUMER_ID "consumer-name" "consumer-description" --from babylond --chain-id $BBN_CHAIN_ID -y
 
 # The IBC client ID is the consumer ID
 echo "Fetched IBC client ID, this will be used as consumer ID and automatically register in Babylon: $CONSUMER_ID"
@@ -54,6 +65,57 @@ while true; do
         sleep 10
     fi
 done
+
+##############################################
+#    Create IBC Channel for ZoneConcierge    #
+##############################################
+
+# Query contract address from ibcsim-bcd container
+# TODO: query babylon module for getting the contract address
+CONTRACT_ADDRESS=$(docker exec ibcsim-bcd /bin/sh -c 'bcd query wasm list-contract-by-code 1 -o json | jq -r ".contracts[0]"')
+CONTRACT_PORT="wasm.$CONTRACT_ADDRESS"
+
+# Create IBC channel for ZoneConcierge
+echo "Creating IBC channel for zoneconcierge"
+docker exec ibcsim-bcd /bin/sh -c "rly --home /data/relayer tx link bcd --src-port zoneconcierge --dst-port $CONTRACT_PORT --order ordered --version zoneconcierge-1"
+[ $? -eq 0 ] && echo "Created zonecincierge IBC channel successfully!" || echo "Error creating zonecincierge IBC channel"
+
+sleep 10
+
+########################################
+#    Start the relayer                  #
+########################################
+
+echo "Starting the relayer"
+docker exec ibcsim-bcd /bin/sh -c "rly --home /data/relayer start bcd --debug-addr "" --flush-interval 30s"
+
+# Wait until the IBC channels are ready
+echo "Waiting for IBC channels to be ready..."
+while true; do
+    # Fetch the port ID and channel ID from the Consumer IBC channel list
+    channelInfoJson=$(docker exec ibcsim-bcd /bin/sh -c "bcd query ibc channel channels -o json")
+
+    # Check if there are any channels available
+    channelsLength=$(echo $channelInfoJson | jq -r '.channels | length')
+    if [ "$channelsLength" -gt 1 ]; then
+        # Print all channel port/ids
+        echo "Found channels:"
+        echo "$channelInfoJson" | jq -r '.channels[] | "Port ID: \(.port_id), Channel ID: \(.channel_id)"'
+        # Store second channel info for later use
+        portId=$(echo "$channelInfoJson" | jq -r '.channels[1].port_id')
+        channelId=$(echo "$channelInfoJson" | jq -r '.channels[1].channel_id')
+        break
+    else
+        echo "Found only $channelsLength channels, retrying in 10 seconds..."
+        sleep 10
+    fi
+done
+
+echo "Integration between Babylon and bcd is ready!"
+echo "Now we will try out BTC staking on the consumer chain..."
+
+# Get the BTC staking contract address from the list-contract-by-code query
+btcStakingContractAddr=$(docker exec ibcsim-bcd /bin/sh -c 'bcd q wasm list-contract-by-code 2 -o json | jq -r ".contracts[0]"')
 
 # create FP for Babylon
 echo ""
