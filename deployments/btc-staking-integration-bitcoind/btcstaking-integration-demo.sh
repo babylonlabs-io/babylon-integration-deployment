@@ -2,6 +2,13 @@
 
 BBN_CHAIN_ID="chain-test"
 
+# TODO: fix the permissioned integration flow
+# - create IBC light client
+# - register consumer on top of the IBC light client
+# - create IBC transfer channel
+# - create IBC channel for ZoneConcierge
+# - start relayer
+
 # Wait until the IBC channels are ready
 echo "Waiting for IBC channels to be ready..."
 while true; do
@@ -195,7 +202,7 @@ done
 echo ""
 echo "Ensuring all finality providers have submitted finality signatures..."
 last_block_height=$(docker exec ibcsim-bcd /bin/sh -c "bcd query blocks --query \"block.height > 1\" --page 1 --limit 1 --order_by desc -o json | jq -r '.blocks[0].header.height'")
-last_block_height=$[last_block_height + 1]
+last_block_height=$((last_block_height + 1))
 while true; do
     cnt=0
     for consumer_btc_pk in $CONSUMER_BTC_PKS; do

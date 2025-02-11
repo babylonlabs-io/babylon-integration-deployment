@@ -82,7 +82,14 @@ rly --home $RELAYER_CONF_DIR keys restore babylon $BABYLON_KEY "$BABYLON_MEMO"
 
 sleep 10
 
-# 3. Start relayer
+# 3. Create IBC light clients
+echo "Creating IBC light clients on Babylon and bcd"
+rly --home $RELAYER_CONF_DIR tx clients bcd
+[ $? -eq 0 ] && echo "Created IBC light clients successfully!" || echo "Error creating IBC light clients"
+
+sleep 10
+
+# 4. Create IBC channels
 echo "Creating IBC channel for zoneconcierge"
 rly --home $RELAYER_CONF_DIR tx link bcd --src-port zoneconcierge --dst-port $CONTRACT_PORT --order ordered --version zoneconcierge-1
 [ $? -eq 0 ] && echo "Created zonecincierge IBC channel successfully!" || echo "Error creating zonecincierge IBC channel"
@@ -93,5 +100,6 @@ rly --home $RELAYER_CONF_DIR tx link bcd --src-port transfer --dst-port transfer
 
 sleep 10
 
+# 5. Start the IBC relayer
 echo "Start the IBC relayer"
 rly --home $RELAYER_CONF_DIR start bcd --debug-addr "" --flush-interval 30s
