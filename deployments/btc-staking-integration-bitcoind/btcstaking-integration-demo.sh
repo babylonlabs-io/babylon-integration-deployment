@@ -45,7 +45,7 @@ docker exec ibcsim-bcd /bin/sh -c "rly --home /data/relayer tx link bcd --src-po
 ###############################
 
 echo "Registering the consumer"
-docker exec babylondnode0 babylond tx btcstkconsumer register-consumer $CONSUMER_ID "consumer-name" "consumer-description" --from babylond --chain-id $BBN_CHAIN_ID -y
+docker exec babylondnode0 /bin/sh -c "/bin/babylond --home /babylondhome tx btcstkconsumer register-consumer $CONSUMER_ID consumer-name consumer-description --from test-spending-key --chain-id $BBN_CHAIN_ID --keyring-backend test --fees 100000ubbn -y"
 
 # The IBC client ID is the consumer ID
 echo "Fetched IBC client ID, this will be used as consumer ID and automatically register in Babylon: $CONSUMER_ID"
