@@ -36,7 +36,7 @@ RUN git clone https://github.com/babylonlabs-io/babylon-sdk.git && \
 
 FROM debian:bullseye-slim AS run
 
-RUN apt-get update && apt-get install -y bash curl jq wget
+RUN apt-get update && apt-get install -y bash curl jq wget procps
 
 # Install libraries
 # Cosmwasm - Download correct libwasmvm version

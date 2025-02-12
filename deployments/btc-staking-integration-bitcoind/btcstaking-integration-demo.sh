@@ -17,9 +17,9 @@ while true; do
     fi
 done
 
-###############################
-#    Create IBC Light Clients #
-###############################
+###############################################
+#    Create IBC Light Clients and Connection  #
+###############################################
 
 echo "Creating IBC light clients on Babylon and bcd"
 docker exec ibcsim-bcd /bin/sh -c "rly --home /data/relayer tx clients bcd"
@@ -32,12 +32,16 @@ echo "Querying client ID registered in Babylon node..."
 CONSUMER_ID=$(docker exec babylondnode0 babylond query ibc client states -o json | jq -r '.client_states[0].client_id')
 [ -n "$CONSUMER_ID" ] && echo "Found client ID: $CONSUMER_ID" || echo "Error: Could not find client ID"
 
+echo "Creating IBC connection between Babylon and bcd"
+docker exec ibcsim-bcd /bin/sh -c "rly --home /data/relayer tx connection bcd"
+[ $? -eq 0 ] && echo "Created IBC connection successfully!" || echo "Error creating IBC connection"
+
 ########################################
 #    Create IBC Channel for IBC transfer #
 ########################################
 
 echo "Creating IBC channel for IBC transfer"
-docker exec ibcsim-bcd /bin/sh -c "rly --home /data/relayer tx link bcd --src-port transfer --dst-port transfer --order unordered --version ics20-1"
+docker exec ibcsim-bcd /bin/sh -c "rly --home /data/relayer tx channel bcd --src-port transfer --dst-port transfer --order unordered --version ics20-1"
 [ $? -eq 0 ] && echo "Created IBC transfer channel successfully!" || echo "Error creating IBC transfer channel"
 
 ###############################
@@ -78,16 +82,17 @@ CONTRACT_PORT="wasm.$CONTRACT_ADDRESS"
 # Create IBC channel for ZoneConcierge
 echo "Creating IBC channel for zoneconcierge"
 docker exec ibcsim-bcd /bin/sh -c "rly --home /data/relayer tx channel bcd --src-port zoneconcierge --dst-port $CONTRACT_PORT --order ordered --version zoneconcierge-1"
-[ $? -eq 0 ] && echo "Created zonecincierge IBC channel successfully!" || echo "Error creating zonecincierge IBC channel"
+[ $? -eq 0 ] && echo "Created zoneconcierge IBC channel successfully!" || echo "Error creating zoneconcierge IBC channel"
 
-sleep 10
+sleep 20
 
 ########################################
 #    Start the relayer                  #
 ########################################
 
-echo "Starting the relayer"
-docker exec ibcsim-bcd /bin/sh -c "rly --home /data/relayer start bcd --debug-addr "" --flush-interval 30s"
+echo "Starting the relayer..."
+docker exec ibcsim-bcd /bin/sh -c "nohup rly --home /data/relayer start bcd --debug-addr '' --flush-interval 30s > /data/relayer/relayer.log 2>&1 &"
+echo "Relayer started, logs at /data/relayer/relayer.log in the container"
 
 # Wait until the IBC channels are ready
 echo "Waiting for IBC channels to be ready..."
@@ -116,44 +121,53 @@ echo "Now we will try out BTC staking on the consumer chain..."
 
 # Get the BTC staking contract address from the list-contract-by-code query
 btcStakingContractAddr=$(docker exec ibcsim-bcd /bin/sh -c 'bcd q wasm list-contract-by-code 2 -o json | jq -r ".contracts[0]"')
+btcFinalityContractAddr=$(docker exec ibcsim-bcd /bin/sh -c 'bcd q wasm list-contract-by-code 3 -o json | jq -r ".contracts[0]"')
 
 # create FP for Babylon
 echo ""
 echo "Creating 1 Babylon finality provider..."
 bbn_btc_pk=$(docker exec eotsmanager /bin/sh -c "
-    /bin/eotsd keys add finality-provider0 --keyring-backend=test --rpc-client "0.0.0.0:15813" --output=json | jq -r '.pubkey_hex'
+    /bin/eotsd keys add finality-provider --keyring-backend=test --rpc-client "0.0.0.0:15813" --output=json | jq -r '.pubkey_hex'
 ")
 docker exec finality-provider /bin/sh -c "
-    /bin/fpd cfp --key-name finality-provider0 \
+    /bin/fpd cfp --key-name finality-provider \
         --chain-id $BBN_CHAIN_ID \
         --eots-pk $bbn_btc_pk \
         --commission-rate 0.05 \
-        --moniker \"Babylon finality provider 0\" | head -n -1 | jq -r .btc_pk_hex
+        --moniker \"Babylon finality provider\" | head -n -1 | jq -r .btc_pk_hex
 "
 
 echo "Created 1 Babylon finality provider"
 echo "BTC PK of Babylon finality provider: $bbn_btc_pk"
 
+# Restart the finality provider containers so that key creation command above
+# takes effect and finality provider is start communication with the chain.
+echo "Restarting Babylon finality provider..."
+docker restart finality-provider
+echo "Babylon finality provider restarted"
+
 # create FPs for the consumer chain
-NUM_COMSUMER_FPS=1
 echo ""
-echo "Creating $NUM_COMSUMER_FPS consumer chain finality providers"
-declare -a CONSUMER_BTC_PKS=()
-for idx in $(seq 1 $((NUM_COMSUMER_FPS))); do
-    btcPk=$(docker exec consumer-eotsmanager /bin/sh -c "
-    /bin/eotsd keys add finality-provider$idx --keyring-backend=test --rpc-client "0.0.0.0:15813" --output=json | jq -r '.pubkey_hex'
-    ")
-    CONSUMER_BTC_PKS+=("$btcPk")
-    docker exec consumer-fp /bin/sh -c "
-        /bin/fpd cfp --key-name finality-provider$idx \
-            --chain-id $CONSUMER_ID \
-            --eots-pk $btcPk \
-            --commission-rate 0.05 \
-            --moniker \"Finality Provider $idx\" | head -n -1 | jq -r .btc_pk_hex
-    "
-done
-echo "Created $NUM_COMSUMER_FPS consumer chain finality providers"
-echo "BTC PK of consumer chain finality providers: $CONSUMER_BTC_PKS"
+echo "Creating a consumer chain finality provider"
+consumer_btc_pk=$(docker exec consumer-eotsmanager /bin/sh -c "
+    /bin/eotsd keys add finality-provider --keyring-backend=test --rpc-client "0.0.0.0:15813" --output=json | jq -r '.pubkey_hex'
+")
+docker exec consumer-fp /bin/sh -c "
+    /bin/fpd cfp --key-name finality-provider \
+        --chain-id $CONSUMER_ID \
+        --eots-pk $consumer_btc_pk \
+        --commission-rate 0.05 \
+        --moniker \"Consumer finality Provider\" | head -n -1 | jq -r .btc_pk_hex
+"
+
+echo "Created 1 consumer chain finality provider"
+echo "BTC PK of consumer chain finality provider: $btcPk"
+
+# Restart the finality provider containers so that key creation command above
+# takes effect and finality provider is start communication with the chain.
+echo "Restarting consumer chain finality provider..."
+docker restart consumer-fp
+echo "Consumer chain finality provider restarted"
 
 # Query contract state and check the count of finality providers
 echo ""
@@ -164,7 +178,7 @@ while true; do
 
     echo "Finality provider count in contract store: $finalityProvidersCount"
 
-    if [ "$finalityProvidersCount" -eq "$NUM_COMSUMER_FPS" ]; then
+    if [ "$finalityProvidersCount" -eq "1" ]; then
         echo "The number of finality providers in contract matches the expected count."
         break
     else
@@ -176,19 +190,12 @@ done
 echo ""
 echo "Ensuring all finality providers have committed public randomness..."
 while true; do
-    cnt=0
-    for consumer_btc_pk in $CONSUMER_BTC_PKS; do
-        pr_commit_info=$(docker exec ibcsim-bcd /bin/sh -c "bcd query wasm contract-state smart $btcStakingContractAddr '{\"last_pub_rand_commit\":{\"btc_pk_hex\":\"$consumer_btc_pk\"}}' -o json")
-        if [[ "$(echo "$pr_commit_info" | jq '.data')" == *"null"* ]]; then
-            echo "The finality provider $consumer_btc_pk hasn't committed any public randomness yet"
-            sleep 10
-        else
-            echo "The finality provider $consumer_btc_pk has committed public randomness"
-            cnt=$((cnt + 1))
-        fi
-    done
-    if [ "$cnt" -eq $NUM_COMSUMER_FPS ]; then
-        echo "All of $consumer_btc_pk finality providers have committed public randomness!"
+    pr_commit_info=$(docker exec ibcsim-bcd /bin/sh -c "bcd query wasm contract-state smart $btcFinalityContractAddr '{\"last_pub_rand_commit\":{\"btc_pk_hex\":\"$consumer_btc_pk\"}}' -o json")
+    if [[ "$(echo "$pr_commit_info" | jq '.data')" == *"null"* ]]; then
+        echo "The finality provider $consumer_btc_pk hasn't committed any public randomness yet"
+        sleep 10
+    else
+        echo "The finality provider $consumer_btc_pk has committed public randomness"
         break
     fi
 done
@@ -199,17 +206,12 @@ echo "Make a delegation to each of the finality providers from a dedicated BTC a
 sleep 10
 # Get the available BTC addresses for delegations
 delAddrs=($(docker exec btc-staker /bin/sh -c '/bin/stakercli dn list-outputs | jq -r ".outputs[].address" | sort | uniq'))
-i=0
-for consumer_btc_pk in $CONSUMER_BTC_PKS; do
-    stakingTime=10000
+stakingTime=10000
+echo "Delegating 1 million Satoshis from BTC address ${delAddrs[i]} to Finality Provider with CZ finality provider $consumer_btc_pk and Babylon finality provider $bbn_btc_pk for $stakingTime BTC blocks"
 
-    echo "Delegating 1 million Satoshis from BTC address ${delAddrs[i]} to Finality Provider with CZ finality provider $consumer_btc_pk and Babylon finality provider $bbn_btc_pk for $stakingTime BTC blocks"
-
-    btcTxHash=$(docker exec btc-staker /bin/sh -c \
-        "/bin/stakercli dn stake --staker-address ${delAddrs[i]} --staking-amount 1000000 --finality-providers-pks $bbn_btc_pk --finality-providers-pks $consumer_btc_pk --staking-time $stakingTime | jq -r '.tx_hash'")
-    echo "Delegation was successful; staking tx hash is $btcTxHash"
-    i=$((i + 1))
-done
+btcTxHash=$(docker exec btc-staker /bin/sh -c \
+    "/bin/stakercli dn stake --staker-address ${delAddrs[i]} --staking-amount 1000000 --finality-providers-pks $bbn_btc_pk --finality-providers-pks $consumer_btc_pk --staking-time $stakingTime | jq -r '.tx_hash'")
+echo "Delegation was successful; staking tx hash is $btcTxHash"
 echo "Made a delegation to each of the finality providers"
 
 # Query babylon and check if the delegations are active
@@ -221,7 +223,7 @@ while true; do
 
     echo "Active delegations count in Babylon: $activeDelegations"
 
-    if [ "$activeDelegations" -eq "$NUM_COMSUMER_FPS" ]; then
+    if [ "$activeDelegations" -eq 1 ]; then
         echo "All delegations have become active"
         break
     else
@@ -238,7 +240,7 @@ while true; do
 
     echo "Delegations count in contract store: $delegationsCount"
 
-    if [ "$delegationsCount" -eq "$NUM_COMSUMER_FPS" ]; then
+    if [ "$delegationsCount" -eq 1 ]; then
         echo "The number of delegations in contract matches the expected count."
         break
     else
@@ -251,8 +253,8 @@ echo "Ensuring all finality providers have voting power"...
 while true; do
     fp_by_info=$(docker exec ibcsim-bcd /bin/sh -c "bcd query wasm contract-state smart $btcStakingContractAddr '{\"finality_providers_by_power\":{}}' -o json")
 
-    if [ $(echo "$fp_by_info" | jq '.data.fps | length') -ne "$NUM_COMSUMER_FPS" ]; then
-        echo "There are less than $NUM_COMSUMER_FPS finality providers"
+    if [ $(echo "$fp_by_info" | jq '.data.fps | length') -ne 1 ]; then
+        echo "There are less than 1 finality provider"
         sleep 10
     elif jq -e '.data.fps[].power | select(. <= 0)' <<<"$fp_by_info" >/dev/null; then
         echo "Some finality providers have zero voting power"
@@ -268,19 +270,12 @@ echo "Ensuring all finality providers have submitted finality signatures..."
 last_block_height=$(docker exec ibcsim-bcd /bin/sh -c "bcd query blocks --query \"block.height > 1\" --page 1 --limit 1 --order_by desc -o json | jq -r '.blocks[0].header.height'")
 last_block_height=$((last_block_height + 1))
 while true; do
-    cnt=0
-    for consumer_btc_pk in $CONSUMER_BTC_PKS; do
-        finality_sig_info=$(docker exec ibcsim-bcd /bin/sh -c "bcd query wasm contract-state smart $btcStakingContractAddr '{\"finality_signature\":{\"btc_pk_hex\":\"$consumer_btc_pk\",\"height\":$last_block_height}}' -o json")
-        if [ $(echo "$finality_sig_info" | jq '.data | length') -ne "1" ]; then
-            echo "The finality provider $consumer_btc_pk hasn't submitted finality signature to $last_block_height yet"
-            sleep 10
-        else
-            echo "The finality provider $consumer_btc_pk has submitted finality signature to $last_block_height"
-            cnt=$((cnt + 1))
-        fi
-    done
-    if [ "$cnt" -eq $NUM_COMSUMER_FPS ]; then
-        echo "All of $consumer_btc_pk finality providers have submitted finality signatures!"
+    finality_sig_info=$(docker exec ibcsim-bcd /bin/sh -c "bcd query wasm contract-state smart $btcFinalityContractAddr '{\"finality_signature\":{\"btc_pk_hex\":\"$consumer_btc_pk\",\"height\":$last_block_height}}' -o json")
+    if [ $(echo "$finality_sig_info" | jq '.data | length') -ne "1" ]; then
+        echo "The finality provider $consumer_btc_pk hasn't submitted finality signature to $last_block_height yet"
+        sleep 10
+    else
+        echo "The finality provider $consumer_btc_pk has submitted finality signature to $last_block_height"
         break
     fi
 done
@@ -288,8 +283,12 @@ done
 echo ""
 echo "Ensuring the block on the consumer chain is finalised by BTC staking..."
 while true; do
-    indexed_block=$(docker exec ibcsim-bcd /bin/sh -c "bcd query wasm contract-state smart $btcStakingContractAddr '{\"block\":{\"height\":$last_block_height}}' -o json")
-    if [ $(echo "$indexed_block" | jq '.data.finalized') != "true" ]; then
+    indexed_block=$(docker exec ibcsim-bcd /bin/sh -c "bcd query wasm contract-state smart $btcFinalityContractAddr '{\"block\":{\"height\":$last_block_height}}' -o json")
+    finalized=$(echo "$indexed_block" | jq -r '.data.finalized')
+    if [ -z "$finalized" ]; then
+        echo "Error: Unable to determine if the block at height $last_block_height is finalised"
+        sleep 10
+    elif [ "$finalized" != "true" ]; then
         echo "The block at height $last_block_height is not finalised yet"
         sleep 10
     else
