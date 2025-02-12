@@ -77,7 +77,7 @@ CONTRACT_PORT="wasm.$CONTRACT_ADDRESS"
 
 # Create IBC channel for ZoneConcierge
 echo "Creating IBC channel for zoneconcierge"
-docker exec ibcsim-bcd /bin/sh -c "rly --home /data/relayer tx link bcd --src-port zoneconcierge --dst-port $CONTRACT_PORT --order ordered --version zoneconcierge-1"
+docker exec ibcsim-bcd /bin/sh -c "rly --home /data/relayer tx channel bcd --src-port zoneconcierge --dst-port $CONTRACT_PORT --order ordered --version zoneconcierge-1"
 [ $? -eq 0 ] && echo "Created zonecincierge IBC channel successfully!" || echo "Error creating zonecincierge IBC channel"
 
 sleep 10
@@ -119,38 +119,40 @@ btcStakingContractAddr=$(docker exec ibcsim-bcd /bin/sh -c 'bcd q wasm list-cont
 
 # create FP for Babylon
 echo ""
-echo "Create 1 Babylon finality provider"
-FP_KEYNAME="finality-provider"
+echo "Creating 1 Babylon finality provider..."
+bbn_btc_pk=$(docker exec eotsmanager /bin/sh -c "
+    /bin/eotsd keys add finality-provider0 --keyring-backend=test --rpc-client "0.0.0.0:15813" --output=json | jq -r '.pubkey_hex'
+")
 docker exec finality-provider /bin/sh -c "
-    BTC_PK=\$(/bin/fpd create-finality-provider --key-name $FP_KEYNAME \
+    /bin/fpd cfp --key-name finality-provider0 \
         --chain-id $BBN_CHAIN_ID \
-        --moniker \"Babylon finality provider 0\" | jq -r .btc_pk_hex ); \
-    /bin/fpd register-finality-provider \$BTC_PK
+        --eots-pk $bbn_btc_pk \
+        --commission-rate 0.05 \
+        --moniker \"Babylon finality provider 0\" | head -n -1 | jq -r .btc_pk_hex
 "
 
-# Get the public keys of the Babylon finality providers
 echo "Created 1 Babylon finality provider"
-bbn_btc_pk=$(docker exec btc-staker /bin/sh -c '/bin/stakercli dn bfp | jq -r ".finality_providers[].bitcoin_public_Key"')
 echo "BTC PK of Babylon finality provider: $bbn_btc_pk"
 
 # create FPs for the consumer chain
 NUM_COMSUMER_FPS=1
-CONSUMER_FP_KEYNAME="finality-provider"
 echo ""
 echo "Creating $NUM_COMSUMER_FPS consumer chain finality providers"
+declare -a CONSUMER_BTC_PKS=()
 for idx in $(seq 1 $((NUM_COMSUMER_FPS))); do
+    btcPk=$(docker exec consumer-eotsmanager /bin/sh -c "
+    /bin/eotsd keys add finality-provider$idx --keyring-backend=test --rpc-client "0.0.0.0:15813" --output=json | jq -r '.pubkey_hex'
+    ")
+    CONSUMER_BTC_PKS+=("$btcPk")
     docker exec consumer-fp /bin/sh -c "
-        BTC_PK=\$(/bin/fpd create-finality-provider --key-name $CONSUMER_FP_KEYNAME \
-           --chain-id \"$CONSUMER_ID\" \
-            --moniker \"Finality Provider $idx\" | jq -r .btc_pk_hex ); \
-        /bin/fpd register-finality-provider \$BTC_PK
+        /bin/fpd cfp --key-name finality-provider$idx \
+            --chain-id $CONSUMER_ID \
+            --eots-pk $btcPk \
+            --commission-rate 0.05 \
+            --moniker \"Finality Provider $idx\" | head -n -1 | jq -r .btc_pk_hex
     "
 done
 echo "Created $NUM_COMSUMER_FPS consumer chain finality providers"
-
-# Get the public keys of the consumer chain finality providers
-CONSUMER_BTC_PKS=$(docker exec babylondnode0 /bin/sh -c "/bin/babylond query btcstkconsumer finality-providers \"$CONSUMER_ID\" --output json" | jq -r ".finality_providers[].btc_pk")
-echo ""
 echo "BTC PK of consumer chain finality providers: $CONSUMER_BTC_PKS"
 
 # Query contract state and check the count of finality providers
