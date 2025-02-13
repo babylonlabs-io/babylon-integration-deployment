@@ -280,6 +280,8 @@ while true; do
     fi
 done
 
+sleep 5
+
 echo ""
 echo "Ensuring the block on the consumer chain is finalised by BTC staking..."
 while true; do
