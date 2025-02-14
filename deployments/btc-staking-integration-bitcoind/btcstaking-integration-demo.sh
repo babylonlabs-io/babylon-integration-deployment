@@ -55,16 +55,16 @@ docker exec babylondnode0 /bin/sh -c "/bin/babylond --home /babylondhome tx btcs
 echo "Fetched IBC client ID, this will be used as consumer ID and automatically register in Babylon: $CONSUMER_ID"
 while true; do
     # Consumer should be automatically registered in Babylon via IBC, query registered consumers
-    REGISTERED_CONSUMER_IDS=$(docker exec babylondnode0 /bin/sh -c "/bin/babylond query btcstkconsumer registered-consumers -o json | jq -r '.consumer_ids'")
+    CONSUMER_REGISTERS=$(docker exec babylondnode0 /bin/sh -c "/bin/babylond query btcstkconsumer registered-consumers -o json | jq -r '.consumer_registers'")
 
     # Check if there's exactly one consumer ID and it matches the expected CONSUMER_ID
-    if [ $(echo $REGISTERED_CONSUMER_IDS | jq 'length') -eq 1 ] && [ $(echo $REGISTERED_CONSUMER_IDS | jq -r '.[0]') = "$CONSUMER_ID" ]; then
+    if [ $(echo "$CONSUMER_REGISTERS" | jq '. | length') -eq 1 ] && [ $(echo "$CONSUMER_REGISTERS" | jq -r '.[0].consumer_id') = "$CONSUMER_ID" ]; then
         echo "Verification successful: Exactly one consumer registered in Babylon with the expected ID."
         break
     else
         echo "Verification failed: Consumer ID not found in Babylon"
         echo "Expected consumer with ID: $CONSUMER_ID"
-        echo "Found: $REGISTERED_CONSUMER_IDS"
+        echo "Found: $CONSUMER_REGISTERS"
         echo "Retrying in 10 seconds..."
         sleep 10
     fi
