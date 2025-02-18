@@ -76,4 +76,6 @@ BABYLON_MEMO=$(cat $BABYLON_HOME/key_seed.json | jq .secret | tr -d '"')
 rly --home $RELAYER_CONF_DIR keys restore babylon $BABYLON_KEY "$BABYLON_MEMO"
 
 # Keep script running silently
-sleep 100000000000
+while true; do
+    sleep 10
+done

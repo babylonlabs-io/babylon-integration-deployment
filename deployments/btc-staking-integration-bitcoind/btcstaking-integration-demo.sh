@@ -52,7 +52,7 @@ echo "Registering the consumer"
 docker exec babylondnode0 /bin/sh -c "/bin/babylond --home /babylondhome tx btcstkconsumer register-consumer $CONSUMER_ID consumer-name consumer-description --from test-spending-key --chain-id $BBN_CHAIN_ID --keyring-backend test --fees 100000ubbn -y"
 
 # The IBC client ID is the consumer ID
-echo "Fetched IBC client ID, this will be used as consumer ID and automatically register in Babylon: $CONSUMER_ID"
+echo "Fetched IBC client ID $CONSUMER_ID. This will be used as consumer ID in Babylon"
 while true; do
     # Consumer should be automatically registered in Babylon via IBC, query registered consumers
     CONSUMER_REGISTERS=$(docker exec babylondnode0 /bin/sh -c "/bin/babylond query btcstkconsumer registered-consumers -o json | jq -r '.consumer_registers'")
