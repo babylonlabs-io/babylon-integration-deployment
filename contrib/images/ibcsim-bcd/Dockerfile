@@ -20,7 +20,7 @@ WORKDIR /work
 
 ENV GO111MODULE on
 ENV RELAYER_TAG v2.5.2
-ENV BABYLON_SDK_TAG v0.5.0-rc.0
+ENV BABYLON_SDK_TAG v0.8.0-rc.0
 
 # Install the relayer
 RUN git clone https://github.com/cosmos/relayer.git
@@ -36,7 +36,7 @@ RUN git clone https://github.com/babylonlabs-io/babylon-sdk.git && \
 
 FROM debian:bullseye-slim AS run
 
-RUN apt-get update && apt-get install -y bash curl jq wget
+RUN apt-get update && apt-get install -y bash curl jq wget procps
 
 # Install libraries
 # Cosmwasm - Download correct libwasmvm version
@@ -58,11 +58,10 @@ COPY wrapper.sh /ibcsim-bcd/wrapper.sh
 COPY setup-bcd.sh /ibcsim-bcd/setup-bcd.sh
 COPY --from=build-env /work/babylon-sdk/tests/testdata/babylon_contract.wasm /ibcsim-bcd/babylon_contract.wasm
 COPY --from=build-env /work/babylon-sdk/tests/testdata/btc_staking.wasm /ibcsim-bcd/btc_staking.wasm
+COPY --from=build-env /work/babylon-sdk/tests/testdata/btc_finality.wasm /ibcsim-bcd/btc_finality.wasm
 
 ENV BABYLON_HOME=/data/node1/babylond
 ENV BABYLON_NODE_RPC="http://babylondnode1:26657"
-ENV RELAYER_CONF_DIR=/data/relayer
-ENV CONSUMER_CONF=/data/bcd
 ENV UPDATE_CLIENTS_INTERVAL=20s
 
 ENTRYPOINT ["/ibcsim-bcd/wrapper.sh"]

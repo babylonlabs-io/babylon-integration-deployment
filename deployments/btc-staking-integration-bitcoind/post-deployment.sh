@@ -19,7 +19,7 @@ docker exec babylondnode0 /bin/sh -c '
     BTC_STAKER_ADDR=$(/bin/babylond --home /babylondhome/.tmpdir keys add \
         btc-staker --output json --keyring-backend test | jq -r .address) && \
     /bin/babylond --home /babylondhome tx bank send test-spending-key \
-        ${BTC_STAKER_ADDR} 100000000ubbn --fees 2ubbn -y \
+        ${BTC_STAKER_ADDR} 100000000ubbn --fees 600000ubbn -y \
         --chain-id chain-test --keyring-backend test
 '
 mkdir -p .testnets/btc-staker/keyring-test
@@ -32,7 +32,7 @@ docker exec babylondnode0 /bin/sh -c '
     FP_BABYLON_ADDR=$(/bin/babylond --home /babylondhome/.tmpdir keys add \
         finality-provider --output json --keyring-backend test | jq -r .address) && \
     /bin/babylond --home /babylondhome tx bank send test-spending-key \
-        ${FP_BABYLON_ADDR} 100000000ubbn --fees 2ubbn -y \
+        ${FP_BABYLON_ADDR} 100000000ubbn --fees 600000ubbn -y \
         --chain-id chain-test --keyring-backend test
 '
 mkdir -p .testnets/finality-provider/keyring-test
@@ -45,7 +45,7 @@ docker exec ibcsim-bcd /bin/sh -c '
     FP_CONSUMER_ADDR=$(bcd --home /data/bcd/.tmpdir keys add \
         consumer-fp --output json --keyring-backend test | jq -r .address) && \
     bcd --home /data/bcd/bcd-test tx bank send user \
-        ${FP_CONSUMER_ADDR} 100000000ustake --fees 2ustake -y \
+        ${FP_CONSUMER_ADDR} 100000000ustake --fees 600000ustake -y \
         --chain-id bcd-test --keyring-backend test
 '
 mkdir -p .testnets/consumer-fp/keyring-test
@@ -59,7 +59,7 @@ docker exec babylondnode0 /bin/sh -c '
     VIGILANTE_ADDR=$(/bin/babylond --home /babylondhome/.tmpdir keys add \
         vigilante --output json --keyring-backend test | jq -r .address) && \
     /bin/babylond --home /babylondhome tx bank send test-spending-key \
-        ${VIGILANTE_ADDR} 100000000ubbn --fees 2ubbn -y \
+        ${VIGILANTE_ADDR} 100000000ubbn --fees 600000ubbn -y \
         --chain-id chain-test --keyring-backend test
 '
 mkdir -p .testnets/vigilante/keyring-test .testnets/vigilante/bbnconfig
@@ -67,17 +67,18 @@ mv .testnets/node0/babylond/.tmpdir/keyring-test/* .testnets/vigilante/keyring-t
 cp .testnets/node0/babylond/config/genesis.json .testnets/vigilante/bbnconfig
 [[ "$(uname)" == "Linux" ]] && chown -R 1138:1138 .testnets/vigilante
 
-sleep 7
-echo "fund covenant committee account on Babylon"
+sleep 10
 mkdir -p .testnets/node0/babylond/.tmpdir/keyring-test
 cp .testnets/covenant-emulator/keyring-test/* .testnets/node0/babylond/.tmpdir/keyring-test/
 docker exec babylondnode0 /bin/sh -c '
     COVENANT_ADDR=$(/bin/babylond --home /babylondhome/.tmpdir keys show covenant \
         --output json --keyring-backend test | jq -r .address) && \
     /bin/babylond --home /babylondhome tx bank send test-spending-key \
-        ${COVENANT_ADDR} 100000000ubbn --fees 2ubbn -y \
+        ${COVENANT_ADDR} 100000000ubbn --fees 600000ubbn -y \
         --chain-id chain-test --keyring-backend test
 '
 [[ "$(uname)" == "Linux" ]] && chown -R 1138:1138 .testnets/covenant-emulator
 
 echo "Created keyrings and sent funds"
+
+docker exec covenant-signer /bin/sh -c 'curl -X POST 127.0.0.1:9791/v1/unlock -H "Content-Type: application/json" -d "{\"passphrase\": \"\"}"'

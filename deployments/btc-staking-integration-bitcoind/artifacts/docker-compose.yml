@@ -200,17 +200,31 @@ services:
       - babylondnode0
     restart: unless-stopped
 
+  covenant-signer:
+    container_name: covenant-signer
+    image: babylonlabs-io/covenant-signer
+    command: covenant-signer start
+    networks:
+      localnet:
+        ipv4_address: 192.168.10.16
+    volumes:
+      - ../.testnets/covenant-signer:/home/covenant-signer/.signer
+    depends_on:
+      - babylondnode0
+    restart: unless-stopped
+
   covenant-emulator:
     container_name: covenant-emulator
     image: babylonlabs-io/covenant-emulator
     command: covd start
     networks:
       localnet:
-        ipv4_address: 192.168.10.16
+        ipv4_address: 192.168.10.17
     volumes:
       - ../.testnets/covenant-emulator:/home/covenant-emulator/.covd
     depends_on:
       - babylondnode0
+      - covenant-signer
     restart: unless-stopped
 
   ibcsim-bcd:
@@ -222,7 +236,7 @@ services:
       - ../.testnets:/data:Z
     networks:
       localnet:
-        ipv4_address: 192.168.10.17
+        ipv4_address: 192.168.10.18
     depends_on:
       - babylondnode0
       - babylondnode1

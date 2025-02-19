@@ -2,8 +2,8 @@
 
 display_usage() {
 	echo "Missing parameters. Please check if all parameters were specified."
-	echo "Usage: setup-bcd.sh [CHAIN_ID] [CHAIN_DIR] [RPC_PORT] [P2P_PORT] [PROFILING_PORT] [GRPC_PORT] [BABYLON_CONTRACT_CODE_DIR] [BTCSTAKING_CONTRACT_CODE_DIR] [INSTANTIATING_CFG]"
-	echo "Example: setup-bcd.sh test-chain-id ./data 26657 26656 6060 9090 ./babylon_contract.wasm '{"btc_confirmation_depth":1,"checkpoint_finalization_timeout":2,"network":"Regtest","babylon_tag":"bbn0", "notify_cosmos_zone":false, "btc_staking_code_id":2}'"
+	echo "Usage: setup-bcd.sh [CHAIN_ID] [CHAIN_DIR] [RPC_PORT] [P2P_PORT] [PROFILING_PORT] [GRPC_PORT] [BABYLON_CONTRACT_CODE_FILE] [BTCSTAKING_CONTRACT_CODE_FILE] [BTCFINALITY_CONTRACT_CODE_FILE]"
+	echo "Example: setup-bcd.sh test-chain-id ./data 26657 26656 6060 9090 ./babylon_contract.wasm ./btc_staking.wasm ./btc_finality.wasm"
 	exit 1
 }
 
@@ -21,7 +21,7 @@ redirect() {
 	fi
 }
 
-if [ "$#" -lt "8" ]; then
+if [ "$#" -lt "9" ]; then
 	display_usage
 	exit 1
 fi
@@ -32,9 +32,9 @@ RPCPORT=$3
 P2PPORT=$4
 PROFPORT=$5
 GRPCPORT=$6
-BABYLON_CONTRACT_CODE_DIR=$7
-BTCSTAKING_CONTRACT_CODE_DIR=$8
-INSTANTIATING_CFG=$9
+BABYLON_CONTRACT_CODE_FILE=$7
+BTCSTAKING_CONTRACT_CODE_FILE=$8
+BTCFINALITY_CONTRACT_CODE_FILE=$9
 
 # ensure the binary exists
 if ! command -v $BINARY &>/dev/null; then
@@ -60,9 +60,9 @@ delegate="100000000000$DENOM"
 
 redirect $BINARY --home $CHAINDIR/$CHAINID --chain-id $CHAINID init $CHAINID
 sleep 1
-$BINARY --home $CHAINDIR/$CHAINID keys add validator $KEYRING --output json > $CHAINDIR/$CHAINID/validator_seed.json 2>&1
+$BINARY --home $CHAINDIR/$CHAINID keys add validator $KEYRING --output json >$CHAINDIR/$CHAINID/validator_seed.json 2>&1
 sleep 1
-$BINARY --home $CHAINDIR/$CHAINID keys add user $KEYRING --output json > $CHAINDIR/$CHAINID/key_seed.json 2>&1
+$BINARY --home $CHAINDIR/$CHAINID keys add user $KEYRING --output json >$CHAINDIR/$CHAINID/key_seed.json 2>&1
 sleep 1
 redirect $BINARY --home $CHAINDIR/$CHAINID genesis add-genesis-account $($BINARY --home $CHAINDIR/$CHAINID keys $KEYRING show user -a) $coins
 sleep 1
@@ -87,34 +87,58 @@ sed -i 's#"tcp://0.0.0.0:1317"#"tcp://0.0.0.0:1318"#g' $CHAINDIR/$CHAINID/config
 sed -i 's/"bond_denom": "stake"/"bond_denom": "'"$DENOM"'"/g' $CHAINDIR/$CHAINID/config/genesis.json
 # sed -i '' 's#index-events = \[\]#index-events = \["message.action","send_packet.packet_src_channel","send_packet.packet_sequence"\]#g' $CHAINDIR/$CHAINID/config/app.toml
 
-## Script for getting contract addresses
-## TODO(euphrates): pass a gov prop on setting the Babylon / BTC staking contract addresses
-# babylonContractAddr=$(bcd query wasm list-contract-by-code 1 -o json | jq -r '.contracts[0]')
-# btcStakingContractAddr=$(bcd query wasm list-contract-by-code 2 -o json | jq -r '.contracts[0]')
-# echo "babylonContractAddr is $babylonContractAddr"
-# echo "btcStakingContractAddr is $btcStakingContractAddr"
-
-# update contract address in genesis
-babylonContractAddr=bbnc14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9syx25zf
-btcStakingContractAddr=bbnc1nc5tatafv6eyq7llkr2gv50ff9e22mnf70qgjlv737ktmt4eswrqgn0kq0
-sed -i 's/"babylon_contract_address": ""/"babylon_contract_address": "'"$babylonContractAddr"'"/g' $CHAINDIR/$CHAINID/config/genesis.json
-sed -i 's/"btc_staking_contract_address": ""/"btc_staking_contract_address": "'"$btcStakingContractAddr"'"/g' $CHAINDIR/$CHAINID/config/genesis.json
-
 # Start
 echo "Starting $BINARY..."
-$BINARY --home $CHAINDIR/$CHAINID start --pruning=nothing --grpc-web.enable=false --grpc.address="0.0.0.0:$GRPCPORT" --log_level trace --trace --log_format 'plain' 2>&1 | tee $CHAINDIR/$CHAINID.log &
+$BINARY --home $CHAINDIR/$CHAINID start --pruning=nothing --grpc-web.enable=false --grpc.address="0.0.0.0:$GRPCPORT" --log_level trace --trace --log_format 'plain' --log_no_color 2>&1 | tee $CHAINDIR/$CHAINID.log &
 sleep 20
 
 # upload contract code
-echo "Uploading babylon contract code $BABYLON_CONTRACT_CODE_DIR..."
-$BINARY --home $CHAINDIR/$CHAINID tx wasm store "$BABYLON_CONTRACT_CODE_DIR" $KEYRING --from user --chain-id $CHAINID --gas 20000000000 --gas-prices 0.01ustake --node http://localhost:$RPCPORT -y
+echo "Uploading babylon contract code $BABYLON_CONTRACT_CODE_FILE..."
+$BINARY --home $CHAINDIR/$CHAINID tx wasm store "$BABYLON_CONTRACT_CODE_FILE" $KEYRING --from user --chain-id $CHAINID --gas 20000000000 --gas-prices 0.01ustake --node http://localhost:$RPCPORT -y
 sleep 10
 
 # upload contract code
-echo "Uploading btcstaking contract code $BTCSTAKING_CONTRACT_CODE_DIR..."
-$BINARY --home $CHAINDIR/$CHAINID tx wasm store "$BTCSTAKING_CONTRACT_CODE_DIR" $KEYRING --from user --chain-id $CHAINID --gas 20000000000 --gas-prices 0.01ustake --node http://localhost:$RPCPORT -y
+echo "Uploading btcstaking contract code $BTCSTAKING_CONTRACT_CODE_FILE..."
+$BINARY --home $CHAINDIR/$CHAINID tx wasm store "$BTCSTAKING_CONTRACT_CODE_FILE" $KEYRING --from user --chain-id $CHAINID --gas 20000000000 --gas-prices 0.01ustake --node http://localhost:$RPCPORT -y
+sleep 10
+
+# upload contract code
+echo "Uploading btcfinality contract code $BTCFINALITY_CONTRACT_CODE_FILE..."
+$BINARY --home $CHAINDIR/$CHAINID tx wasm store "$BTCFINALITY_CONTRACT_CODE_FILE" $KEYRING --from user --chain-id $CHAINID --gas 20000000000 --gas-prices 0.01ustake --node http://localhost:$RPCPORT -y
 sleep 10
 
 # Echo the command with expanded variables
-echo "Instantiating contract with code $BABYLON_CONTRACT_CODE_DIR..."
-$BINARY --home $CHAINDIR/$CHAINID tx wasm instantiate 1 "$INSTANTIATING_CFG" --admin=$(bcd --home $CHAINDIR/$CHAINID keys show user --keyring-backend test -a) --label "v0.0.1" $KEYRING --from user --chain-id $CHAINID --gas 20000000000 --gas-prices 0.001ustake --node http://localhost:$RPCPORT -y --amount 100000stake
+echo "Instantiating contracts..."
+
+ADMIN=$(bcd --home $CHAINDIR/$CHAINID keys show user --keyring-backend test -a)
+STAKING_MSG='{
+  "admin": "'"$ADMIN"'"
+}'
+FINALITY_MSG='{
+  "params": {
+    "max_active_finality_providers": 100,
+    "min_pub_rand": 1,
+    "finality_inflation_rate": "0.035",
+    "epoch_length": 10
+  },
+  "admin": "'"$ADMIN"'"
+}'
+
+$BINARY --home $CHAINDIR/$CHAINID tx babylon instantiate-babylon-contracts \
+	1 2 3 \
+	"regtest" \
+	"01020304" \
+	1 2 false \
+	"$STAKING_MSG" \
+	"$FINALITY_MSG" \
+	test-consumer \
+	test-consumer-description \
+	--admin=$ADMIN \
+	$KEYRING \
+	--from user \
+	--chain-id $CHAINID \
+	--gas 20000000000 \
+	--gas-prices 0.001ustake \
+	--node http://localhost:$RPCPORT \
+	-y \
+	--ibc-transfer-channel-id=channel-0
