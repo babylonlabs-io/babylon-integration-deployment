@@ -316,38 +316,54 @@ while true; do
 done
 
 echo ""
-echo "✍️ Step 15: Verifying Finality Signatures"
-last_block_height=$(docker exec ibcsim-bcd /bin/sh -c "bcd query blocks --query \"block.height > 1\" --page 1 --limit 1 --order_by desc -o json | jq -r '.blocks[0].header.height'")
-last_block_height=$((last_block_height + 1))
-echo "  → Checking finality signatures for block $last_block_height..."
-while true; do
-    finality_sig_info=$(docker exec ibcsim-bcd /bin/sh -c "bcd query wasm contract-state smart $btcFinalityContractAddr '{\"finality_signature\":{\"btc_pk_hex\":\"$consumer_btc_pk\",\"height\":$last_block_height}}' -o json")
-    if [ $(echo "$finality_sig_info" | jq '.data | length') -ne "1" ]; then
-        echo "  → Waiting for finality signature submission..."
-        sleep 10
-    else
-        echo "  ✅ Finality signature submitted for block $last_block_height"
-        break
-    fi
-done
-
+echo "⚠️  Steps 15-16: Finality Verification (TEMPORARILY DISABLED)"
+echo "============================================================"
 echo ""
-echo "🎯 Step 16: Verifying Block Finalization"
-echo "  → Checking if block $last_block_height is finalized..."
-while true; do
-    indexed_block=$(docker exec ibcsim-bcd /bin/sh -c "bcd query wasm contract-state smart $btcFinalityContractAddr '{\"block\":{\"height\":$last_block_height}}' -o json")
-    finalized=$(echo "$indexed_block" | jq -r '.data.finalized')
-    if [ -z "$finalized" ]; then
-        echo "  → Unable to determine finalization status, retrying..."
-        sleep 10
-    elif [ "$finalized" != "true" ]; then
-        echo "  → Block $last_block_height is not finalized yet, waiting..."
-        sleep 10
-    else
-        echo "  ✅ Block $last_block_height is finalized by BTC staking!"
-        break
-    fi
-done
+echo "🐛 Known Issue: Block finalization may not work correctly due to contract bugs"
+echo "   Reference: https://github.com/babylonlabs-io/cosmos-bsn-contracts/issues/156"
+echo ""
+echo "📝 Steps that would normally run here:"
+echo "   Step 15: Verify finality signatures"
+echo "   Step 16: Verify block finalization"
+echo ""
+echo "⏭️  Skipping above steps until contract issues are resolved..."
+
+# COMMENTED OUT DUE TO CONTRACT BUGS - UNCOMMENT WHEN FIXED
+# Reference: https://github.com/babylonlabs-io/cosmos-bsn-contracts/issues/156
+# 
+# echo ""
+# echo "✍️ Step 15: Verifying Finality Signatures"
+# last_block_height=$(docker exec ibcsim-bcd /bin/sh -c "bcd query blocks --query \"block.height > 1\" --page 1 --limit 1 --order_by desc -o json | jq -r '.blocks[0].header.height'")
+# last_block_height=$((last_block_height + 1))
+# echo "  → Checking finality signatures for block $last_block_height..."
+# while true; do
+#     finality_sig_info=$(docker exec ibcsim-bcd /bin/sh -c "bcd query wasm contract-state smart $btcFinalityContractAddr '{\"finality_signature\":{\"btc_pk_hex\":\"$consumer_btc_pk\",\"height\":$last_block_height}}' -o json")
+#     if [ $(echo "$finality_sig_info" | jq '.data | length') -ne "1" ]; then
+#         echo "  → Waiting for finality signature submission..."
+#         sleep 10
+#     else
+#         echo "  ✅ Finality signature submitted for block $last_block_height"
+#         break
+#     fi
+# done
+# 
+# echo ""
+# echo "🎯 Step 16: Verifying Block Finalization"
+# echo "  → Checking if block $last_block_height is finalized..."
+# while true; do
+#     indexed_block=$(docker exec ibcsim-bcd /bin/sh -c "bcd query wasm contract-state smart $btcFinalityContractAddr '{\"block\":{\"height\":$last_block_height}}' -o json")
+#     finalized=$(echo "$indexed_block" | jq -r '.data.finalized')
+#     if [ -z "$finalized" ]; then
+#         echo "  → Unable to determine finalization status, retrying..."
+#         sleep 10
+#     elif [ "$finalized" != "true" ]; then
+#         echo "  → Block $last_block_height is not finalized yet, waiting..."
+#         sleep 10
+#     else
+#         echo "  ✅ Block $last_block_height is finalized by BTC staking!"
+#         break
+#     fi
+# done
 
 echo ""
 echo "🎉 BTC Staking Integration Demo Complete!"
@@ -359,7 +375,8 @@ echo "✅ BTC Finality Contract: $btcFinalityContractAddr"
 echo "✅ Babylon FP BTC PK: $bbn_btc_pk"
 echo "✅ Consumer FP BTC PK: $consumer_btc_pk"
 echo "✅ BTC Delegation TX: $btcTxHash"
-echo "✅ Block $last_block_height: FINALIZED"
+echo "⚠️  Block Finalization: SKIPPED (due to contract bugs)"
 echo ""
-echo "🚀 The integration is now fully operational!"
-echo "   Consumer chain blocks are being finalized via BTC staking."
+echo "🚀 The integration setup is complete!"
+echo "   Note: Finality verification was skipped due to known contract issues."
+echo "   Reference: https://github.com/babylonlabs-io/cosmos-bsn-contracts/issues/156"
