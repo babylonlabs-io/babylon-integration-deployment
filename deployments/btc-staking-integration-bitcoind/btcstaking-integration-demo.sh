@@ -11,14 +11,14 @@ echo ""
 echo "⏳ Step 1: Waiting for relayer key recovery..."
 while true; do
     # Check if both keys are recovered by querying them
-    BABYLON_ADDRESS=$(docker exec ibcsim-bcd /bin/sh -c "rly --home /data/relayer keys list babylon 2>/dev/null" | cut -d' ' -f3)
-    BCD_ADDRESS=$(docker exec ibcsim-bcd /bin/sh -c "rly --home /data/relayer keys list bcd 2>/dev/null" | cut -d' ' -f3)
+    BABYLON_RELAYER_ADDR=$(docker exec ibcsim-bcd /bin/sh -c "rly --home /data/relayer keys list babylon 2>/dev/null" | cut -d' ' -f3)
+    BCD_RELAYER_ADDR=$(docker exec ibcsim-bcd /bin/sh -c "rly --home /data/relayer keys list bcd 2>/dev/null" | cut -d' ' -f3)
 
-    if [ -n "$BABYLON_ADDRESS" ] && [ -n "$BCD_ADDRESS" ]; then
-        echo "  ✅ Successfully recovered keys for both chains"
+    if [ -n "$BABYLON_RELAYER_ADDR" ] && [ -n "$BCD_RELAYER_ADDR" ]; then
+        echo "  → Found relayer addresses: babylon=$BABYLON_RELAYER_ADDR, bcd=$BCD_RELAYER_ADDR"
         break
     else
-        echo "  → Waiting for key recovery... (babylon: $BABYLON_ADDRESS, bcd: $BCD_ADDRESS)"
+        echo "  → Waiting for relayer keys... (babylon: $BABYLON_RELAYER_ADDR, bcd: $BCD_RELAYER_ADDR)"
         sleep 5
     fi
 done

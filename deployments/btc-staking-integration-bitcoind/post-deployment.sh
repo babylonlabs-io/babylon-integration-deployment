@@ -79,6 +79,37 @@ docker exec babylondnode0 /bin/sh -c '
 '
 [[ "$(uname)" == "Linux" ]] && chown -R 1138:1138 .testnets/covenant-emulator
 
+sleep 7
+echo "fund relayer accounts"
+# Wait for relayer keys to be generated, then fund them
+echo "  → Waiting for relayer keys to be generated..."
+while true; do
+    BABYLON_RELAYER_ADDR=$(docker exec ibcsim-bcd /bin/sh -c "rly --home /data/relayer keys list babylon 2>/dev/null" | cut -d' ' -f3)
+    BCD_RELAYER_ADDR=$(docker exec ibcsim-bcd /bin/sh -c "rly --home /data/relayer keys list bcd 2>/dev/null" | cut -d' ' -f3)
+    
+    if [ -n "$BABYLON_RELAYER_ADDR" ] && [ -n "$BCD_RELAYER_ADDR" ]; then
+        echo "  → Found relayer addresses: babylon=$BABYLON_RELAYER_ADDR, bcd=$BCD_RELAYER_ADDR"
+        break
+    else
+        echo "  → Waiting for relayer keys... (babylon: $BABYLON_RELAYER_ADDR, bcd: $BCD_RELAYER_ADDR)"
+        sleep 5
+    fi
+done
+
+echo "  → Funding relayer account on Babylon"
+docker exec babylondnode0 /bin/sh -c "
+    /bin/babylond --home /babylondhome tx bank send test-spending-key \
+        $BABYLON_RELAYER_ADDR 100000000ubbn --fees 600000ubbn -y \
+        --chain-id chain-test --keyring-backend test
+"
+
+echo "  → Funding relayer account on Consumer chain"
+docker exec ibcsim-bcd /bin/sh -c "
+    bcd --home /data/bcd/bcd-test tx bank send user \
+        $BCD_RELAYER_ADDR 100000000ustake --fees 600000ustake -y \
+        --chain-id bcd-test --keyring-backend test
+"
+
 echo "Created keyrings and sent funds"
 
 docker exec covenant-signer /bin/sh -c 'curl -X POST 127.0.0.1:9791/v1/unlock -H "Content-Type: application/json" -d "{\"passphrase\": \"\"}"'
